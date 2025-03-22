@@ -13,24 +13,80 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
     const router = useRouter();
     const { auth } = useAppContext();
     return (
-        <div className="bg-gray-50 drawer lg:drawer-open">
-            <input id="sidebar" type="checkbox" className="drawer-toggle" />
-
-            {/* Drawer content */}
-            <div className="drawer-content flex flex-col">
-                <label htmlFor="sidebar" className="btn btn-square btn-ghost drawer-button lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </label>
-                <div className="p-4">
+        <div className="bg-gray-50">
+            {/* Main content */}
+            <div className="flex flex-col min-h-screen pb-16 lg:pb-0 lg:pl-20">
+                <div className="flex-grow p-4">
                     {children}
                 </div>
             </div>
 
-            {/* Sidebar Content */}
-            <div className="drawer-side">
-                <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
+            {/* Mobile Dock Menu - only visible on small screens */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50">
+                <ul className="flex justify-between items-center px-2 py-3">
+                    <li>
+                        <div 
+                            onClick={() => router.push('/dashboard')}
+                            className="flex flex-col items-center p-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span className="text-xs">Home</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div 
+                            onClick={() => router.push(`/profile/${auth.userData?.id}/ideas`)}
+                            className="flex flex-col items-center p-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                            <span className="text-xs">Ideas</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div 
+                            onClick={() => router.push(`/profile/${auth.userData?.id}/offers`)}
+                            className="flex flex-col items-center p-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                            <span className="text-xs">Offers</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div 
+                            onClick={() => router.push(`/profile/${auth.userData?.id}/deals`)}
+                            className="flex flex-col items-center p-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            <span className="text-xs">Deals</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div 
+                            onClick={() => router.push(`/profile/${auth.userData?.id}/settings`)}
+                            className="flex flex-col items-center p-2"
+                        >
+                            <img
+                                src={auth.userData?.photo || Logo.src}
+                                alt="Profile"
+                                className="w-6 h-6 rounded-full"
+                                onError={(e) => { e.currentTarget.src = Logo.src }}
+                            />
+                            <span className="text-xs">Profile</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            {/* Desktop Sidebar - hidden on mobile, visible on lg screens */}
+            <div className="hidden lg:block fixed top-0 left-0 h-full">
                 <ul className="menu p-4 w-18 min-h-full bg-gray-50 text-base-content flex flex-col items-center gap-4">
                     <li className="mb-4">
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
