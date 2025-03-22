@@ -64,14 +64,14 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6">
-              <span className="text-black">NAIL YOUR</span>
+              <span className="text-black">EMBRACE</span>
               <br />
               <span className="text-black">
-                PERFECT STYLE
+                BOLD BEAUTY
               </span>
             </h1>
             <p className="text-black text-lg mb-8">
-              More than just nails, it's about style, confidence, and self-care. ✨ Get flawless designs with premium care.
+              It's not just about longer lashes; it's about boosting your confidence and embracing self-love. Let us help you feel and look your best—inside and out!
             </p>
             <button
               onClick={() => window.open("https://colaunch-it.vercel.app/booking", "_blank")}

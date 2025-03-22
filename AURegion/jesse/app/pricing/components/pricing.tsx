@@ -10,8 +10,8 @@ export default function PricingHero() {
 
   const services = [
     {
-      title: "Manicures & Pedicures",
-      description: "Keep your nails looking fresh and flawless. Want perfectly polished nails?",
+      title: "Lashes",
+      description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we’ve got you covered to enhance your natural beauty.",
       image: "/manicure.jpg",
       subServices: [
         {
@@ -35,8 +35,8 @@ export default function PricingHero() {
       ]
     },
     {
-      title: "Acrylic & Gel Extensions",
-      description: "Get longer, stronger, and more stylish nails. Want stunning nail extensions?",
+      title: "Brow Shaping & Tinting",
+      description: "Get perfectly shaped and tinted brows that beautifully frame your face.",
       image: "/extension.jpg",
       subServices: [
         {
@@ -60,8 +60,8 @@ export default function PricingHero() {
       ]
     },
     {
-      title: "Nail Art & Designs",
-      description: "Express yourself with custom nail art. Want unique, eye-catching designs?",
+      title: "Facials",
+      description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
       image: "/design.jpg",
       subServices: [
         {

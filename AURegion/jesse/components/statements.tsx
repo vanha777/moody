@@ -82,7 +82,7 @@ export default function Statements() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          With a 90% customer retention rate, our clients love us because we take pride in our work. We proudly use 100% premium, non-toxic products for long-lasting beauty. Because you deserve the best!
+          Beauty is more than just appearances—it's about making you feel seen, heard, and valued. Whether you're treating yourself to a fresh set of lashes, perfectly shaped brows, or just little self-care, we're here for you.
         </motion.p>
 
         {/* Updated CTA Button with new color */}
@@ -96,7 +96,7 @@ export default function Statements() {
             href="/about"
             className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
           >
-            Our Story
+            Read Our Story
           </a>
         </motion.div>
 
