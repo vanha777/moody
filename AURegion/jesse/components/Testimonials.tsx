@@ -20,28 +20,31 @@ export default function Testimonials() {
 
   const testimonials = [
     {
-      name: "Sofia Nguyen",
+      name: "Hoaithu Luu",
       role: "5-Year Loyal Client",
-      image: "/customer1.jpg", // Replace with actual image path
-      quote: "I can't say enough good things about Glaze! The team is so friendly and welcoming. They really listen to what you want and make sure you leave happy. My nails have never looked this good!",
+      image: "/rozy.jpeg", // Replace with actual image path
+      quote: "I am happy when Jess did my eyelashes. They look natural and beautiful. I will recommend my friends to come to Jess. Thank you.",
       start: 5,
-      profile: "/customer1.jpg"
+      profile: "/hoaithu.png",
+      link: "https://maps.app.goo.gl/thWPdXegv4g5sPCY7"
     },
     {
-      name: "Fiano Pham",
+      name: "Tinh Tran",
       role: "3-Year VIP Member",
-      image: "/customer2.jpg", // Replace with actual image path
-      quote: "My nails usually chip within a few days, but after getting them done at Glaze, they've lasted over two weeks without any issues. I'm so impressed with the quality and attention to detail!",
+      image: "/tinh.jpeg", // Replace with actual image path
+      quote: "I got eyelash extensions done, was so perfect and Jess is really nice and professional. Would definitely recommend",
       start: 5,
-      profile: "/customer2.jpg"
+      profile: "/tinhProfile.png",
+      link: "https://maps.app.goo.gl/Lqdb8uM7SskULQLx5"
     },
     {
-      name: "Lisa Wong",
+      name: "Michelle G",
       role: "4-Year Regular Client",
-      image: "/customer3.jpg", // Replace with actual image path
-      quote: "I went to Glaze for the first time last week, and I'm already hooked! They took the time to understand exactly what I wanted, and the design turned out better than I could've imagined. Definitely coming back!",
-      start: 4,
-      profile: "/customer3.jpg"
+      image: "/michelleG.png", // Replace with actual image path
+      quote: "Thank u so much! Lovely lashes and professional technique! Will come back!",
+      start: 5,
+      profile: "/michelle.jpg",
+      link: "https://www.fresha.com/a/jess-beauty-studio-869-morley-12-marchant-way-yk7j7prt#modal-reviews"
     },
   ]
 
@@ -66,7 +69,12 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative h-[600px] rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+              className="relative h-[600px] rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => {
+                if (testimonial.link) {
+                  window.open(testimonial.link, '_blank', 'noopener,noreferrer');
+                }
+              }}
             >
               {/* Background Image */}
               <div className="absolute inset-0">
@@ -108,7 +116,7 @@ export default function Testimonials() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-10"> {/* Add margin top to make space for profile image */}
                     <p className="text-md text-black/80 mb-6">
                       "{testimonial.quote}"
@@ -141,6 +149,37 @@ export default function Testimonials() {
             </motion.div>
           ))}
         </div>
+
+        {/* Review Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col md:flex-row items-center justify-center gap-4 mt-16"
+        >
+          <a
+            href="https://www.google.com/maps/place/Jess'+Beauty+Studio+869/@-31.9008491,115.9014628,17z/data=!4m17!1m8!3m7!1s0x2a32b1c8d178da49:0xfd0a3e6445537478!2sJess'+Beauty+Studio+869!8m2!3d-31.9007777!4d115.9012622!10e1!16s%2Fg%2F11w3s_k4gq!3m7!1s0x2a32b1c8d178da49:0xfd0a3e6445537478!8m2!3d-31.9007777!4d115.9012622!9m1!1b1!16s%2Fg%2F11w3s_k4gq?hl=en-AU&entry=ttu&g_ep=EgoyMDI1MDMxOS4xIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-[#FF6B35] hover:bg-[#E85C2C] text-white font-medium rounded-full transition-colors flex items-center gap-2 shadow-md"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="inline-block">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.97 13.01l-2.74-2.74a.996.996 0 0 1 0-1.41l.17-.17a.996.996 0 0 1 1.41 0l1.87 1.87 4.95-4.95a.996.996 0 0 1 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-5.82 5.82a.996.996 0 0 1-1.41 0z" />
+            </svg>
+            Google Reviews
+          </a>
+          <a
+            href="https://www.fresha.com/a/jess-beauty-studio-869-morley-12-marchant-way-yk7j7prt#modal-reviews"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-[#FF6B35] hover:bg-[#E85C2C] text-white font-medium rounded-full transition-colors flex items-center gap-2 shadow-md"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="inline-block">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+            Fresha Reviews
+          </a>
+        </motion.div>
       </div>
     </section>
   )
