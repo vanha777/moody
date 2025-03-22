@@ -262,6 +262,21 @@ export default function PricingHero() {
             <span className="text-black">Our</span>{' '}
             <span className="text-[#FF6B35]">Premium Services</span>
           </motion.h1>
+          
+          <motion.div 
+            className="flex items-center justify-center w-full my-6 mb-16"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+            <div className="mx-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FF6B35" />
+              </svg>
+            </div>
+            <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+          </motion.div>
 
           {services.map((service, index) => (
             <motion.div

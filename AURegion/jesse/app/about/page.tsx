@@ -54,12 +54,10 @@ export default function About() {
     <>
       <NavBar />
 
-      <section className="relative overflow-hidden min-h-screen">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB]">
-        </div>
+      <section id="services" className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen py-10">
 
         <motion.div
-          className="relative z-10 px-6 py-24 max-w-7xl mx-auto"
+    className="container mx-auto relative z-10 px-4 md:px-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -68,16 +66,26 @@ export default function About() {
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold my-32 mb-8">
               <span className="text-black">Welcome to</span>{' '}
               <span className="text-[#FF6B35]">
-                Glaze Nails
+                Jess
               </span>
             </h1>
+
+            <div className="flex items-center justify-center w-full my-6">
+              <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+              <div className="mx-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FF6B35" />
+                </svg>
+              </div>
+              <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+            </div>
           </motion.div>
 
           <motion.div
             variants={itemVariants}
             className="prose prose-lg max-w-none"
           >
-            <div className="flex flex-col md:flex-row gap-16 items-center my-48">
+            <div className="flex flex-col md:flex-row gap-16 items-center">
               <div className="w-full md:w-1/2">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 text-[#FF6B35]">
                   Who We Are

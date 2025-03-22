@@ -71,7 +71,14 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-2">
               <FiMapPin className="text-[#FF6B35] h-5 w-5" />
-              <span className="text-black/80">Hawthorn, Australia, VIC, 3123</span>
+              <a
+                href="https://maps.app.goo.gl/WsgcUrhmE1vPuiX8A"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-black/80 hover:text-[#FF6B35] transition-colors"
+              >
+                12 Marchant Way, Morley WA 6062
+              </a>
             </div>
           </motion.div>
 

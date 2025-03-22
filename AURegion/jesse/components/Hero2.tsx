@@ -73,11 +73,18 @@ export default function Hero() {
             <p className="text-black text-lg mb-8">
               It's not just about longer lashes; it's about boosting your confidence and embracing self-love. Let us help you feel and look your best—inside and out!
             </p>
-            <button
-              onClick={() => window.open("https://colaunch-it.vercel.app/booking", "_blank")}
-              className="bg-[#FF6B35] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold">
-              Book Now
-            </button>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <button
+                onClick={() => window.open("https://colaunch-it.vercel.app/booking", "_blank")}
+                className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
+              >
+                Book Now
+              </button>
+            </motion.div>
           </motion.div>
 
           {/* Right side image */}

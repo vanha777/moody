@@ -10,7 +10,7 @@ export default function Hero() {
   const services = [
     {
       title: "Lashes",
-      description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we’ve got you covered to enhance your natural beauty.",
+      description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we've got you covered to enhance your natural beauty.",
       image: "/manicure.jpg"
     },
     {
@@ -86,19 +86,20 @@ export default function Hero() {
           ))}
 
           {/* Centered Book Now button */}
-          <div className="flex justify-center mt-8">
-            <motion.a
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <a
               href="/pricing"
-              // target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-[#FF6B35] text-white px-10 py-4 rounded-full hover:bg-opacity-90 transition-all duration-300 text-xl font-bold shadow-lg"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
             >
               Our Services
-            </motion.a>
-          </div>
+            </a>
+          </motion.div>
         </div>
       </section>
     </>
