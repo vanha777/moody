@@ -15,22 +15,70 @@ export default function PricingHero() {
       image: "/manicure.jpg",
       subServices: [
         {
-          name: "Classic Manicure",
-          description: "Includes nail shaping, cuticle care, hand massage, and polish",
-          price: 35,
-          duration: "45 min"
+          name: "Classic Lashes",
+          description: "Classic lashes involve applying a single lash extension to each natural lash. This technique enhances length and can create a more subtle, natural look.",
+          price: 90.25,
+          duration: "95 min"
         },
         {
-          name: "Spa Pedicure",
-          description: "Luxurious foot treatment with scrub, massage, and polish",
-          price: 45,
-          duration: "60 min"
+          name: "Hybrid Lashes",
+          description: "Hybrid lashes combine both classic and volume lash techniques. They typically feature a mix of individual lash extensions (classic) and fans of multiple lashes (volume), resulting in a fuller, textured look while still maintaining some natural appearance.",
+          price: 113.05,
+          duration: "95 min"
+        },
+        {
+          name: "Natural Volume Lashes 3D-5D",
+          description: "Volume 3D-5D. Natural volume lashes use a technique that applies multiple lightweight lash extensions to each natural lash, creating a fuller look without being overly dramatic. ",
+          price: 132.05,
+          duration: "105 min"
+        },
+        {
+          name: "Glam Volume Lashes 10D-14D",
+          description: "Mega volume lashes take the volume lash technique to the next level by using a larger number of ultra-lightweight extensions per natural lash—typically ranging from 6D to 15D or even more.",
+          price: 152,
+          duration: "105 min"
         },
         {
           name: "Gel Polish",
           description: "Long-lasting, chip-free polish that stays perfect for weeks",
           price: 40,
           duration: "45 min"
+        },
+        {
+          name: "Removal",
+          description: "Lash removal refers to the process of safely removing eyelash extensions, whether they are classic, volume, or mega volume.",
+          price: 19,
+          duration: "10 min"
+        },
+        {
+          name: "Add-Ons Color Lash Extension",
+          description: "These are eyelash extensions that come in a variety of colors, allowing you to enhance your natural lashes or create dramatic effects. They can be used individually or mixed with classic black extensions for added dimension.",
+          price: 14.25,
+          duration: "15 min"
+        },
+        {
+          name: "Under Lash Extension",
+          description: "These are individual lash extensions applied to the lower lashes to create a fuller and more dramatic look. They can help balance out the overall appearance of your eyes, especially if you have heavy upper lash extensions.",
+          price: 9.50,
+          duration: "15 min"
+        },
+        {
+          name: "Lash Lift",
+          description: "A lash lift is a perming treatment that curls and lifts your natural lashes from the root, giving them a more defined and elongated appearance.",
+          price: 76,
+          duration: "45 min"
+        },
+        {
+          name: "Lash Tint",
+          description: "Lash tinting involves applying a semi-permanent dye to your lashes to darken them, enhancing their visibility and creating a more defined look.",
+          price: 23.75,
+          duration: "15 min"
+        },
+        {
+          name: "Lash Lift and Tint",
+          description: "A lash lift and tint is a beauty treatment designed to enhance your natural lashes without the use of extensions.",
+          price: 88,
+          duration: "60 min"
         }
       ]
     },
@@ -40,22 +88,34 @@ export default function PricingHero() {
       image: "/extension.jpg",
       subServices: [
         {
-          name: "Full Set Acrylics",
-          description: "Custom-length acrylic extensions with your choice of design",
-          price: 75,
-          duration: "90 min"
+          name: "Brow Lamination",
+          description: "Brow lamination is a cosmetic treatment that helps to create fuller, mor defined brows by restructuring the hair for a polished look. It gives your brows a groomed and voluminous look.",
+          price: 71.25,
+          duration: "45 min"
         },
         {
-          name: "Gel Extensions",
-          description: "Natural-looking gel nail extensions for added length and strength",
-          price: 85,
-          duration: "90 min"
+          name: "Brow Tint",
+          description: "A semi-permanent dye is applied to the brow hairs to enhance their color. The tint is usually left on for a few minutes, depending on the desired depth of color, and then it’s removed.",
+          price: 19,
+          duration: "15 min"
         },
         {
-          name: "Fill-ins",
-          description: "Maintenance service to keep your extensions looking fresh",
-          price: 45,
+          name: "Brow Wax",
+          description: "Warm wax is applied to the areas around the eyebrows where unwanted hair exists. A cloth or paper strip is then placed over the wax and quickly pulled away, removing the hair from the root.",
+          price: 19,
+          duration: "15 min"
+        },
+        {
+          name: "Brow Lamination + Tint",
+          description: "When done together, brow lamination and tinting can create a polished, defined look that enhances your natural brow shape and color. Many people love this combo for a low-maintenance yet striking brow appearance.",
+          price: 80,
           duration: "60 min"
+        },
+        {
+          name: "Brow Lamination + Wax + Tint",
+          description: "Fuller Appearance: Lamination and tinting together create the illusion of thicker brows.Defined Shape: Waxing shapes the brows while lamination keeps them in place. Low Maintenance: The combined effects reduce the need for daily brow makeup.",
+          price: 85,
+          duration: "75 min"
         }
       ]
     },
@@ -65,33 +125,93 @@ export default function PricingHero() {
       image: "/design.jpg",
       subServices: [
         {
-          name: "Basic Gel Polish",
-          description: "Single color gel polish application with high shine finish",
-          price: 40,
-          duration: "45 min"
+          name: "Acne Treatments",
+          description: "Skin Examination- Deep Cleanse the Skin - Remove Acne with Specialized Instruments- Apply Mask and Biolight- Apply Serum and Cream.",
+          price: 79,
+          duration: "40 min"
         },
         {
-          name: "French Gel Tips",
-          description: "Classic French manicure style with gel polish",
-          price: 50,
+          name: "Deluxe Deep Facial Massage 60 mins",
+          description: "Skin Examination - Deep Cleansing - Relaxing Face Lifting by HOT massage-  Acne removal ( option) - COLD Massage to Firm the Skin and Shrink Pores- Relax with Mask and omega light, - Apply Serum and Cream.",
+          price: 89,
           duration: "60 min"
         },
         {
-          name: "Gel Art Design",
-          description: "Custom nail art with gel polish and decorative elements",
-          price: 65,
+          name: "Pro-lifted Facial Massage 45-mins",
+          description: "Skin Examination- Deep Cleansing - Relaxing Face Lift Massage with Massage Cream Suitable for Each Skin Type- Relax with Mask- Apply Serum and Cream.",
+          price: 79,
+          duration: "45 min"
+        }
+      ]
+    },
+    {
+      title: "Refill",
+      description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
+      image: "/design.jpg",
+      subServices: [
+        {
+          name: "Refill Angle Wings Lashes",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 105,
+          duration: "80 min"
+        },
+        {
+          name: "Refill Baby Lashes",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 105,
+          duration: "80 min"
+        },
+        {
+          name: "Refill Multi Level Lashes",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 120,
+          duration: "90 min"
+        },
+        {
+          name: "Refill Wet Look",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 115,
+          duration: "90 min"
+        },
+        {
+          name: "Refill Eyeliner Lashes",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 40-50% of lashes remaining to book this service and must be booked within 16-21 days from your last service. After 21 days a new set will be required or if you have lost more than 70% in this time.",
+          price: 125,
+          duration: "70 min"
+        },
+        {
+          name: "Refill Katun Lashes",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 40-50% of lashes remaining to book this service and must be booked within 16-21 days from your last service. After 21 days a new set will be required or if you have lost more than 70% in this time.",
+          price: 110,
+          duration: "60 min"
+        },
+        {
+          name: "Refill Natural Volume",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 84.55,
+          duration: "50 min"
+        },
+        {
+          name: "Refill Mega",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 103.55,
           duration: "75 min"
         },
         {
-          name: "Chrome/Cat Eye",
-          description: "Specialty gel polish effects for a unique shine",
-          price: 55,
+          name: "Refill Hybrid",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 89,
+          duration: "70 min"
+        },
+        {
+          name: "Refill Classic",
+          description: "A healthcheck appointment, remove any extensions growing out and infill with new lash extensions where required. You must have at least 50-60% of lashes remaining to book this service and must be booked with in 7-15 days from your last service.",
+          price: 65,
           duration: "60 min"
         }
       ]
     }
   ]
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)

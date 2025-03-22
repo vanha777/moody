@@ -22,6 +22,11 @@ export default function Hero() {
       title: "Facials",
       description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
       image: "/design.jpg"
+    },
+    {
+      title: "Refill",
+      description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
+      image: "/design.jpg"
     }
   ]
 
