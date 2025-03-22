@@ -57,7 +57,7 @@ export default function About() {
       <section id="services" className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen py-10">
 
         <motion.div
-    className="container mx-auto relative z-10 px-4 md:px-8"
+          className="container mx-auto relative z-10 px-4 md:px-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
