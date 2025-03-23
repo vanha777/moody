@@ -494,12 +494,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     Week
                   </div>
                   <div className="text-lg sm:text-2xl font-bold whitespace-nowrap">
-                    {format(weekDays[0], 'd')} - {format(weekDays[6], 'd')}
+                    {safeFormat(weekDays[0], 'd')} - {safeFormat(weekDays[6], 'd')}
                   </div>
                   <div className="text-xs sm:text-sm text-gray-500">
-                    {format(weekDays[0], 'MMM')} {weekDays[0].getFullYear() !== weekDays[6].getFullYear() ? format(weekDays[0], 'yyyy') : ''} 
-                    {weekDays[0].getMonth() !== weekDays[6].getMonth() ? ` - ${format(weekDays[6], 'MMM')}` : ''} 
-                    {format(weekDays[6], 'yyyy')}
+                    {safeFormat(weekDays[0], 'MMM')} {weekDays[0]?.getFullYear() !== weekDays[6]?.getFullYear() ? safeFormat(weekDays[0], 'yyyy') : ''} 
+                    {weekDays[0]?.getMonth() !== weekDays[6]?.getMonth() ? ` - ${safeFormat(weekDays[6], 'MMM')}` : ''} 
+                    {safeFormat(weekDays[6], 'yyyy')}
                   </div>
                 </>
               ) : (
