@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import IdeaCard, { IdeaProps, OfferProps } from "./components/ideaCard";
+import IdeaCard, { IdeaProps, OfferProps } from "./components/businesses";
 import { Db, Server } from "@/app/utils/db";
 import { AppProvider, useAppContext, UserData } from "@/app/utils/AppContext";
 import { useEffect, useState } from "react";

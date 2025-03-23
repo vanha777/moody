@@ -15,7 +15,7 @@ export default function DashboardClient({ rawUser }: InitialUserProps) {
     const { auth, setAccessToken, setUser, setGame, setTokenData, logout, getUser } = useAppContext();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,14 +30,14 @@ export default function DashboardClient({ rawUser }: InitialUserProps) {
                     }
                     initialUser = user;
                 }
-                setIsLoading(true);
+                // setIsLoading(true);
                 console.log("this is data", initialUser);
                 setUser(initialUser);
             } catch (error) {
                 console.error('Error fetching data:', error);
                 router.push("/dashboard/login");
             } finally {
-                setIsLoading(false);
+                // setIsLoading(false);
                 // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
                 // router.push("/");
             }
@@ -46,5 +46,5 @@ export default function DashboardClient({ rawUser }: InitialUserProps) {
         fetchData();
     }, []);
 
-    return isLoading ? <SimpleLoading /> : <MainUniverse />;
+    return <MainUniverse />;
 }
