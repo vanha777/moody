@@ -45,6 +45,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showAddBooking, setShowAddBooking] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<Date | null>(null);
   // const [currentTime, setCurrentTime] = useState(new Date());
   // this is for testing purposes
   const [currentTime, setCurrentTime] = useState(() => {
@@ -229,12 +230,41 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             const hour = hourIndex + 8; // Starting at 8 AM
             const eventsInSlot = getEventsForTimeSlot(currentDate, hour);
             
+            // Helper function to create date with specific hour
+            const createDateTimeForHour = () => {
+              const selectedDateTime = new Date(currentDate);
+              selectedDateTime.setHours(hour, 0, 0, 0);
+              return selectedDateTime;
+            };
+            
             return (
               <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50 relative">
-                <div className="time-label flex items-center justify-center h-full text-xs font-semibold text-gray-500">
+                <div 
+                  className="time-label flex h-full text-xs font-semibold text-gray-500 cursor-pointer" 
+                  onClick={() => {
+                    // Create new date object for the selected time slot
+                    const selectedDateTime = createDateTimeForHour();
+                    
+                    // Open the booking form with the selected date/time
+                    setShowAddBooking(true);
+                    // Store the selected date/time (for passing to overlay)
+                    setSelectedTimeSlot(selectedDateTime);
+                  }}
+                >
                   {timeDisplay}
                 </div>
-                <div className="time-slot p-2 min-h-20 flex flex-col gap-2 relative hover:bg-gray-50/50 transition-all duration-200">
+                <div 
+                  className="time-slot p-2 min-h-20 flex flex-col gap-2 relative hover:bg-gray-50/50 transition-all duration-200 cursor-pointer"
+                  onClick={() => {
+                    // Create new date object for the selected time slot
+                    const selectedDateTime = createDateTimeForHour();
+                    
+                    // Open the booking form with the selected date/time
+                    setShowAddBooking(true);
+                    // Store the selected date/time (for passing to overlay)
+                    setSelectedTimeSlot(selectedDateTime);
+                  }}
+                >
                   {/* Current time indicator - updated with z-index */}
                   {showTimeIndicator && currentHour === hour && (
                     <div 
@@ -252,7 +282,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     <div
                       key={event.id}
                       className="event-chip bg-black/90 text-white px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-black hover:scale-[1.01] transition-all z-1 relative"
-                      onClick={() => handleEventClick(event)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering the time slot click
+                        handleEventClick(event);
+                      }}
                     >
                       {event.title}
                     </div>
@@ -300,8 +333,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             const hour = hourIndex + 8; // Starting at 8 AM
             
             return (
-              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50">
-                <div className="time-label flex items-center justify-center h-full text-xs font-semibold text-gray-500">
+              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray">
+                <div className="time-label flex h-full text-xs font-semibold text-gray-500">
                   {timeDisplay}
                 </div>
                 <div className="grid grid-cols-7">
@@ -381,12 +414,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             return (
               <div 
                 key={index} 
-                className={`day-cell rounded-2xl p-1.5 sm:p-2.5 flex flex-col overflow-hidden transition-all duration-200 hover:bg-gray-50/70 ${isCurrentMonth ? '' : 'bg-gray-50/30 text-gray-400'} ${isToday ? 'ring-1 ring-black/20 shadow-sm' : ''}`}
+                className={`day-cell rounded-2xl p-1.5 sm:p-2.5 flex flex-col overflow-hidden transition-all duration-200 hover:bg-gray-50/70 ${isCurrentMonth ? '' : 'bg-gray-50/30 text-gray-400'} ${isToday ? 'ring-1 ring-black/20 shadow-sm' : ''} cursor-pointer`}
                 onClick={() => {
-                  if (isMobile) {
-                    setCurrentDate(day);
-                    setCurrentView('day');
-                  }
+                  setCurrentDate(day);
+                  setCurrentView('day');
                 }}
               >
                 <div className="flex justify-end mb-2 flex-shrink-0">
@@ -571,7 +602,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       {showAddBooking && (
         <AddBookingOverlay
           onClose={() => setShowAddBooking(false)}
-          // selectedDate={currentDate}
+          selectedDate={selectedTimeSlot || currentDate}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format, addHours } from 'date-fns';
 
 interface AddBookingOverlayProps {
   onClose: () => void;
@@ -13,24 +13,33 @@ interface AddBookingOverlayProps {
 //     service: string;
 //     phoneNumber: string;
 //   }) => void;
-  initialDate?: Date;
+  selectedDate?: Date;
 }
 
 const AddBookingOverlay: React.FC<AddBookingOverlayProps> = ({
   onClose,
 //   onAddBooking,
-  initialDate
+  selectedDate
 }) => {
   const [title, setTitle] = useState<string>('');
-  const [startDate, setStartDate] = useState<Date>(initialDate || new Date());
-  const [endDate, setEndDate] = useState<Date>(
-    initialDate 
-      ? new Date(initialDate.getTime() + 60 * 60 * 1000) 
-      : new Date(new Date().getTime() + 60 * 60 * 1000)
-  ); // Default to 1 hour later
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const [clientName, setClientName] = useState<string>('');
   const [service, setService] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
+
+  // Update dates when selectedDate prop changes
+  useEffect(() => {
+    if (selectedDate) {
+      setStartDate(selectedDate);
+      setEndDate(addHours(selectedDate, 1)); // Default to 1 hour appointment
+    } else {
+      // Default fallback if no date is selected
+      const now = new Date();
+      setStartDate(now);
+      setEndDate(addHours(now, 1));
+    }
+  }, [selectedDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
