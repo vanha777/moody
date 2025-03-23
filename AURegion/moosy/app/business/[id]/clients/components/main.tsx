@@ -7,10 +7,7 @@ export default function Main() {
     return (
         <>
             <SimpleSideBar>
-                {/* <SimpleNavBar /> */}
-                {/* <div className="container mx-auto py-28 overflow-y-auto"> */}
                     <IdeaCard />
-                {/* </div> */}
             </SimpleSideBar>
         </>
     );

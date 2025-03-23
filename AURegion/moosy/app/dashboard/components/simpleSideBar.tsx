@@ -43,7 +43,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                     </li>
                     <li>
                         <div 
-                            onClick={() => handleNavigation(`/business/${auth.userData?.id}/ideas`, 'ideas')}
+                            onClick={() => handleNavigation('/business/clients', 'ideas')}
                             className={`flex flex-col items-center p-2 ${activeItem === 'ideas' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'ideas' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">

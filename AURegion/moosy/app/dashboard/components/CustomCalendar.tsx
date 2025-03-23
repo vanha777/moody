@@ -38,13 +38,29 @@ type CalendarView = 'day' | 'week' | 'month' | 'list';
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentView, setCurrentView] = useState<CalendarView>('week');
+  const [currentView, setCurrentView] = useState<CalendarView>('day');
   const [weekDays, setWeekDays] = useState<Date[]>([]);
   const [monthDays, setMonthDays] = useState<Date[][]>([]);
   const [displayHours, setDisplayHours] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showAddBooking, setShowAddBooking] = useState(false);
+  // const [currentTime, setCurrentTime] = useState(new Date());
+  // this is for testing purposes
+  const [currentTime, setCurrentTime] = useState(() => {
+    const today = new Date();
+    today.setHours(10, 0, 0, 0); // Set to 5 PM
+    return today;
+  });
+  
+  // Update current time every minute
+  useEffect(() => {
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 15 * 60 * 1000); // Update every 15 minutes
+    
+    return () => clearInterval(timeInterval);
+  }, []);
   
   // Check if we're on mobile
   useEffect(() => {
@@ -196,25 +212,46 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     onEventClick(event);
   };
 
-  // Updated event chip styles with modern mobile-friendly design
+  // Updated renderDayView with current time indicator
   const renderDayView = () => {
+    // Calculate current time position
+    const now = currentTime;
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const timePercentage = (currentMinute / 60) * 100;
+    const isCurrentTimeInRange = currentHour >= 8 && currentHour <= 20;
+    const showTimeIndicator = isSameDay(currentDate, now) && isCurrentTimeInRange;
+    
     return (
-      <div className="day-view">
+      <div className="day-view relative">
         <div className="time-grid">
           {displayHours.map((timeDisplay, hourIndex) => {
             const hour = hourIndex + 8; // Starting at 8 AM
             const eventsInSlot = getEventsForTimeSlot(currentDate, hour);
             
             return (
-              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50">
+              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50 relative">
                 <div className="time-label flex items-center justify-center h-full text-xs font-semibold text-gray-500">
                   {timeDisplay}
                 </div>
                 <div className="time-slot p-2 min-h-20 flex flex-col gap-2 relative hover:bg-gray-50/50 transition-all duration-200">
+                  {/* Current time indicator - updated with z-index */}
+                  {showTimeIndicator && currentHour === hour && (
+                    <div 
+                      className="absolute left-0 right-0 z-0 pointer-events-none" 
+                      style={{ top: `${timePercentage}%` }}
+                    >
+                      <div className="flex items-center">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-md"></div>
+                        <div className="h-0.5 bg-red-500 w-full"></div>
+                      </div>
+                    </div>
+                  )}
+                  
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
-                      className="event-chip bg-black/90 text-white px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-black hover:scale-[1.01] transition-all"
+                      className="event-chip bg-black/90 text-white px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-black hover:scale-[1.01] transition-all z-1 relative"
                       onClick={() => handleEventClick(event)}
                     >
                       {event.title}
@@ -409,7 +446,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   return (
     <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">
       {/* Calendar Header - Modernized design */}
-      <div className="calendar-header flex flex-col sticky top-0 bg-white z-10 rounded-t-xl">
+      <div className="calendar-header flex flex-col sticky top-0 bg-white z-20 rounded-t-xl">
         {/* View switcher with responsive padding */}
         <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
           {/* View buttons with modern style */}
@@ -516,7 +553,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       </div>
       
       {/* Calendar Content */}
-      <div className="calendar-content overflow-auto flex-grow px-2">
+      <div className="calendar-content overflow-auto flex-grow px-2 relative">
         {currentView === 'day' && renderDayView()}
         {currentView === 'week' && renderWeekView()}
         {currentView === 'month' && renderMonthView()}

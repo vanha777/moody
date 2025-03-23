@@ -34,8 +34,7 @@ export const metadata: Metadata = {
   },
 };
 export const revalidate = 0
-export default async function IdeaPage({ params }: { params: { id: string } }) {
-  console.log('user ID:', params.id);
+export default async function IdeaPage() {
   return (
     <Main />
   )
