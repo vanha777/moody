@@ -34,11 +34,11 @@ interface CustomCalendarProps {
   onEventClick: (event: CalendarEvent) => void;
 }
 
-type CalendarView = 'list' | 'day' | 'week' | 'month';
+type CalendarView = 'day' | 'week' | 'month' | 'list';
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentView, setCurrentView] = useState<CalendarView>('list');
+  const [currentView, setCurrentView] = useState<CalendarView>('week');
   const [weekDays, setWeekDays] = useState<Date[]>([]);
   const [monthDays, setMonthDays] = useState<Date[][]>([]);
   const [displayHours, setDisplayHours] = useState<string[]>([]);
@@ -136,13 +136,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       return isSameDay(eventDate, day) && eventDate.getHours() === hour;
     });
   };
-  
-  // Filter events for the current date (for list view)
-  const getEventsForCurrentDate = () => {
-    return events
-      .filter(event => isSameDay(new Date(event.start), currentDate))
-      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-  };
 
   // Navigation functions
   const goToPrevious = () => {
@@ -171,12 +164,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
 
   // Change view
   const changeView = (view: CalendarView) => {
-    // For mobile devices, redirect week view to list view
+    // On mobile, don't allow changing to week view
     if (isMobile && view === 'week') {
-      setCurrentView('list');
-    } else {
-      setCurrentView(view);
+      return;
     }
+    setCurrentView(view);
   };
 
   // Safe format function
@@ -193,8 +185,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       return `${safeFormat(weekDays[0], 'MMM d')} - ${safeFormat(weekDays[6], 'MMM d, yyyy')}`;
     } else if (currentView === 'month') {
       return safeFormat(currentDate, 'MMMM yyyy');
-    } else if (currentView === 'list') {
-      return `Events for ${safeFormat(currentDate, 'MMMM d, yyyy')}`;
     }
     return '';
   };
@@ -203,42 +193,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     onEventClick(event);
-  };
-
-  // Render list view
-  const renderListView = () => {
-    const dayEvents = getEventsForCurrentDate();
-    
-    return (
-      <div className="list-view p-4">
-        {dayEvents.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No events scheduled for this date.</p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-gray-200">
-            {dayEvents.map((event) => (
-              <li 
-                key={event.id} 
-                className="py-4 hover:bg-gray-50 cursor-pointer"
-                onClick={() => handleEventClick(event)}
-              >
-                <div className="flex items-start">
-                  <div className="min-w-24 text-sm font-medium text-gray-900">
-                    {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">{event.title}</p>
-                    <p className="text-sm text-gray-500">{event.extendedProps.clientName}</p>
-                    <p className="text-sm text-gray-500">{event.extendedProps.service}</p>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
   };
 
   // Render day view
@@ -487,18 +441,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
         
         <div className="flex space-x-1 sm:space-x-2 text-xs sm:text-sm">
           <button 
-            className={`p-1 sm:p-2 rounded ${currentView === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-            onClick={() => changeView('list')}
-          >
-            List
-          </button>
-          <button 
             className={`p-1 sm:p-2 rounded ${currentView === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
             onClick={() => changeView('day')}
           >
             Day
           </button>
-          {/* Hide week view button on mobile */}
+          {/* Only show week view button on desktop */}
           {!isMobile && (
             <button 
               className={`p-1 sm:p-2 rounded ${currentView === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
@@ -518,7 +466,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       
       {/* Calendar Content - Modified to flex-grow and have specific height */}
       <div className="calendar-content overflow-auto flex-grow">
-        {currentView === 'list' && renderListView()}
         {currentView === 'day' && renderDayView()}
         {currentView === 'week' && renderWeekView()}
         {currentView === 'month' && renderMonthView()}

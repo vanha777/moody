@@ -103,6 +103,13 @@ const BookingList: React.FC = () => {
                         service: 'Shave',
                         phoneNumber: '(555) 567-8901',
                         dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                    },
+                    {
+                        id: '6',
+                        clientName: 'John Smith',
+                        service: 'Haircut',
+                        phoneNumber: '(555) 123-4567',
+                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
                     }
                 ];
 
