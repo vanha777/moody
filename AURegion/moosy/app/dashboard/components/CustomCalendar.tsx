@@ -421,14 +421,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
 
   return (
     <div className="custom-calendar bg-white rounded-lg shadow-md flex flex-col h-full min-h-[70vh]">
-      {/* Calendar Header - Modified to have view switcher on separate line */}
+      {/* Calendar Header - Modified for better responsiveness */}
       <div className="calendar-header flex flex-col border-b sticky top-0 bg-white z-10">
-        {/* View switcher line with add booking button at the end */}
-        <div className="view-switcher flex justify-between items-center p-2 pb-0">
-          {/* View buttons on the left */}
-          <div className="flex space-x-3">
+        {/* View switcher with responsive padding */}
+        <div className="view-switcher flex justify-between items-center px-3 py-3 sm:px-4 sm:py-3">
+          {/* View buttons with responsive sizing */}
+          <div className="flex space-x-2 sm:space-x-3">
             <button 
-              className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'day' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'day' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
               onClick={() => changeView('day')}
             >
               Day
@@ -436,58 +436,63 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             {/* Only show week view button on desktop */}
             {!isMobile && (
               <button 
-                className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'week' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'week' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
                 onClick={() => changeView('week')}
               >
                 Week
               </button>
             )}
             <button 
-              className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'month' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'month' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
               onClick={() => changeView('month')}
             >
               Month
             </button>
           </div>
           
-          {/* Add booking button at the end */}
+          {/* Add booking button with responsive sizing */}
           <button 
-            className="w-12 h-12 rounded-full bg-gray-200 text-black flex items-center justify-center shadow-md hover:bg-black hover:text-white transition-colors"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 text-black flex items-center justify-center shadow-md hover:bg-black hover:text-white transition-colors"
             onClick={() => setShowAddBooking(true)}
           >
-            <span className="text-xl font-bold">+</span>
+            <span className="text-lg sm:text-xl font-bold">+</span>
           </button>
         </div>
         
-        {/* Date navigation on second line */}
-        <div className="flex flex-row justify-between items-center p-2 pt-1">
-          <div className="flex space-x-2">
+        {/* Date navigation - Redesigned for better responsiveness */}
+        <div className="flex justify-center items-center py-2 px-2 sm:py-3 sm:px-4 border-t border-gray-100">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <button 
-              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
               onClick={goToPrevious}
+              aria-label="Previous"
             >
-              Prev
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
             </button>
-            <button 
-              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+            
+            <div 
+              className="text-sm sm:text-lg font-medium flex items-center cursor-pointer hover:text-blue-600 transition-colors"
               onClick={goToToday}
             >
-              Today
-            </button>
+              {getTitle()}
+              {/* Smaller "today" indicator that disappears on very small screens */}
+              <div className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full hidden sm:block">
+                today
+              </div>
+            </div>
+            
             <button 
-              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
               onClick={goToNext}
+              aria-label="Next"
             >
-              Next
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
             </button>
           </div>
-          
-          <div className="text-base sm:text-xl font-bold text-center">
-            {getTitle()}
-          </div>
-          
-          {/* Empty div to balance the flex layout */}
-          <div className="w-[108px] sm:w-[150px]"></div>
         </div>
       </div>
       
