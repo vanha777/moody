@@ -16,7 +16,7 @@ import {
   isSameMonth
 } from 'date-fns';
 import BookingOverlay from './bookingOverlay';
-
+import AddBookingOverlay from './addBookingOverlay';
 interface CalendarEvent {
   id: string;
   title: string;
@@ -44,6 +44,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const [displayHours, setDisplayHours] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [showAddBooking, setShowAddBooking] = useState(false);
   
   // Check if we're on mobile
   useEffect(() => {
@@ -335,7 +336,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     if (monthDays.length === 0) return null;
     
     return (
-      <div className="month-view p-1 sm:p-4">
+      <div className="month-view p-1 sm:p-4 h-full flex flex-col">
         <div className="grid grid-cols-7 text-center font-medium border-b">
           <div className="p-1 sm:p-2 text-xs sm:text-sm">Mon</div>
           <div className="p-1 sm:p-2 text-xs sm:text-sm">Tue</div>
@@ -346,7 +347,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           <div className="p-1 sm:p-2 text-xs sm:text-sm">Sun</div>
         </div>
         
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-7 flex-grow min-h-[70vh]">
           {monthDays.flat().map((day, index) => {
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isToday = isSameDay(day, new Date());
@@ -355,17 +356,16 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             return (
               <div 
                 key={index} 
-                className={`day-cell border p-1 ${isMobile ? 'h-14 cursor-pointer' : 'h-24'} overflow-hidden ${isCurrentMonth ? '' : 'bg-gray-100 text-gray-400'} ${isToday ? 'bg-blue-50' : ''}`}
+                className={`day-cell border p-1 flex flex-col overflow-hidden ${isCurrentMonth ? '' : 'bg-gray-100 text-gray-400'} ${isToday ? 'bg-blue-50' : ''}`}
                 onClick={() => {
-                  if (isMobile || dayEvents.length > 0) {
-                    // On mobile, always redirect to list view on click
-                    // On desktop, only redirect if there are events
+                  if (isMobile) {
+                    // On mobile, redirect to day view
                     setCurrentDate(day);
-                    setCurrentView('list');
+                    setCurrentView('day');
                   }
                 }}
               >
-                <div className="text-right">
+                <div className="text-right mb-1 flex-shrink-0">
                   <span className={`inline-block w-6 h-6 text-sm sm:text-base text-center ${isToday ? 'bg-blue-500 text-white rounded-full' : ''}`}>
                     {format(day, 'd')}
                   </span>
@@ -374,31 +374,40 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                 {dayEvents.length > 0 && (
                   isMobile ? (
                     // Mobile: Only show event count
-                    <div className="flex justify-center mt-1">
-                      <div className="event-count bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                    <div className="flex justify-center mt-auto mb-1">
+                      <div 
+                        className="event-count bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Switch to day view on mobile
+                          setCurrentDate(day);
+                          setCurrentView('day');
+                        }}
+                      >
                         {dayEvents.length}
                       </div>
                     </div>
                   ) : (
-                    // Desktop: Show event previews
-                    <div className="mt-1 max-h-[4.5rem] overflow-hidden">
-                      {dayEvents.slice(0, 3).map(event => (
-                        <div
-                          key={event.id}
-                          className="event-chip bg-blue-500 text-white p-1 mb-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEventClick(event);
-                          }}
-                        >
-                          {format(new Date(event.start), 'h:mm a')} {event.title}
-                        </div>
+                    // Desktop: Show event previews with flexible layout
+                    <div className="flex-grow overflow-y-auto">
+                      {dayEvents.map((event, idx) => (
+                        idx < 3 ? (
+                          <div
+                            key={event.id}
+                            className="event-chip bg-blue-500 text-white p-1 mb-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEventClick(event);
+                            }}
+                          >
+                            {format(new Date(event.start), 'h:mm a')} {event.title}
+                          </div>
+                        ) : (idx === 3 ? (
+                          <div key="more" className="text-xs text-gray-500 pl-1">
+                            +{dayEvents.length - 3} more
+                          </div>
+                        ) : null)
                       ))}
-                      {dayEvents.length > 3 && (
-                        <div className="text-xs text-gray-500 pl-1">
-                          +{dayEvents.length - 3} more
-                        </div>
-                      )}
                     </div>
                   )
                 )}
@@ -411,60 +420,78 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   };
 
   return (
-    <div className="custom-calendar bg-white rounded-lg shadow-md flex flex-col h-full">
-      {/* Calendar Header - Added sticky positioning */}
-      <div className="calendar-header flex flex-col sm:flex-row justify-between items-center p-2 sm:p-4 border-b gap-2 sticky top-0 bg-white z-10">
-        <div className="flex space-x-2">
-          <button 
-            className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            onClick={goToPrevious}
-          >
-            Prev
-          </button>
-          <button 
-            className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            onClick={goToToday}
-          >
-            Today
-          </button>
-          <button 
-            className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            onClick={goToNext}
-          >
-            Next
-          </button>
-        </div>
-        
-        <div className="text-base sm:text-xl font-bold text-center">
-          {getTitle()}
-        </div>
-        
-        <div className="flex space-x-1 sm:space-x-2 text-xs sm:text-sm">
-          <button 
-            className={`p-1 sm:p-2 rounded ${currentView === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-            onClick={() => changeView('day')}
-          >
-            Day
-          </button>
-          {/* Only show week view button on desktop */}
-          {!isMobile && (
+    <div className="custom-calendar bg-white rounded-lg shadow-md flex flex-col h-full min-h-[70vh]">
+      {/* Calendar Header - Modified to have view switcher on separate line */}
+      <div className="calendar-header flex flex-col border-b sticky top-0 bg-white z-10">
+        {/* View switcher line with add booking button at the end */}
+        <div className="view-switcher flex justify-between items-center p-2 pb-0">
+          {/* View buttons on the left */}
+          <div className="flex space-x-3">
             <button 
-              className={`p-1 sm:p-2 rounded ${currentView === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-              onClick={() => changeView('week')}
+              className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'day' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              onClick={() => changeView('day')}
             >
-              Week
+              Day
             </button>
-          )}
+            {/* Only show week view button on desktop */}
+            {!isMobile && (
+              <button 
+                className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'week' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                onClick={() => changeView('week')}
+              >
+                Week
+              </button>
+            )}
+            <button 
+              className={`w-28 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${currentView === 'month' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              onClick={() => changeView('month')}
+            >
+              Month
+            </button>
+          </div>
+          
+          {/* Add booking button at the end */}
           <button 
-            className={`p-1 sm:p-2 rounded ${currentView === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-            onClick={() => changeView('month')}
+            className="w-12 h-12 rounded-full bg-gray-200 text-black flex items-center justify-center shadow-md hover:bg-black hover:text-white transition-colors"
+            onClick={() => setShowAddBooking(true)}
           >
-            Month
+            <span className="text-xl font-bold">+</span>
           </button>
+        </div>
+        
+        {/* Date navigation on second line */}
+        <div className="flex flex-row justify-between items-center p-2 pt-1">
+          <div className="flex space-x-2">
+            <button 
+              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              onClick={goToPrevious}
+            >
+              Prev
+            </button>
+            <button 
+              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              onClick={goToToday}
+            >
+              Today
+            </button>
+            <button 
+              className="p-1 sm:p-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              onClick={goToNext}
+            >
+              Next
+            </button>
+          </div>
+          
+          <div className="text-base sm:text-xl font-bold text-center">
+            {getTitle()}
+          </div>
+          
+          {/* Empty div to balance the flex layout */}
+          <div className="w-[108px] sm:w-[150px]"></div>
         </div>
       </div>
       
-      {/* Calendar Content - Modified to flex-grow and have specific height */}
+      {/* Calendar Content - Modified to ensure month view gets proper height */}
       <div className="calendar-content overflow-auto flex-grow">
         {currentView === 'day' && renderDayView()}
         {currentView === 'week' && renderWeekView()}
@@ -476,6 +503,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
         <BookingOverlay
           booking={selectedEvent}
           onClose={() => setSelectedEvent(null)}
+        />
+      )}
+      
+      {/* Add Booking Overlay */}
+      {showAddBooking && (
+        <AddBookingOverlay
+          onClose={() => setShowAddBooking(false)}
+          // selectedDate={currentDate}
         />
       )}
     </div>
