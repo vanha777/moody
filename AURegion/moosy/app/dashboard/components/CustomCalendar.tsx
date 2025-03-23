@@ -459,11 +459,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           </button>
         </div>
         
-        {/* Date navigation - Redesigned for better responsiveness */}
+        {/* Date navigation - Artistic redesign without Today button */}
         <div className="flex justify-center items-center py-2 px-2 sm:py-3 sm:px-4 border-t border-gray-100">
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-6">
             <button 
-              className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
               onClick={goToPrevious}
               aria-label="Previous"
             >
@@ -472,19 +472,51 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
               </svg>
             </button>
             
-            <div 
-              className="text-sm sm:text-lg font-medium flex items-center cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={goToToday}
-            >
-              {getTitle()}
-              {/* Smaller "today" indicator that disappears on very small screens */}
-              <div className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full hidden sm:block">
-                today
-              </div>
+            {/* Artistic date display with stacked layout */}
+            <div className="flex flex-col items-center">
+              {currentView === 'day' ? (
+                /* Day view - show day with big date */
+                <>
+                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider">
+                    {format(currentDate, 'EEEE')}
+                  </div>
+                  <div className="text-lg sm:text-2xl font-bold">
+                    {format(currentDate, 'd')}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-500">
+                    {format(currentDate, 'MMMM yyyy')}
+                  </div>
+                </>
+              ) : currentView === 'week' ? (
+                /* Week view - show week range */
+                <>
+                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider">
+                    Week
+                  </div>
+                  <div className="text-lg sm:text-2xl font-bold whitespace-nowrap">
+                    {format(weekDays[0], 'd')} - {format(weekDays[6], 'd')}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-500">
+                    {format(weekDays[0], 'MMM')} {weekDays[0].getFullYear() !== weekDays[6].getFullYear() ? format(weekDays[0], 'yyyy') : ''} 
+                    {weekDays[0].getMonth() !== weekDays[6].getMonth() ? ` - ${format(weekDays[6], 'MMM')}` : ''} 
+                    {format(weekDays[6], 'yyyy')}
+                  </div>
+                </>
+              ) : (
+                /* Month view - show month and year */
+                <>
+                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider">
+                    {format(currentDate, 'yyyy')}
+                  </div>
+                  <div className="text-lg sm:text-2xl font-bold">
+                    {format(currentDate, 'MMMM')}
+                  </div>
+                </>
+              )}
             </div>
             
             <button 
-              className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
               onClick={goToNext}
               aria-label="Next"
             >
