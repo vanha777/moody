@@ -196,30 +196,25 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     onEventClick(event);
   };
 
-  // Render day view
+  // Updated event chip styles to be simpler and more monochromatic
   const renderDayView = () => {
     return (
       <div className="day-view">
-        <div className="day-header p-2 text-center border-b font-medium">
-          <div>{format(currentDate, 'EEEE')}</div>
-          <div className="text-lg">{format(currentDate, 'd')}</div>
-        </div>
-        
         <div className="time-grid">
           {displayHours.map((timeDisplay, hourIndex) => {
             const hour = hourIndex + 8; // Starting at 8 AM
             const eventsInSlot = getEventsForTimeSlot(currentDate, hour);
             
             return (
-              <div key={hourIndex} className="grid grid-cols-[80px_1fr] border-b">
-                <div className="time-label p-2 text-xs text-right pr-3 relative -top-3">
+              <div key={hourIndex} className="grid grid-cols-[80px_1fr] border-b border-gray-200">
+                <div className="time-label flex items-center justify-center h-full text-xs text-gray-500">
                   {timeDisplay}
                 </div>
-                <div className="time-slot p-1 border-l min-h-16 flex flex-col gap-1 relative">
+                <div className="time-slot p-1 border-l border-gray-200 min-h-16 flex flex-col gap-1 relative">
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
-                      className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0"
+                      className="event-chip bg-black text-white p-1.5 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-800 transition-colors"
                       onClick={() => handleEventClick(event)}
                     >
                       {event.title}
@@ -234,29 +229,28 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     );
   };
 
-  // Render week view
+  // Render week view with updated styles
   const renderWeekView = () => {
     return (
       <div className="week-view">
-        <div className="grid grid-cols-[80px_1fr] border-b">
+        <div className="grid grid-cols-[80px_1fr] border-b border-gray-200">
           <div className="time-gutter"></div>
           <div className="grid grid-cols-7">
             {weekDays.map((day, index) => (
               <div 
                 key={index} 
-                className="day-header p-2 text-center border-l font-medium"
+                className="day-header p-2 text-center border-l border-gray-200 font-medium"
                 onClick={() => {
                   if (isMobile) {
-                    // On mobile, clicking a day header redirects to list view for that day
                     setCurrentDate(day);
                     setCurrentView('list');
                   }
                 }}
               >
-                <div className="text-xs sm:text-sm whitespace-nowrap">
+                <div className="text-xs sm:text-sm whitespace-nowrap text-gray-600">
                   {format(day, isMobile ? 'E' : 'EEE')}
                 </div>
-                <div className={`text-base sm:text-lg ${isSameDay(day, new Date()) ? 'bg-blue-100 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center mx-auto' : ''}`}>
+                <div className={`text-base sm:text-lg ${isSameDay(day, new Date()) ? 'bg-black text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center mx-auto' : ''}`}>
                   {format(day, 'd')}
                 </div>
               </div>
@@ -269,8 +263,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             const hour = hourIndex + 8; // Starting at 8 AM
             
             return (
-              <div key={hourIndex} className="grid grid-cols-[80px_1fr] border-b">
-                <div className="time-label p-2 text-xs text-right pr-3 relative -top-3">
+              <div key={hourIndex} className="grid grid-cols-[80px_1fr] border-b border-gray-200">
+                <div className="time-label flex items-center justify-center h-full text-xs text-gray-500">
                   {timeDisplay}
                 </div>
                 <div className="grid grid-cols-7">
@@ -280,23 +274,21 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     return (
                       <div 
                         key={dayIndex} 
-                        className={`time-slot p-1 border-l min-h-16 flex flex-col gap-1 relative ${isSameDay(day, new Date()) ? 'bg-blue-50' : ''}`}
+                        className={`time-slot p-1 border-l border-gray-200 min-h-16 flex flex-col gap-1 relative ${isSameDay(day, new Date()) ? 'bg-gray-50' : ''}`}
                         onClick={() => {
                           if (isMobile) {
-                            // On mobile, clicking any time slot redirects to list view for that day
                             setCurrentDate(day);
                             setCurrentView('list');
                           }
                         }}
                       >
                         {isMobile ? (
-                          // Mobile: Just show the count and always redirect to list view
+                          // Mobile: Just show the count
                           eventsInSlot.length > 0 && (
                             <div 
-                              className="event-count bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center mx-auto cursor-pointer"
+                              className="event-count bg-black text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center mx-auto cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Always redirect to list view on mobile
                                 setCurrentDate(day);
                                 setCurrentView('list');
                               }}
@@ -309,7 +301,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                           eventsInSlot.map(event => (
                             <div
                               key={event.id}
-                              className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0"
+                              className="event-chip bg-black text-white p-1.5 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-800 transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEventClick(event);
@@ -331,20 +323,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     );
   };
 
-  // Render month view
+  // Render month view with updated styles
   const renderMonthView = () => {
     if (monthDays.length === 0) return null;
     
     return (
       <div className="month-view p-1 sm:p-4 h-full flex flex-col">
-        <div className="grid grid-cols-7 text-center font-medium border-b">
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Mon</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Tue</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Wed</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Thu</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Fri</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Sat</div>
-          <div className="p-1 sm:p-2 text-xs sm:text-sm">Sun</div>
+        <div className="grid grid-cols-7 text-center font-medium border-b border-gray-200">
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Mon</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Tue</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Wed</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Thu</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Fri</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Sat</div>
+          <div className="p-1 sm:p-2 text-sm sm:text-base text-gray-600">Sun</div>
         </div>
         
         <div className="grid grid-cols-7 flex-grow min-h-[70vh]">
@@ -356,17 +348,16 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             return (
               <div 
                 key={index} 
-                className={`day-cell border p-1 flex flex-col overflow-hidden ${isCurrentMonth ? '' : 'bg-gray-100 text-gray-400'} ${isToday ? 'bg-blue-50' : ''}`}
+                className={`day-cell border border-gray-200 p-1 flex flex-col overflow-hidden ${isCurrentMonth ? '' : 'bg-gray-50 text-gray-400'} ${isToday ? 'bg-gray-50' : ''}`}
                 onClick={() => {
                   if (isMobile) {
-                    // On mobile, redirect to day view
                     setCurrentDate(day);
                     setCurrentView('day');
                   }
                 }}
               >
-                <div className="text-right mb-1 flex-shrink-0">
-                  <span className={`inline-block w-6 h-6 text-sm sm:text-base text-center ${isToday ? 'bg-blue-500 text-white rounded-full' : ''}`}>
+                <div className="flex justify-center mb-1 flex-shrink-0">
+                  <span className={`inline-flex items-center justify-center w-6 h-6 text-sm sm:text-base ${isToday ? 'bg-black text-white rounded-full' : ''}`}>
                     {format(day, 'd')}
                   </span>
                 </div>
@@ -376,10 +367,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     // Mobile: Only show event count
                     <div className="flex justify-center mt-auto mb-1">
                       <div 
-                        className="event-count bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                        className="event-count bg-black text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Switch to day view on mobile
                           setCurrentDate(day);
                           setCurrentView('day');
                         }}
@@ -394,7 +384,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         idx < 3 ? (
                           <div
                             key={event.id}
-                            className="event-chip bg-blue-500 text-white p-1 mb-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
+                            className="event-chip bg-black text-white p-1 mb-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:bg-gray-800 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleEventClick(event);
@@ -420,15 +410,15 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   };
 
   return (
-    <div className="custom-calendar bg-white rounded-lg shadow-md flex flex-col h-full min-h-[70vh]">
-      {/* Calendar Header - Modified for better responsiveness */}
-      <div className="calendar-header flex flex-col border-b sticky top-0 bg-white z-10">
+    <div className="custom-calendar bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full min-h-[70vh]">
+      {/* Calendar Header - Simplified for black and white theme */}
+      <div className="calendar-header flex flex-col border-b border-gray-200 sticky top-0 bg-white z-10">
         {/* View switcher with responsive padding */}
         <div className="view-switcher flex justify-between items-center px-3 py-3 sm:px-4 sm:py-3">
-          {/* View buttons with responsive sizing */}
+          {/* View buttons with simplified monochrome style */}
           <div className="flex space-x-2 sm:space-x-3">
             <button 
-              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'day' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'day' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
               onClick={() => changeView('day')}
             >
               Day
@@ -436,30 +426,30 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             {/* Only show week view button on desktop */}
             {!isMobile && (
               <button 
-                className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'week' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'week' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                 onClick={() => changeView('week')}
               >
                 Week
               </button>
             )}
             <button 
-              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'month' ? 'bg-black text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${currentView === 'month' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
               onClick={() => changeView('month')}
             >
               Month
             </button>
           </div>
           
-          {/* Add booking button with responsive sizing */}
+          {/* Add booking button with simplified style */}
           <button 
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 text-black flex items-center justify-center shadow-md hover:bg-black hover:text-white transition-colors"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:bg-gray-800 transition-colors"
             onClick={() => setShowAddBooking(true)}
           >
             <span className="text-lg sm:text-xl font-bold">+</span>
           </button>
         </div>
         
-        {/* Date navigation - Artistic redesign without Today button */}
+        {/* Date navigation - Clean black and white style */}
         <div className="flex justify-center items-center py-2 px-2 sm:py-3 sm:px-4 border-t border-gray-100">
           <div className="flex items-center space-x-3 sm:space-x-6">
             <button 
@@ -472,7 +462,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
               </svg>
             </button>
             
-            {/* Artistic date display with stacked layout */}
+            {/* Minimalist date display with stacked layout */}
             <div className="flex flex-col items-center">
               {currentView === 'day' ? (
                 /* Day view - show day with big date */
@@ -528,7 +518,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
         </div>
       </div>
       
-      {/* Calendar Content - Modified to ensure month view gets proper height */}
+      {/* Calendar Content */}
       <div className="calendar-content overflow-auto flex-grow">
         {currentView === 'day' && renderDayView()}
         {currentView === 'week' && renderWeekView()}
