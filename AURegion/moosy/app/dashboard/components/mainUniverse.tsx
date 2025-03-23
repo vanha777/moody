@@ -19,17 +19,10 @@ import {
 import { MdGeneratingTokens, MdOutlineGeneratingTokens, MdOutlineWebhook, MdWebhook } from "react-icons/md";
 import { CollectionData, GameData, UserData } from '@/app/utils/AppContext'
 import { AppProvider, useAppContext } from "@/app/utils/AppContext";
-import { Db } from "@/app/utils/db";
 import SimpleLoading from "./simpleLoading";
-import Navbar from "./navBarV2";
 import IdeaComponent, { Idea } from "./ideaComponent";
-import SimpleNav from "./simpleNav";
 import SimpleSideBar from "./simpleSideBar";
-import SimpleNavBar from "./simpleNavBar";
-import ChatInstruction from "./chatInstruction";
-import BusinessComponent from "./businessComponent";
 import BookingList from "./booking";
-import Calendar from "./calendar";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface InitialUserProps {

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { LocationProps } from '@/app/idea/[id]/components/ideaCard';
+import { LocationProps } from '@/app/business/clients/components/businesses';
 import { IoSearch, IoLocationOutline, IoMic } from "react-icons/io5";
 import ChatInstruction from './chatInstruction';
 import { Db } from '@/app/utils/db';

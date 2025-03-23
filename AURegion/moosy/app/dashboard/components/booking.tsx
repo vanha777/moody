@@ -3,10 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import BookingOverlay from './bookingOverlay';
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
 import CustomCalendar from './CustomCalendar';
 
 interface Booking {
