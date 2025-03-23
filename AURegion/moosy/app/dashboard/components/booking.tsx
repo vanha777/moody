@@ -110,6 +110,34 @@ const BookingList: React.FC = () => {
                         service: 'Haircut',
                         phoneNumber: '(555) 123-4567',
                         dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                    },
+                    {
+                        id: '7',
+                        clientName: 'Sarah Johnson',
+                        service: 'Color Treatment',
+                        phoneNumber: '(555) 234-5678',
+                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                    },
+                    {
+                        id: '8',
+                        clientName: 'Michael Brown',
+                        service: 'Beard Trim',
+                        phoneNumber: '(555) 345-6789',
+                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                    },
+                    {
+                        id: '9',
+                        clientName: 'Emily Davis',
+                        service: 'Full Styling',
+                        phoneNumber: '(555) 456-7890',
+                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                    },
+                    {
+                        id: '10',
+                        clientName: 'Robert Wilson',
+                        service: 'Shave',
+                        phoneNumber: '(555) 567-8901',
+                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
                     }
                 ];
 

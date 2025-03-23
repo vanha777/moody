@@ -214,11 +214,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                 <div className="time-label p-2 text-xs text-right pr-3 relative -top-3">
                   {timeDisplay}
                 </div>
-                <div className="time-slot p-1 border-l h-16 relative">
+                <div className="time-slot p-1 border-l min-h-16 flex flex-col gap-1 relative">
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
-                      className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
+                      className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0"
                       onClick={() => handleEventClick(event)}
                     >
                       {event.title}
@@ -279,7 +279,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     return (
                       <div 
                         key={dayIndex} 
-                        className={`time-slot p-1 border-l h-16 relative ${isSameDay(day, new Date()) ? 'bg-blue-50' : ''}`}
+                        className={`time-slot p-1 border-l min-h-16 flex flex-col gap-1 relative ${isSameDay(day, new Date()) ? 'bg-blue-50' : ''}`}
                         onClick={() => {
                           if (isMobile) {
                             // On mobile, clicking any time slot redirects to list view for that day
@@ -308,7 +308,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                           eventsInSlot.map(event => (
                             <div
                               key={event.id}
-                              className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap"
+                              className="event-chip bg-blue-500 text-white p-1 text-xs rounded cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEventClick(event);
