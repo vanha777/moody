@@ -584,7 +584,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       </div>
       
       {/* Calendar Content */}
-      <div className="calendar-content overflow-auto flex-grow px-2 relative">
+      <div className="calendar-content overflow-auto flex-grow px-2 relative pb-4 md:pb-0">
         {currentView === 'day' && renderDayView()}
         {currentView === 'week' && renderWeekView()}
         {currentView === 'month' && renderMonthView()}
