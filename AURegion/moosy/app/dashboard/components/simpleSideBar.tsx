@@ -22,11 +22,9 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
     
     return (
         <div className="bg-gray-50">
-            {/* Main content */}
-            <div className="flex flex-col min-h-screen pb-16 lg:pb-0 lg:pl-20">
-                <div className="flex-grow p-4">
-                    {children}
-                </div>
+            {/* Main content - add margin/padding for desktop view */}
+            <div className="lg:ml-24">
+                {children}
             </div>
 
             {/* Mobile Dock Menu - only visible on small screens */}

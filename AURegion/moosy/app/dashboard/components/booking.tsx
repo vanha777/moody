@@ -218,7 +218,7 @@ const BookingList: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+        <div >
                 <CustomCalendar
                     events={events}
                     onEventClick={(event) => {
