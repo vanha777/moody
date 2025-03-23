@@ -28,6 +28,8 @@ import SimpleSideBar from "./simpleSideBar";
 import SimpleNavBar from "./simpleNavBar";
 import ChatInstruction from "./chatInstruction";
 import BusinessComponent from "./businessComponent";
+import BookingList from "./booking";
+import Calendar from "./calendar";
 
 export default function MainUniverse() {
     const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout } = useAppContext();
@@ -36,6 +38,7 @@ export default function MainUniverse() {
     const [activeView, setActiveView] = useState("view1");
     const [selectedGameData, setSelectedGameData] = useState<GameData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
 
     useEffect(() => {
         console.log("this is auth", auth);
@@ -101,7 +104,16 @@ export default function MainUniverse() {
             ) : (
                 <>
                     <SimpleSideBar>
-                        <BusinessComponent industries={industries} />
+                        <div className="flex justify-center mb-4">
+                            <button 
+                                onClick={() => setShowCalendar(!showCalendar)}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                            >
+                                {showCalendar ? "Show Bookings" : "Show Calendar"}
+                            </button>
+                        </div>
+                        {showCalendar ? <Calendar /> : <BookingList />}
+                        {/* <BusinessComponent industries={industries} /> */}
                     </SimpleSideBar>
                 </>
             )}
