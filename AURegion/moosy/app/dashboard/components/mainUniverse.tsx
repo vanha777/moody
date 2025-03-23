@@ -104,16 +104,7 @@ export default function MainUniverse() {
             ) : (
                 <>
                     <SimpleSideBar>
-                        <div className="flex justify-center mb-4">
-                            <button 
-                                onClick={() => setShowCalendar(!showCalendar)}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                            >
-                                {showCalendar ? "Show Bookings" : "Show Calendar"}
-                            </button>
-                        </div>
-                        {showCalendar ? <Calendar /> : <BookingList />}
-                        {/* <BusinessComponent industries={industries} /> */}
+                        <BookingList />
                     </SimpleSideBar>
                 </>
             )}
