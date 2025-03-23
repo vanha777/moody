@@ -9,7 +9,7 @@ export default function NavBar() {
         <motion.div
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-full z-50 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB]"
+            className="w-full z-50 bg-[#F8D7D2]"
         >
             <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="navbar-start">
@@ -51,22 +51,22 @@ export default function NavBar() {
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1">
                         <li>
-                            <Link href="/" className="text-black hover:text-[#FF6B35] transition-colors font-medium text-lg">
+                            <Link href="/" className="text-black hover:text-black transition-colors font-medium text-lg">
                                 Home
                             </Link>
                         </li>
                         <li>
-                            <Link href="/about" className="text-black hover:text-[#FF6B35] transition-colors font-medium text-lg">
+                            <Link href="/about" className="text-black hover:text-black transition-colors font-medium text-lg">
                                 About
                             </Link>
                         </li>
                         <li>
-                            <Link href="/pricing" className="text-black hover:text-[#FF6B35] transition-colors font-medium text-lg">
+                            <Link href="/pricing" className="text-black hover:text-black transition-colors font-medium text-lg">
                                 Pricing
                             </Link>
                         </li>
                         <li>
-                            <Link href="/#location" className="text-black hover:text-[#FF6B35] transition-colors font-medium text-lg">
+                            <Link href="/#location" className="text-black hover:text-black transition-colors font-medium text-lg">
                                 Contact
                             </Link>
                         </li>
@@ -78,7 +78,7 @@ export default function NavBar() {
                     <Link
                         href="https://colaunch-it.vercel.app/booking"
                         rel="noopener noreferrer"
-                        className="bg-[#FF6B35] text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                        className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
                     >
                         Book Now
                     </Link>

@@ -41,10 +41,11 @@ export default function Hero() {
 
   return (
     <>
-      <section id="services" className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen py-10">
+      <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10">
+        {/* <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10"> */}
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.p
-            className="text-center text-[#FF6B35] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"
+            className="text-center text-[#D1B882] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -95,7 +96,7 @@ export default function Hero() {
             <a
               href="/pricing"
               rel="noopener noreferrer"
-              className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
+              className="bg-[#D1B882] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#E2CA94]"
             >
               Our Services
             </a>

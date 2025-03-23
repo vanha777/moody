@@ -20,7 +20,8 @@ export default function Hero() {
   }, [isMobile])
 
   return (
-    <section className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10">
+    <section className="bg-white relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10">
+      {/* <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10"> */}
       {/* Animated gradient background */}
       {/* <div className="absolute inset-0"> */}
       {/* Glowing orbs */}
@@ -64,13 +65,13 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6">
-              <span className="text-black">EMBRACE</span>
+              <span className="text-[#3A3A3A]">EMBRACE</span>
               <br />
-              <span className="text-black">
+              <span className="text-[#3A3A3A]">
                 BOLD BEAUTY
               </span>
             </h1>
-            <p className="text-black text-lg mb-8">
+            <p className="text-[#3A3A3A] text-lg mb-8">
               It's not just about longer lashes; it's about boosting your confidence and embracing self-love. Let us help you feel and look your best—inside and out!
             </p>
             <motion.div
@@ -80,7 +81,7 @@ export default function Hero() {
             >
               <button
                 onClick={() => window.open("https://colaunch-it.vercel.app/booking", "_blank")}
-                className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
+                className="bg-[#D1B882] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#E2CA94]"
               >
                 Book Now
               </button>

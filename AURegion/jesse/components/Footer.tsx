@@ -26,7 +26,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden">
+    <footer className="bg-[#F8D7D2] relative overflow-hidden">
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
           {/* Logo */}
@@ -52,30 +52,30 @@ export default function Footer() {
             className="flex flex-col items-center md:items-start gap-4"
           >
             <div className="flex items-center gap-2">
-              <FiPhone className="text-[#FF6B35] h-5 w-5" />
+              <FiPhone className="text-black h-5 w-5" />
               <a
                 href="tel:+61424407427"
-                className="text-black/80 hover:text-[#FF6B35] transition-colors"
+                className="text-black/80 hover:text-black transition-colors font-medium"
               >
                 +61 424 407 427
               </a>
             </div>
             <div className="flex items-center gap-2">
-              <FiMail className="text-[#FF6B35] h-5 w-5" />
+              <FiMail className="text-black h-5 w-5" />
               <a
                 href="mailto:sofiang2407@gmail.com"
-                className="text-black/80 hover:text-[#FF6B35] transition-colors"
+                className="text-black/80 hover:text-black transition-colors font-medium"
               >
                 sofiang2407@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-2">
-              <FiMapPin className="text-[#FF6B35] h-5 w-5" />
+              <FiMapPin className="text-black h-5 w-5" />
               <a
                 href="https://maps.app.goo.gl/WsgcUrhmE1vPuiX8A"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-black/80 hover:text-[#FF6B35] transition-colors"
+                className="text-black/80 hover:text-black transition-colors font-medium"
               >
                 12 Marchant Way, Morley WA 6062
               </a>
@@ -90,7 +90,7 @@ export default function Footer() {
           >
             <Link
               href="https://colaunch-it.vercel.app/booking"
-              className="inline-block bg-[#FF6B35] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
+              className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
             >
               Book Appointment
             </Link>
@@ -110,7 +110,7 @@ export default function Footer() {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#FF6B35] w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-90 transition-all"
+              className="bg-black w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-90 transition-all"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               aria-label={link.name}
@@ -125,7 +125,7 @@ export default function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center text-black text-sm border-t border-[#FF6B35]/20 pt-6"
+          className="text-center text-black text-sm border-t border-black/20 pt-6"
         >
           <p>© 2024 Glaze. All rights reserved.</p>
         </motion.div>
