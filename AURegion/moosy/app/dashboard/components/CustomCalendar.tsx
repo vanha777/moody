@@ -442,7 +442,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           
           {/* Add booking button with simplified style */}
           <button 
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:bg-gray-800 transition-colors"
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-sm transition-colors ${showAddBooking ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
             onClick={() => setShowAddBooking(true)}
           >
             <span className="text-lg sm:text-xl font-bold">+</span>
