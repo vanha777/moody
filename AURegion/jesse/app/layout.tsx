@@ -10,16 +10,16 @@ config.autoAddCss = false
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Jess Glow - Nail Salon',
-  description: 'More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care.',
+  title: 'Jess Glow - Eyebrows & Lashes Salon in Morley',
+  description: 'At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued',
   openGraph: {
-    title: 'Jess Glow - Nail Salon',
-    description: 'More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care.',
+    title: 'Jess Glow - Eyebrows & Lashes Salon in Morley',
+    description: 'At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued',
     url: 'https://www.jessglow.com/',
     images: [
       {
         url: 'https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png',
-        alt: 'Jess Glow Nail Salon',
+        alt: 'Jess Glow - Eyebrows & Lashes Salon in Morley',
       },
     ],
   },
@@ -43,36 +43,36 @@ export default function RootLayout({
     <html lang="en" data-theme="light">
       <Head>
         {/* General Meta Tags */}
-        <meta name="title" content="Glaze - Nail Salon" />
-        <meta name="description" content="More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care." />
+        <meta name="title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta name="description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://creativemood.vercel.app" />
-        <meta property="og:title" content="Glaze - Nail Salon" />
-        <meta property="og:description" content="More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care." />
+        <meta property="og:url" content="https://jessglow.vercel.app" />
+        <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
         <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
-        <meta property="og:image:alt" content="Glaze - Nail Salon" />
+        <meta property="og:image:alt" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://glaze.com/" />
-        <meta name="twitter:title" content="Glaze - Nail Salon" />
-        <meta name="twitter:description" content="More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care." />
+        <meta name="twitter:url" content="https://jessglow.vercel.app/" />
+        <meta name="twitter:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta name="twitter:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
         <meta name="twitter:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
-        <meta name="twitter:image:alt" content="Glaze - Nail Salon" />
-        <meta name="twitter:site" content="@glaze" />
-        <meta name="twitter:creator" content="@glaze" />
+        <meta name="twitter:image:alt" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta name="twitter:site" content="@jessglow" />
+        <meta name="twitter:creator" content="@jessglow" />
 
         {/* Telegram */}
-        <meta property="og:title" content="Glaze - Nail Salon" />
-        <meta property="og:description" content="More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care." />
+        <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
         <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
-        <meta property="og:url" content="https://glaze.com/" />
+        <meta property="og:url" content="https://jessglow.vercel.app/" />
 
         {/* Discord */}
-        <meta property="og:title" content="Glaze - Nail Salon" />
-        <meta property="og:description" content="More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care." />
+        <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
+        <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
         <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
         <meta property="og:type" content="website" />
       </Head>
