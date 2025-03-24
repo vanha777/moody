@@ -80,7 +80,7 @@ export default function Statements() {
             <motion.img
               src="/statement1.jpg"
               alt="Is This You?"
-              className="w-80 h-80 md:w-[700px] md:h-[700px] rounded-full object-cover shadow-xl"
+              className="w-80 h-80 md:w-[700px] md:h-[700px] rounded-full object-cover shadow-xl border-4 border-[#D1B882]"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{
@@ -95,9 +95,8 @@ export default function Statements() {
           <div className="flex-1 flex items-center justify-center">
             <motion.img
               src="/jesseStatement2.png"
-                //  src="/statement23.jpeg"
               alt="Another perspective"
-              className="w-48 md:w-72 h-auto rounded-[90px]"
+              className="w-48 md:w-72 h-auto rounded-[90px] border-4 border-[#D1B882]"
               style={{
                 clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
                 height: isMobile ? "400px" : "700px",

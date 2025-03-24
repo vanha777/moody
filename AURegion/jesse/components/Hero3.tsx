@@ -75,12 +75,19 @@ export default function Hero() {
 
               {/* Image */}
               <div className="w-full md:w-1/2">
-                <div className="rounded-[30px] overflow-hidden shadow-lg aspect-square">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative">
+                  {/* Gradient background box */}
+                  <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
+                  </div>
+                  
+                  {/* Image container */}
+                  <div className="relative p-6">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover rounded-[24px]"
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>

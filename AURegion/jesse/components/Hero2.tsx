@@ -63,11 +63,16 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="rounded-[30px] overflow-hidden shadow-lg aspect-square">
+            {/* Gradient background box */}
+            <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
+            </div>
+
+            {/* Image container */}
+            <div className="relative p-6">
               <img
                 src={isMobile ? "/hero2.jpg" : "/hero2.jpg"}
                 alt="Hero Image"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-[24px]"
               />
             </div>
           </motion.div>

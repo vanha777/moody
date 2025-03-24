@@ -70,7 +70,7 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative h-[600px] rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+              className="relative h-[600px] rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border-2 border-[#D1B882]"
               onClick={() => {
                 if (testimonial.link) {
                   window.open(testimonial.link, '_blank', 'noopener,noreferrer');
@@ -98,10 +98,10 @@ export default function Testimonials() {
 
               {/* Content Overlay */}
               <div className="absolute bottom-0 px-3">
-                <div className="bg-white rounded-t-3xl p-6 relative">
+                <div className="bg-white rounded-t-3xl p-6 relative border-t-2 border-x-2 border-[#D1B882]">
                   {/* Profile Image */}
                   <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
-                    <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden relative">
+                    <div className="w-24 h-24 rounded-full border-4 border-[#D1B882] overflow-hidden relative">
                       <Image
                         src={testimonial.profile}
                         alt={testimonial.name}
@@ -153,19 +153,19 @@ export default function Testimonials() {
 
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-16 md:mt-20">
-          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-gray-200">
+          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-[#D1B882]">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="#2BB673">
               <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
             </svg>
             <span className="font-semibold text-xs md:text-sm">Verified Reviews</span>
           </div>
-          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-gray-200">
+          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-[#D1B882]">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="#FF6B35">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
             <span className="font-semibold text-xs md:text-sm">50+ Satisfied Clients</span>
           </div>
-          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-gray-200">
+          <div className="bg-white/80 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md flex items-center gap-1 md:gap-2 border border-[#D1B882]">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="#4285F4">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
             </svg>
