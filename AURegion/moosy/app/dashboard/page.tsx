@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { UserData } from "../utils/AppContext";
 import type { Metadata } from 'next'
 import { useSearchParams } from "next/navigation";
+import MainUniverse from "./components/mainUniverse";
+
 // export const metadata: Metadata = {
 //   title: 'CoLaunch - Connect Business and Scale Up',
 //   description: 'CoLaunch is a platform that connects businesses and scale ups with the right people and resources to help them grow.',
@@ -36,8 +38,9 @@ export default function Dashboard() {
   const initialUser = searchParams.get('user');
   console.log("initialUser", initialUser);
   return (
-    <Suspense fallback={<SimpleLoading />}>
-      <DashboardClient rawUser={initialUser} />
-    </Suspense>
+    // <Suspense fallback={<SimpleLoading />}>
+      // <DashboardClient rawUser={initialUser} />
+      <MainUniverse rawUser={initialUser} />
+    // </Suspense>
   );
 }

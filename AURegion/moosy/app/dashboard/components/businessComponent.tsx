@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { LocationProps } from '@/app/idea/[id]/components/ideaCard';
 import { IoSearch, IoLocationOutline, IoMic } from "react-icons/io5";
 import ChatInstruction from './chatInstruction';
 import { Db } from '@/app/utils/db';
@@ -10,6 +9,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, PieChart, Pie
 } from 'recharts';
+import { LocationProps } from '@/app/business/clients/components/businesses';
 
 export interface Idea {
   id: string;

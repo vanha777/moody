@@ -11,22 +11,22 @@ export default function Hero() {
     {
       title: "Lashes",
       description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we've got you covered to enhance your natural beauty.",
-      image: "/manicure.jpg"
+      image: "/lashes.jpg"
     },
     {
       title: "Brow Shaping & Tinting",
       description: "Get perfectly shaped and tinted brows that beautifully frame your face.",
-      image: "/extension.jpg"
+      image: "/brows2.png"
     },
     {
       title: "Facials",
       description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
-      image: "/design.jpg"
+      image: "/facial.jpg"
     },
     {
       title: "Refill",
       description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
-      image: "/design.jpg"
+      image: "/refills.jpg"
     }
   ]
 
@@ -41,10 +41,11 @@ export default function Hero() {
 
   return (
     <>
-      <section id="services" className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen py-10">
+      {/* <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10"> */}
+        <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.p
-            className="text-center text-[#FF6B35] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"
+            className="text-center text-[#D1B882] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -74,12 +75,19 @@ export default function Hero() {
 
               {/* Image */}
               <div className="w-full md:w-1/2">
-                <div className="rounded-[30px] overflow-hidden shadow-lg aspect-square">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative">
+                  {/* Gradient background box */}
+                  <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
+                  </div>
+                  
+                  {/* Image container */}
+                  <div className="relative p-6">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover rounded-[24px]"
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -95,7 +103,7 @@ export default function Hero() {
             <a
               href="/pricing"
               rel="noopener noreferrer"
-              className="bg-[#FF6B35] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#ff8255]"
+              className="bg-[#D1B882] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#E2CA94]"
             >
               Our Services
             </a>

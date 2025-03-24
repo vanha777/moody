@@ -3,7 +3,7 @@ import { useState, FormEvent, ChangeEvent } from 'react';
 import { FaImage } from 'react-icons/fa';
 import { AppProvider, GameData, useAppContext } from "@/app/utils/AppContext";
 import { circIn } from 'framer-motion';
-import { IdeaProps } from '@/app/idea/[id]/components/ideaCard';
+import { IdeaProps } from '@/app/business/clients/components/businesses';
 
 interface CollectionFormData {
     title: string;

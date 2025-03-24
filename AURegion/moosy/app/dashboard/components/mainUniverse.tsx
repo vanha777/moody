@@ -17,22 +17,22 @@ import {
     IoStorefrontSharp
 } from "react-icons/io5";
 import { MdGeneratingTokens, MdOutlineGeneratingTokens, MdOutlineWebhook, MdWebhook } from "react-icons/md";
-import { CollectionData, GameData } from '@/app/utils/AppContext'
+import { CollectionData, GameData, UserData } from '@/app/utils/AppContext'
 import { AppProvider, useAppContext } from "@/app/utils/AppContext";
-import { Db } from "@/app/utils/db";
 import SimpleLoading from "./simpleLoading";
-import Navbar from "./navBarV2";
 import IdeaComponent, { Idea } from "./ideaComponent";
-import SimpleNav from "./simpleNav";
 import SimpleSideBar from "./simpleSideBar";
-import SimpleNavBar from "./simpleNavBar";
-import ChatInstruction from "./chatInstruction";
-import BusinessComponent from "./businessComponent";
 import BookingList from "./booking";
-import Calendar from "./calendar";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function MainUniverse() {
-    const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout } = useAppContext();
+interface InitialUserProps {
+    rawUser?: any;
+}
+
+
+export default function MainUniverse({ rawUser }: InitialUserProps) {
+    const router = useRouter();
+    const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout,getUser } = useAppContext();
     const [ideas, setIdeas] = useState<Idea[]>([]);
     const [activeMenu, setActiveMenu] = useState("software");
     const [activeView, setActiveView] = useState("view1");
@@ -40,12 +40,42 @@ export default function MainUniverse() {
     const [isLoading, setIsLoading] = useState(false);
     const [showCalendar, setShowCalendar] = useState(false);
 
+    // useEffect(() => {
+    //     console.log("this is auth", auth);
+    //     if (auth.userData == null) {
+    //         console.log("no user");
+    //         // window.location.href = '/dashboard/login';
+    //     }
+    // }, [auth.userData]);
+
     useEffect(() => {
-        console.log("this is auth", auth);
-        if (auth.userData == null) {
-            window.location.href = '/dashboard/login';
-        }
-    }, [auth.userData]);
+        const fetchData = async () => {
+            try {
+                let initialUser: UserData;
+                if (rawUser) {
+                    initialUser = JSON.parse(rawUser) as UserData;
+                } else {
+                    const user = getUser();
+                    if (!user) {
+                        throw new Error('No user found');
+                    }
+                    initialUser = user;
+                }
+                // setIsLoading(true);
+                console.log("this is data", initialUser);
+                setUser(initialUser);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                router.push("/dashboard/login");
+            } finally {
+                // setIsLoading(false);
+                // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
+                // router.push("/");
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -104,16 +134,7 @@ export default function MainUniverse() {
             ) : (
                 <>
                     <SimpleSideBar>
-                        <div className="flex justify-center mb-4">
-                            <button 
-                                onClick={() => setShowCalendar(!showCalendar)}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                            >
-                                {showCalendar ? "Show Bookings" : "Show Calendar"}
-                            </button>
-                        </div>
-                        {showCalendar ? <Calendar /> : <BookingList />}
-                        {/* <BusinessComponent industries={industries} /> */}
+                        <BookingList />
                     </SimpleSideBar>
                 </>
             )}

@@ -37,7 +37,8 @@ const OpeningHours = () => {
   };
 
   return (
-    <section id="location" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB]">
+    <section id="location" className="relative overflow-hidden py-24 bg-white">
+      {/* <section id="location" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]"> */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
           {/* Left Side - Visit Us */}
@@ -52,11 +53,11 @@ const OpeningHours = () => {
                 Find Us Here! ✨
               </h2>
               <p className="text-lg text-black/70 mb-6">
-                Jess Beauty Studio 869 is conveniently located in the heart of Morley. See you soon! 💖
+                Jess Glow is conveniently located in the heart of Morley. See you soon! 💖
               </p>
               <motion.a
                 href="https://colaunch-it.vercel.app/booking"
-                className="inline-flex items-center space-x-2 bg-[#FF6B35] text-white px-6 py-3 rounded-full shadow-lg hover:bg-opacity-90 transition-all duration-300"
+                className="inline-flex items-center space-x-2 bg-[#D1B882] text-white px-6 py-3 rounded-full shadow-lg hover:bg-opacity-90 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -76,7 +77,7 @@ const OpeningHours = () => {
             {/* Location Card with larger map */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="bg-[#FF6B35] p-4 rounded-full text-white shadow-lg">
+                <div className="bg-[#D1B882] p-4 rounded-full text-white shadow-lg">
                   <FiMapPin className="h-6 w-6" />
                 </div>
                 <div>
@@ -105,7 +106,7 @@ const OpeningHours = () => {
             {/* Opening Hours Card */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="bg-[#FF6B35] p-4 rounded-full text-white shadow-lg">
+                <div className="bg-[#D1B882] p-4 rounded-full text-white shadow-lg">
                   <FiClock className="h-6 w-6" />
                 </div>
                 <h3 className="text-2xl font-bold text-black">Opening Hours</h3>
@@ -116,10 +117,10 @@ const OpeningHours = () => {
                   <motion.div
                     key={schedule.day}
                     variants={itemVariants}
-                    className={`flex justify-between items-center p-3 rounded-lg ${currentDay === index ? 'bg-[#FF6B35]/10 shadow-sm' : ''
+                    className={`flex justify-between items-center p-3 rounded-lg ${currentDay === index ? 'bg-[#D1B882]/10 shadow-sm' : ''
                       }`}
                   >
-                    <span className={`font-medium ${currentDay === index ? 'text-[#FF6B35]' : 'text-black'}`}>
+                    <span className={`font-medium ${currentDay === index ? 'text-[#D1B882]' : 'text-black'}`}>
                       {schedule.day}
                     </span>
                     <span className="text-black/70">{schedule.hours}</span>

@@ -12,7 +12,7 @@ export default function PricingHero() {
     {
       title: "Lashes",
       description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we've got you covered to enhance your natural beauty.",
-      image: "/manicure.jpg",
+      image: "/lashes.jpg",
       subServices: [
         {
           name: "Classic Lashes",
@@ -96,7 +96,7 @@ export default function PricingHero() {
     {
       title: "Brow Shaping & Tinting",
       description: "Get perfectly shaped and tinted brows that beautifully frame your face.",
-      image: "/extension.jpg",
+      image: "/brows2.png",
       subServices: [
         {
           name: "Brow Lamination",
@@ -138,7 +138,7 @@ export default function PricingHero() {
     {
       title: "Facials",
       description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
-      image: "/design.jpg",
+      image: "/facial.jpg",
       subServices: [
         {
           name: "Acne Treatments",
@@ -166,7 +166,7 @@ export default function PricingHero() {
     {
       title: "Refill",
       description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
-      image: "/design.jpg",
+      image: "/refills.jpg",
       subServices: [
         {
           name: "Refill Angle Wings Lashes",
@@ -251,7 +251,7 @@ export default function PricingHero() {
 
   return (
     <>
-      <section id="services" className="bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] relative overflow-hidden min-h-screen py-10">
+      <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.h1
             className="text-4xl md:text-5xl lg:text-7xl font-bold  my-32 mb-8"
@@ -260,22 +260,22 @@ export default function PricingHero() {
             transition={{ duration: 0.6 }}
           >
             <span className="text-black">Our</span>{' '}
-            <span className="text-[#FF6B35]">Premium Services</span>
+            <span className="text-[#D1B882]">Premium Services</span>
           </motion.h1>
-          
-          <motion.div 
+
+          <motion.div
             className="flex items-center justify-center w-full my-6 mb-16"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+            <div className="h-0.5 w-24 bg-[#D1B882]"></div>
             <div className="mx-4">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FF6B35" />
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#D1B882" />
               </svg>
             </div>
-            <div className="h-0.5 w-24 bg-[#FF6B35]"></div>
+            <div className="h-0.5 w-24 bg-[#D1B882]"></div>
           </motion.div>
 
           {services.map((service, index) => (
@@ -306,11 +306,11 @@ export default function PricingHero() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                       onClick={() => setExpandedService(expandedService === subService.name ? null : subService.name)}
-                      className="backdrop-blur-sm rounded-lg p-5 hover:bg-white/70 transition-all duration-300 cursor-pointer transform hover:scale-[1.02] border-b border-[#FF6B35]/10"
+                      className="backdrop-blur-sm rounded-lg p-5 hover:bg-white/70 transition-all duration-300 cursor-pointer transform hover:scale-[1.02] border-b border-[#D1B882]/10"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-[#FF6B35] mb-1">
+                          <h3 className="text-xl font-semibold text-[#D1B882] mb-1">
                             {subService.name}
                           </h3>
                         </div>
@@ -318,7 +318,7 @@ export default function PricingHero() {
                           <span className="text-gray-600">
                             <span className="font-medium">Estimate:</span> {subService.duration}
                           </span>
-                          <div className="h-[1px] w-12 bg-[#FF6B35]/30 hidden sm:block" />
+                          <div className="h-[1px] w-12 bg-[#D1B882]/30 hidden sm:block" />
                           <span className="text-xl font-semibold text-gray-900">
                             <span className="text-sm font-normal text-gray-600 mr-1">From:</span>${subService.price}
                           </span>
@@ -358,7 +358,7 @@ export default function PricingHero() {
                   href="https://colaunch-it.vercel.app/booking"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-[#FF6B35] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
+                  className="inline-block bg-[#D1B882] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
                 >
                   Book Now
                 </a>
