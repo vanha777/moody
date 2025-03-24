@@ -35,18 +35,18 @@ export default function NavBar() {
                             </li>
                         </ul>
                     </div>
-                    
+
                     {/* Logo */}
                     <Link href="/" className="flex items-center">
                         <Image
-                            src="/logo1.png"
-                            alt="MetaLoot Logo"
-                            width={150}
-                            height={150}
+                            src="/x.png"
+                            alt="Jess Glow Logo"
+                            width={250}
+                            height={250}
                         />
                     </Link>
                 </div>
-                
+
                 {/* Desktop Navigation Links */}
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1">
@@ -72,7 +72,7 @@ export default function NavBar() {
                         </li>
                     </ul>
                 </div>
-                
+
                 {/* CTA Button */}
                 <div className="navbar-end">
                     <Link

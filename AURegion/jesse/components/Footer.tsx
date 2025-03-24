@@ -36,8 +36,8 @@ export default function Footer() {
             transition={{ duration: 0.5 }}
           >
             <Image
-              src="/logo1.png"
-              alt="Glaze Logo"
+              src="/x.png"
+              alt="Jess Glow Logo"
               width={320}
               height={40}
               className="h-auto"
