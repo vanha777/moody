@@ -34,7 +34,7 @@ export default function About() {
 
   const teamMembers = [
     {
-      name: "Jesse Nguyen",
+      name: "Jessie Nguyen",
       role: "Jess Glow Founder",
       image: "/founder01.jpg",
       instagram: "https://instagram.com/glazenails",
