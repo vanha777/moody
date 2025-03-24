@@ -54,19 +54,19 @@ export default function Footer() {
             <div className="flex items-center gap-2">
               <FiPhone className="text-black h-5 w-5" />
               <a
-                href="tel:+61424407427"
+                href="tel:+61413659869"
                 className="text-black/80 hover:text-black transition-colors font-medium"
               >
-                +61 424 407 427
+                +61 413 659 869
               </a>
             </div>
             <div className="flex items-center gap-2">
               <FiMail className="text-black h-5 w-5" />
               <a
-                href="mailto:sofiang2407@gmail.com"
+                href="mailto:Jessglow.jg@gmail.com"
                 className="text-black/80 hover:text-black transition-colors font-medium"
               >
-                sofiang2407@gmail.com
+                Jessglow.jg@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default function Footer() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-center text-black text-sm border-t border-[#D1B882] pt-6"
         >
-          <p>© 2024 Glaze. All rights reserved.</p>
+          <p>© 2025 Jess Glow. All rights reserved.</p>
         </motion.div>
       </div>
     </footer>

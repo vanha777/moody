@@ -53,7 +53,7 @@ const OpeningHours = () => {
                 Find Us Here! ✨
               </h2>
               <p className="text-lg text-black/70 mb-6">
-                Jess Beauty Studio 869 is conveniently located in the heart of Morley. See you soon! 💖
+                Jess Glow is conveniently located in the heart of Morley. See you soon! 💖
               </p>
               <motion.a
                 href="https://colaunch-it.vercel.app/booking"

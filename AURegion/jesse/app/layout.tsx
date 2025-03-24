@@ -10,16 +10,16 @@ config.autoAddCss = false
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Glaze - Nail Salon',
+  title: 'Jess Glow - Nail Salon',
   description: 'More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care.',
   openGraph: {
-    title: 'Glaze - Nail Salon',
+    title: 'Jess Glow - Nail Salon',
     description: 'More than just nails, it\'s about style, confidence, and self-care. ✨ Get flawless designs with premium care.',
-    url: 'https://www.glaze.com/',
+    url: 'https://www.jessglow.com/',
     images: [
       {
         url: 'https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png',
-        alt: 'Glaze Nail Salon',
+        alt: 'Jess Glow Nail Salon',
       },
     ],
   },

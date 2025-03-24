@@ -34,8 +34,8 @@ export default function About() {
 
   const teamMembers = [
     {
-      name: "Sarah Johnson",
-      role: "Senior Nail Artist",
+      name: "Jesse Nguyen",
+      role: "Jess Glow Founder",
       image: "/founder01.jpg",
       instagram: "https://instagram.com/glazenails",
       facebook: "https://facebook.com/glazenails",
@@ -92,20 +92,20 @@ export default function About() {
                   <div className="flex flex-col items-center justify-center h-full">
                     <Image
                       src="/store.jpeg"
-                      alt="Glaze Nails"
+                      alt="Jess Glow"
                       fill
                       className="object-cover rounded-xl"
                     />
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 text-center text-sm text-white">
-                      <p className="font-medium">Glaze Nails</p>
+                      <p className="font-medium">Jess Glow</p>
                       <p className="text-gray-300">2025 all rights reserved</p>
                       <a
-                        href="https://glaze-nails.vercel.app/"
+                        href="https://jessglow.vercel.app/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[#9945FF] hover:underline"
                       >
-                        www.glazenails.com
+                        www.jessglow.com
                       </a>
                     </div>
                   </div>
