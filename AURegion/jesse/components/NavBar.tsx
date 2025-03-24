@@ -9,7 +9,7 @@ export default function NavBar() {
         <motion.div
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-full z-50 bg-[#F8D7D2]"
+            className="w-full z-50 bg-[#F8D7D2] border-b-2 border-[#D1B882]"
         >
             <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="navbar-start">
@@ -20,7 +20,7 @@ export default function NavBar() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
                             </svg>
                         </div>
-                        <ul tabIndex={0} className="menu menu-sm dropdown-content z-50 mt-3 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] rounded-box w-52 p-2 shadow text-lg">
+                        <ul tabIndex={0} className="menu menu-sm dropdown-content z-50 mt-3 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] rounded-box w-52 p-2 shadow text-lg border border-[#D1B882]">
                             <li>
                                 <Link href="/" className="font-medium">Home</Link>
                             </li>
@@ -78,7 +78,7 @@ export default function NavBar() {
                     <Link
                         href="https://colaunch-it.vercel.app/booking"
                         rel="noopener noreferrer"
-                        className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                        className="bg-[#D1B882] text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg hover:bg-[#E2CA94]"
                     >
                         Book Now
                     </Link>

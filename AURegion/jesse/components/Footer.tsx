@@ -26,7 +26,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-[#F8D7D2] relative overflow-hidden">
+    <footer className="bg-[#F8D7D2] relative overflow-hidden border-t-2 border-[#D1B882]">
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
           {/* Logo */}
@@ -90,7 +90,7 @@ export default function Footer() {
           >
             <Link
               href="https://colaunch-it.vercel.app/booking"
-              className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
+              className="inline-block bg-[#D1B882] text-white px-8 py-3 rounded-full hover:bg-[#E2CA94] transition-all duration-300 text-lg font-semibold"
             >
               Book Appointment
             </Link>
@@ -110,7 +110,7 @@ export default function Footer() {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-black w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-opacity-90 transition-all"
+              className="bg-[#D1B882] w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-[#E2CA94] transition-all"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               aria-label={link.name}
@@ -125,7 +125,7 @@ export default function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center text-black text-sm border-t border-black/20 pt-6"
+          className="text-center text-black text-sm border-t border-[#D1B882] pt-6"
         >
           <p>© 2024 Glaze. All rights reserved.</p>
         </motion.div>
