@@ -11,22 +11,22 @@ export default function Hero() {
     {
       title: "Lashes",
       description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we've got you covered to enhance your natural beauty.",
-      image: "/manicure.jpg"
+      image: "/lashes.jpg"
     },
     {
       title: "Brow Shaping & Tinting",
       description: "Get perfectly shaped and tinted brows that beautifully frame your face.",
-      image: "/extension.jpg"
+      image: "/brows2.png"
     },
     {
       title: "Facials",
       description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
-      image: "/design.jpg"
+      image: "/facial.jpg"
     },
     {
       title: "Refill",
       description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
-      image: "/design.jpg"
+      image: "/refills.jpg"
     }
   ]
 
@@ -41,8 +41,8 @@ export default function Hero() {
 
   return (
     <>
-      <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10">
-        {/* <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10"> */}
+      {/* <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10"> */}
+        <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.p
             className="text-center text-[#D1B882] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"

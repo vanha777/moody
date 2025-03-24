@@ -30,8 +30,8 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="relative overflow-hidden py-24 bg-white">
-      {/* <section id="contact" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]"> */}
+    // <section id="contact" className="relative overflow-hidden py-24 bg-white">
+      <section id="contact" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">

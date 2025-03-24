@@ -94,7 +94,8 @@ export default function Statements() {
           {/* Right subsection */}
           <div className="flex-1 flex items-center justify-center">
             <motion.img
-              src="/statement2.jpg"
+              src="/jesseStatement2.png"
+                //  src="/statement23.jpeg"
               alt="Another perspective"
               className="w-48 md:w-72 h-auto rounded-[90px]"
               style={{
