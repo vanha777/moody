@@ -3,14 +3,7 @@ import { motion } from "framer-motion";
 import Checkout from "./components/checkout";
 import Link from "next/link";
 
-
-interface CheckoutPageProps {
-    productId?: string;
-    planId?: string;
-    businessId?: string;
-}
-
-export default function CheckoutPage({ productId, planId, businessId }: CheckoutPageProps) {
+export default function CheckoutPage() {
 
     return (
         <motion.div
