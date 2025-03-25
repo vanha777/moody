@@ -473,7 +473,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
       </div>
     );
   };
-
   return (
     <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">
       {/* Calendar Header - Modernized design */}
