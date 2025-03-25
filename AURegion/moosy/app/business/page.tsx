@@ -7,6 +7,7 @@ import { UserData } from "../utils/AppContext";
 import type { Metadata } from 'next'
 import { useSearchParams } from "next/navigation";
 import MainUniverse from "../dashboard/components/mainUniverse";
+import { motion } from "framer-motion";
 
 // export const metadata: Metadata = {
 //   title: 'CoLaunch - Connect Business and Scale Up',
@@ -39,7 +40,7 @@ export default function Dashboard() {
   console.log("initialUser", initialUser);
   return (
     // <Suspense fallback={<SimpleLoading />}>
-      // <DashboardClient rawUser={initialUser} />
+    // <DashboardClient rawUser={initialUser} />
       <MainUniverse rawUser={initialUser} />
     // </Suspense>
   );

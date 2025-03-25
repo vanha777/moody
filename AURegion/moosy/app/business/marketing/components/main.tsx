@@ -5,6 +5,7 @@ import AiSocialPost from './aiSocialPost';
 import Promotions from './promotions';
 import Sms from './sms';
 import { useState } from 'react';
+import { motion } from "framer-motion";
 
 // Define the marketing option type
 interface MarketingOption {
@@ -54,11 +55,17 @@ export default function Main() {
 
     return (
         <>
-
-
             {!selectedOption ? (
-                <>
-                    <SimpleSideBar>
+                <SimpleSideBar>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{
+                            duration: 0.3,
+                            ease: "easeInOut"
+                        }}
+                    >
                         <h1 className="text-3xl font-bold p-6">Marketing</h1>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
                             {marketingOptions.map((option) => (
@@ -72,13 +79,11 @@ export default function Main() {
                                 </div>
                             ))}
                         </div>
-                    </SimpleSideBar>
-                </>
-
+                    </motion.div>
+                </SimpleSideBar>
             ) : (
                 renderSelectedComponent()
             )}
-
         </>
     );
 }

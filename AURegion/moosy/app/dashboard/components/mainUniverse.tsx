@@ -32,7 +32,7 @@ interface InitialUserProps {
 
 export default function MainUniverse({ rawUser }: InitialUserProps) {
     const router = useRouter();
-    const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout,getUser } = useAppContext();
+    const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout, getUser } = useAppContext();
     const [ideas, setIdeas] = useState<Idea[]>([]);
     const [activeMenu, setActiveMenu] = useState("software");
     const [activeView, setActiveView] = useState("view1");
@@ -134,7 +134,17 @@ export default function MainUniverse({ rawUser }: InitialUserProps) {
             ) : (
                 <>
                     <SimpleSideBar>
-                        <BookingList />
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            <BookingList />
+                        </motion.div>
                     </SimpleSideBar>
                 </>
             )}
