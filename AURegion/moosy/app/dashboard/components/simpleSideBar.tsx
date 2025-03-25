@@ -14,28 +14,28 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
     const pathname = usePathname();
     const { auth } = useAppContext();
     const [activeItem, setActiveItem] = React.useState<string>('home');
-    
+
     // Sync activeItem with current route on mount and when route changes
     useEffect(() => {
-        if (pathname.includes('/dashboard')) {
-            setActiveItem('home');
-        } else if (pathname.includes('/business/clients')) {
+        if (pathname.includes('/business/clients')) {
             setActiveItem('clients');
-        } else if (pathname.includes('/offers')) {
-            setActiveItem('offers');
-        } else if (pathname.includes('/deals')) {
+        } else if (pathname.includes('/business/checkout')) {
+            setActiveItem('checkout');
+        } else if (pathname.includes('/business/deals')) {
             setActiveItem('deals');
-        } else if (pathname.includes('/settings')) {
+        } else if (pathname.includes('/business/settings')) {
             setActiveItem('settings');
+        } else if (pathname.includes('/business')) {
+            setActiveItem('home');
         }
     }, [pathname]);
-    
+
     // Function to handle navigation and set active item
     const handleNavigation = (path: string, item: string) => {
         setActiveItem(item);
         router.push(path);
     };
-    
+
     return (
         <div className="bg-gray-50">
             {/* Main content - add margin/padding for desktop view */}
@@ -47,8 +47,8 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-black shadow-lg border-t border-gray-800 z-50">
                 <ul className="flex justify-between items-center px-2 py-3">
                     <li>
-                        <div 
-                            onClick={() => handleNavigation('/dashboard', 'home')}
+                        <div
+                            onClick={() => handleNavigation('/business', 'home')}
                             className={`flex flex-col items-center p-2 ${activeItem === 'home' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'home' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +58,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                         </div>
                     </li>
                     <li>
-                        <div 
+                        <div
                             onClick={() => handleNavigation('/business/clients', 'clients')}
                             className={`flex flex-col items-center p-2 ${activeItem === 'clients' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
@@ -69,18 +69,18 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                         </div>
                     </li>
                     <li>
-                        <div 
-                            onClick={() => handleNavigation(`/business/${auth.userData?.id}/offers`, 'offers')}
-                            className={`flex flex-col items-center p-2 ${activeItem === 'offers' ? 'text-white font-medium' : 'text-gray-400'}`}
+                        <div
+                            onClick={() => handleNavigation(`/business/checkout`, 'checkout')}
+                            className={`flex flex-col items-center p-2 ${activeItem === 'checkout' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'offers' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'checkout' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
                             </svg>
-                            <span className={`text-xs ${activeItem === 'offers' ? 'text-white' : 'text-gray-400'}`}>CheckOut</span>
+                            <span className={`text-xs ${activeItem === 'checkout' ? 'text-white' : 'text-gray-400'}`}>CheckOut</span>
                         </div>
                     </li>
                     <li>
-                        <div 
+                        <div
                             onClick={() => handleNavigation(`/business/${auth.userData?.id}/deals`, 'deals')}
                             className={`flex flex-col items-center p-2 ${activeItem === 'deals' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
@@ -91,7 +91,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                         </div>
                     </li>
                     <li>
-                        <div 
+                        <div
                             onClick={() => handleNavigation(`/business/${auth.userData?.id}/settings`, 'settings')}
                             className={`flex flex-col items-center p-2 ${activeItem === 'settings' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >

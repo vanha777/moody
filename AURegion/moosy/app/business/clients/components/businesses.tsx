@@ -65,7 +65,7 @@ export interface ContactProps {
   }[];
 }
 
-// Using props for now as requested
+// Update the interface to remove toggle and isSelecting
 interface ContactListProps {
   contacts?: ContactProps[];
   onContactSelect?: (contact: ContactProps) => void;
@@ -73,7 +73,7 @@ interface ContactListProps {
 
 export default function ContactList({ 
   contacts: propContacts, 
-  onContactSelect 
+  onContactSelect,
 }: ContactListProps = {}) {
   const { auth, getUser } = useAppContext();
   const [contacts, setContacts] = useState<ContactProps[]>([]);
@@ -322,16 +322,16 @@ export default function ContactList({
     
     // Update recently visited list
     setRecentlyVisited(prev => {
-      // Remove the contact if it's already in the list
       const withoutCurrent = prev.filter(c => c.id !== contact.id);
-      // Add the contact at the beginning of the array
       return [updatedContact, ...withoutCurrent].slice(0, 4);
     });
     
-    setSelectedContact(updatedContact);
-    setShowContactDetail(true);
     if (onContactSelect) {
       onContactSelect(updatedContact);
+    } else {
+      // Only show contact detail if not in selection mode
+      setSelectedContact(updatedContact);
+      setShowContactDetail(true);
     }
   };
 
@@ -348,7 +348,9 @@ export default function ContactList({
     <div className="w-full h-full flex flex-col bg-gray-50 relative">
       {/* Header */}
       <div className="bg-white shadow-sm p-4 sticky top-0 z-10">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-3">My Customers</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-3">
+          {onContactSelect ? "Select Customer" : "My Customers"}
+        </h1>
         
         {/* Search bar on a different line */}
         <div className="relative">
@@ -478,15 +480,17 @@ export default function ContactList({
         </div>
       </div>
 
-      {/* New Contact Button - Positioned much higher on mobile */}
-      <button 
-        className="fixed md:bottom-6 bottom-28 right-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors z-20"
-        onClick={() => setShowAddContact(true)}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-      </button>
+      {/* New Contact Button - Only show if onContactSelect is not provided */}
+      {!onContactSelect && (
+        <button 
+          className="fixed md:bottom-6 bottom-28 right-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors z-20"
+          onClick={() => setShowAddContact(true)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
 
       {/* Contact Detail Overlay - Now sticky */}
       {showContactDetail && selectedContact && (
