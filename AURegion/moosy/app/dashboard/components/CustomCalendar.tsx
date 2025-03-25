@@ -466,7 +466,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     );
   };
   return (
-    <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">
+    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+      {/* <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">*/}
       {!selectedEvent && !showAddBooking ? (
         <SimpleSideBar>
           <motion.div
@@ -480,9 +481,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           >
             {/* Calendar Header - Modernized design */}
             <div className="calendar-header flex flex-col sticky top-0 bg-white z-20 rounded-t-xl">
-              {/* Notification Bell - Positioned at the top left */}
-
-
               {/* View switcher with responsive padding */}
               <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
                 {/* View buttons with modern style */}
