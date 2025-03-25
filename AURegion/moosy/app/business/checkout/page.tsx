@@ -1,7 +1,6 @@
 "use client"; // Mark as client component
 import { motion } from "framer-motion";
 import Checkout from "./components/checkout";
-import Link from "next/link";
 
 export default function CheckoutPage() {
 

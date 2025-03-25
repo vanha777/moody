@@ -477,8 +477,8 @@ export default function ContactList({
                     )}
                     <div>
                       <p className="text-sm font-medium text-gray-900">{contact.name}</p>
-                      {contact.company && (
-                        <p className="text-xs text-gray-500">{contact.company}</p>
+                      {contact.phone && (
+                        <p className="text-xs text-gray-500">{contact.phone}</p>
                       )}
                     </div>
                   </li>

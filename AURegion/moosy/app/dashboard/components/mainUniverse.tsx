@@ -76,77 +76,21 @@ export default function MainUniverse({ rawUser }: InitialUserProps) {
         fetchData();
     }, []);
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.3,
-                delayChildren: 0.2,
-            },
-        },
-    };
-
-    const industries = [
-        {
-            id: "software",
-            label: "Software",
-            icon: IoCodeSlashOutline,
-            selectedIcon: IoCodeSlashSharp
-        },
-        {
-            id: "healthcare",
-            label: "Healthcare",
-            icon: MdOutlineGeneratingTokens,
-            selectedIcon: MdGeneratingTokens
-        },
-        {
-            id: "fintech",
-            label: "Fintech",
-            icon: IoStorefrontOutline,
-            selectedIcon: IoImagesSharp
-        },
-        {
-            id: "ecommerce",
-            label: "E-Commerce",
-            icon: IoStorefrontOutline,
-            selectedIcon: IoStorefrontSharp
-        },
-        {
-            id: "ai",
-            label: "AI & ML",
-            icon: IoStatsChartOutline,
-            selectedIcon: IoStatsChartSharp
-        },
-        {
-            id: "blockchain",
-            label: "Blockchain",
-            icon: IoSettingsOutline,
-            selectedIcon: IoSettingsSharp
-        }
-    ];
-
     return (
         <>
-            {isLoading ? (
-                <SimpleLoading />
-            ) : (
-                <>
-                    <SimpleSideBar>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 20 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: "easeInOut"
-                            }}
-                        >
-                            <BookingList />
-                        </motion.div>
-                    </SimpleSideBar>
-                </>
-            )}
+            <SimpleSideBar>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{
+                        duration: 0.3,
+                        ease: "easeInOut"
+                    }}
+                >
+                    <BookingList />
+                </motion.div>
+            </SimpleSideBar>
         </>
     );
 }
