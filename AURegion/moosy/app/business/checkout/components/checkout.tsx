@@ -13,11 +13,7 @@ const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-interface Client {
-    id: string;
-    name: string;
-    email: string;
-}
+
 
 interface Service {
     id: string;
@@ -33,7 +29,6 @@ interface Discount {
 
 export default function Checkout() {
     const router = useRouter();
-    const [clients, setClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);
     const [services, setServices] = useState<ServiceData[]>([]);
@@ -93,11 +88,11 @@ export default function Checkout() {
     };
 
     return (
-        <div className="h-screen bg-gray-50">
+        <div className="min-h-screen bg-white">
             {showOverall && !showContactModal && !showServiceModal && (
                 <>
-                    {/* Header with back button and title aligned */}
-                    <div className="bg-white px-4 py-6 shadow-sm">
+                    {/* Header */}
+                    <div className="bg-white px-4 py-6 border-b">
                         <div className="flex items-center justify-start max-w-3xl mx-auto">
                             <Link
                                 href="/business"
@@ -122,74 +117,98 @@ export default function Checkout() {
                         </div>
                     </div>
 
-                    {/* Main Content with Order Summary */}
-                    <div className="h-[calc(100vh-80px)] overflow-y-auto p-4">
-                        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-                            <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-
-                            {/* Client Section */}
-                            <div className="mb-4">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-medium">Client</h3>
-                                    <button
-                                        onClick={() => setShowContactModal(true)}
-                                        className="text-black text-sm hover:text-gray-700"
-                                    >
-                                        {selectedClient ? 'Change Client' : '+ Add Client'}
-                                    </button>
-                                </div>
-                                {selectedClient ? (
-                                    <div className="mt-2 p-2 bg-gray-50 rounded">
-                                        <p>{selectedClient.name}</p>
-                                        <p className="text-sm text-gray-500">{selectedClient.email}</p>
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-gray-500 mt-2">No client selected</p>
-                                )}
-                            </div>
-
-                            {/* Services Section */}
-                            <div className="mb-4">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-medium">Services</h3>
-                                    <button
-                                        onClick={() => setShowServiceModal(true)}
-                                        className="text-blue-600 text-sm"
-                                    >
-                                        + Add Service
-                                    </button>
-                                </div>
-                                {selectedServices.length > 0 ? (
-                                    <div className="mt-2 space-y-2">
-                                        {selectedServices.map(service => (
-                                            <div key={service.id} className="flex items-center justify-between p-2 bg-gray-50 rounded group">
-                                                <span>{service.name}</span>
-                                                <div className="flex items-center gap-2">
-                                                    <span>${service.price}</span>
-                                                    <button
-                                                        onClick={() => handleRemoveService(service.id)}
-                                                        className="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="#00000">
-                                                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                        </svg>
-                                                    </button>
+                    {/* Main Content */}
+                    <div className="px-4 py-6 space-y-6 max-w-3xl mx-auto">
+                        {/* Client Selection Box */}
+                        <div 
+                            onClick={() => setShowContactModal(true)}
+                            className="p-4 border-2 rounded-xl cursor-pointer hover:border-gray-400"
+                        >
+                            {selectedClient ? (
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                                            {selectedClient.avatar ? (
+                                                <img 
+                                                    src={selectedClient.avatar} 
+                                                    alt={selectedClient.email}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-900 flex items-center justify-center text-white text-lg font-semibold">
+                                                    {selectedClient.name.charAt(0).toUpperCase()}
                                                 </div>
-                                            </div>
-                                        ))}
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">{selectedClient.name}</p>
+                                            <p className="text-sm text-gray-500">{selectedClient.email}</p>
+                                        </div>
                                     </div>
-                                ) : (
-                                    <p className="text-sm text-gray-500 mt-2">No services selected</p>
-                                )}
-                            </div>
-
-                            {/* Total Amount */}
-                            <div className="border-t pt-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-semibold">Total Amount:</span>
-                                    <span className="text-xl font-bold">${amount}</span>
+                                    <div className="text-gray-400 hover:text-gray-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                    </div>
                                 </div>
+                            ) : (
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-600">Select a client</p>
+                                        <p className="text-sm text-gray-400">Click to choose a client</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Total Amount Box */}
+                        <div className="p-4 border-2 rounded-xl bg-gray-50">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center">
+                                    <span className="text-2xl font-bold mr-2">$</span>
+                                    <span className="text-3xl font-bold">{amount}</span>
+                                </div>
+                                <button
+                                    onClick={() => setShowServiceModal(true)}
+                                    className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm"
+                                >
+                                    Add Service
+                                </button>
                             </div>
+                        </div>
+
+                        {/* Services List */}
+                        <div className="space-y-3">
+                            {selectedServices.length > 0 ? (
+                                selectedServices.map(service => (
+                                    <div 
+                                        key={service.id} 
+                                        className="p-4 border-2 rounded-xl flex items-center justify-between group hover:border-gray-400"
+                                    >
+                                        <span className="font-medium">{service.name}</span>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="font-bold">${service.price}</span>
+                                            <button
+                                                onClick={() => handleRemoveService(service.id)}
+                                                className="text-gray-400 hover:text-red-500 p-1"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                    No services selected
+                                </div>
+                            )}
                         </div>
                     </div>
                 </>
@@ -199,6 +218,7 @@ export default function Checkout() {
             {showContactModal && (
                 <ContactList
                     onContactSelect={handleClientSelect}
+                    onClose={() => setShowContactModal(false)}
                 />
             )}
 
@@ -212,12 +232,12 @@ export default function Checkout() {
 
             {/* Bottom action bar */}
             {showOverall && !showContactModal && !showServiceModal && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
-                    <div className="flex justify-center items-center">
+                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t">
+                    <div className="max-w-3xl mx-auto">
                         <button
                             onClick={handleProceedToPayment}
                             disabled={!selectedClient || selectedServices.length === 0}
-                            className="w-full bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-300"
+                            className="w-full bg-black text-white py-4 rounded-xl font-semibold hover:bg-gray-800 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors"
                         >
                             Proceed to Payment
                         </button>

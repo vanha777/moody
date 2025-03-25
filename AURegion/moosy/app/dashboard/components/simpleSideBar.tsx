@@ -21,8 +21,8 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
             setActiveItem('clients');
         } else if (pathname.includes('/business/checkout')) {
             setActiveItem('checkout');
-        } else if (pathname.includes('/business/deals')) {
-            setActiveItem('deals');
+        } else if (pathname.includes('/business/marketing')) {
+            setActiveItem('marketing');
         } else if (pathname.includes('/business/settings')) {
             setActiveItem('settings');
         } else if (pathname.includes('/business')) {
@@ -81,13 +81,13 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                     </li>
                     <li>
                         <div
-                            onClick={() => handleNavigation(`/business/${auth.userData?.id}/deals`, 'deals')}
-                            className={`flex flex-col items-center p-2 ${activeItem === 'deals' ? 'text-white font-medium' : 'text-gray-400'}`}
+                            onClick={() => handleNavigation(`/business/marketing`, 'marketing')}
+                            className={`flex flex-col items-center p-2 ${activeItem === 'marketing' ? 'text-white font-medium' : 'text-gray-400'}`}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'deals' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${activeItem === 'marketing' ? 'text-white' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
-                            <span className={`text-xs ${activeItem === 'deals' ? 'text-white' : 'text-gray-400'}`}>Marketing</span>
+                            <span className={`text-xs ${activeItem === 'marketing' ? 'text-white' : 'text-gray-400'}`}>Marketing</span>
                         </div>
                     </li>
                     <li>

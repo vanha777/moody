@@ -69,11 +69,13 @@ export interface ContactProps {
 interface ContactListProps {
   contacts?: ContactProps[];
   onContactSelect?: (contact: ContactProps) => void;
+  onClose?: () => void;
 }
 
 export default function ContactList({ 
   contacts: propContacts, 
   onContactSelect,
+  onClose
 }: ContactListProps = {}) {
   const { auth, getUser } = useAppContext();
   const [contacts, setContacts] = useState<ContactProps[]>([]);
@@ -348,9 +350,32 @@ export default function ContactList({
     <div className="w-full h-full flex flex-col bg-gray-50 relative">
       {/* Header */}
       <div className="bg-white shadow-sm p-4 sticky top-0 z-10">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-3">
-          {onContactSelect ? "Select Customer" : "My Customers"}
-        </h1>
+        <div className="flex items-center">
+          {onClose && (
+            <button 
+              onClick={onClose}
+              className="mr-3 p-1 hover:bg-gray-100 rounded-full"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-6 w-6 text-gray-600" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                />
+              </svg>
+            </button>
+          )}
+          <h1 className="text-2xl font-semibold text-gray-800 mb-3">
+            {onContactSelect ? "Select Customer" : "My Customers"}
+          </h1>
+        </div>
         
         {/* Search bar on a different line */}
         <div className="relative">
