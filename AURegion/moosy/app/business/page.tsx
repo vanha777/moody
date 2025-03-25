@@ -35,9 +35,10 @@ import { motion } from "framer-motion";
 // };
 
 export default function Dashboard() {
-  const searchParams = useSearchParams();
-  const initialUser = searchParams.get('user');
-  console.log("initialUser", initialUser);
+  const initialUser = JSON.stringify({"id":1,"created_at":"2025-02-20T04:07:48.884114+00:00","email":"vanha101096@gmail.com","name":"Minion Van","type":"founder","photo":"https://lh3.googleusercontent.com/a/ACg8ocLpvZKCFXsRyAqki7sk-ak2UifnOIH6oBL6Biz7ROzxGPiUve0U=s96-c","x":"https://x.com/patricksaturnor","github":"https://github.com/vanha777","linkedin":"","website":"","instagram":""});
+  // const searchParams = useSearchParams();
+  // const initialUser = searchParams.get('user');
+  // console.log("initialUser", initialUser);
   return (
     // <Suspense fallback={<SimpleLoading />}>
     // <DashboardClient rawUser={initialUser} />

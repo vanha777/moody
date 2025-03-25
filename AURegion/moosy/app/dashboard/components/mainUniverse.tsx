@@ -29,7 +29,6 @@ interface InitialUserProps {
     rawUser?: any;
 }
 
-
 export default function MainUniverse({ rawUser }: InitialUserProps) {
     const router = useRouter();
     const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout, getUser } = useAppContext();
