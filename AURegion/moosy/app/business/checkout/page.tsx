@@ -1,9 +1,12 @@
 "use client"; // Mark as client component
 import { motion } from "framer-motion";
 import Checkout from "./components/checkout";
+import { useSearchParams } from "next/navigation";
 
 export default function CheckoutPage() {
-
+    const searchParams = useSearchParams();
+    const bookingParam = searchParams.get("booking");
+    const booking = bookingParam ? JSON.parse(decodeURIComponent(bookingParam)) as import('@/app/dashboard/components/booking').CalendarEvent : undefined;
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -14,7 +17,7 @@ export default function CheckoutPage() {
                 ease: "easeInOut"
             }}
         >
-            <Checkout />
+            <Checkout booking={booking} />
         </motion.div>
     );
 }

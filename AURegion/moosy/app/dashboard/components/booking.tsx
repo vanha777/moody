@@ -4,35 +4,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import BookingOverlay from './bookingOverlay';
 import CustomCalendar from './CustomCalendar';
+import { ContactProps } from '@/app/business/clients/components/businesses';
+import { ServiceData } from '@/app/business/checkout/components/service';
 
-interface Booking {
+export interface CalendarEvent {
     id: string;
-    clientName: string;
-    service: string;
-    phoneNumber: string;
-    dateTime: Date;
-}
-
-interface CalendarEvent {
-    id: string;
-    title: string;
+    service: ServiceData
+    notes: string;
     start: Date;
     end: Date;
-    extendedProps: {
-        clientName: string;
-        service: string;
-        phoneNumber: string;
-    };
+    customer: ContactProps
 }
 
 const BookingList: React.FC = () => {
-    const [bookings, setBookings] = useState<Booking[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [showOverlay, setShowOverlay] = useState<boolean>(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
-    const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [currentView, setCurrentView] = useState("timeGridWeek");
 
@@ -53,182 +40,186 @@ const BookingList: React.FC = () => {
         return () => window.removeEventListener("resize", updateCalendarView);
     }, []);
 
-
     useEffect(() => {
-        // Mock data - replace with actual API call
-        const fetchBookings = async () => {
+        const fetchEvents = async () => {
             setIsLoading(true);
             try {
-                // This would be your actual data fetching logic
-                // const response = await fetch('/api/bookings');
-                // const data = await response.json();
-
                 // Mock data for demonstration
-                const mockBookings: Booking[] = [
+                const mockEvents: CalendarEvent[] = [
                     {
                         id: '1',
-                        clientName: 'John Smith',
-                        service: 'Haircut',
-                        phoneNumber: '(555) 123-4567',
-                        dateTime: new Date(new Date().setHours(9, 0, 0, 0))
+                        service: {
+                            id: '101',
+                            name: 'Haircut',
+                            description: 'Basic haircut service',
+                            price: 100,
+                            duration: '1 hour',
+                            category: 'Hair'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(9, 0, 0, 0)),
+                        end: new Date(new Date().setHours(10, 0, 0, 0)),
+                        customer: {
+                            id: 123,
+                            name: 'John Smith',
+                            email: 'john.smith@example.com',
+                            phone: '(555) 123-4567',
+                            company: 'ABC Company',
+                            avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+                            lastContacted: '2023-05-15',
+                            notes: 'Regular client, prefers appointments in the morning'
+                        }
                     },
                     {
                         id: '2',
-                        clientName: 'Sarah Johnson',
-                        service: 'Color Treatment',
-                        phoneNumber: '(555) 234-5678',
-                        dateTime: new Date(new Date().setHours(10, 30, 0, 0))
+                        service: {
+                            id: '456',
+                            name: 'Color Treatment',
+                            description: 'Full color treatment service',
+                            price: 150,
+                            duration: '2 hours',
+                            category: 'Color'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(11, 0, 0, 0)),
+                        end: new Date(new Date().setHours(13, 0, 0, 0)),
+                        customer: {
+                            id: 456,
+                            name: 'Emily Johnson',
+                            email: 'emily.johnson@example.com',
+                            phone: '(555) 234-5678',
+                            avatar: 'https://randomuser.me/api/portraits/men/2.jpg'
+                        }
                     },
                     {
                         id: '3',
-                        clientName: 'Michael Brown',
-                        service: 'Beard Trim',
-                        phoneNumber: '(555) 345-6789',
-                        dateTime: new Date(new Date().setHours(11, 15, 0, 0))
+                        service: {
+                            id: '789',
+                            name: 'Beard Trim',
+                            description: 'Beard trimming and shaping',
+                            price: 200,
+                            duration: '30 minutes',
+                            category: 'Grooming'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(14, 0, 0, 0)),
+                        end: new Date(new Date().setHours(14, 30, 0, 0)),
+                        customer: {
+                            id: 789,
+                            name: 'Michael Brown',
+                            email: 'michael.brown@example.com',
+                            phone: '(555) 345-6789',
+                            avatar: 'https://randomuser.me/api/portraits/men/3.jpg'
+                        }
                     },
                     {
                         id: '4',
-                        clientName: 'Emily Davis',
-                        service: 'Full Styling',
-                        phoneNumber: '(555) 456-7890',
-                        dateTime: new Date(new Date().setHours(13, 0, 0, 0))
+                        service: {
+                            id: '101',
+                            name: 'Full Highlights',
+                            description: 'Complete hair highlighting service',
+                            price: 250,
+                            duration: '2 hours',
+                            category: 'Color'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(15, 0, 0, 0)),
+                        end: new Date(new Date().setHours(17, 0, 0, 0)),
+                        customer: {
+                            id: 101,
+                            name: 'Sarah Davis',
+                            email: 'sarah.davis@example.com',
+                            phone: '(555) 456-7890',
+                            avatar: 'https://randomuser.me/api/portraits/men/4.jpg'
+                        }
                     },
                     {
                         id: '5',
-                        clientName: 'Robert Wilson',
-                        service: 'Shave',
-                        phoneNumber: '(555) 567-8901',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                        service: {
+                            id: '102',
+                            name: 'Haircut & Style',
+                            description: 'Haircut with styling service',
+                            price: 120,
+                            duration: '1 hour',
+                            category: 'Hair'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(9, 0, 0, 0)),
+                        end: new Date(new Date().setHours(10, 0, 0, 0)),
+                        customer: {
+                            id: 102,
+                            name: 'Robert Wilson',
+                            email: 'robert.wilson@example.com',
+                            phone: '(555) 567-8901',
+                            avatar: 'https://randomuser.me/api/portraits/men/5.jpg'
+                        }
                     },
                     {
                         id: '6',
-                        clientName: 'John Smith',
-                        service: 'Haircut',
-                        phoneNumber: '(555) 123-4567',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                        service: {
+                            id: '103',
+                            name: 'Blowout',
+                            description: 'Hair blowout and styling',
+                            price: 130,
+                            duration: '1 hour',
+                            category: 'Styling'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(11, 30, 0, 0)),
+                        end: new Date(new Date().setHours(12, 30, 0, 0)),
+                        customer: {
+                            id: 103,
+                            name: 'Jennifer Lee',
+                            email: 'jennifer.lee@example.com',
+                            phone: '(555) 678-9012',
+                            notes: 'Prefers volume and texture. Allergic to some hair products.',
+                            avatar: 'https://randomuser.me/api/portraits/men/6.jpg'
+                        }
                     },
                     {
                         id: '7',
-                        clientName: 'Sarah Johnson',
-                        service: 'Color Treatment',
-                        phoneNumber: '(555) 234-5678',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
-                    },
-                    {
-                        id: '8',
-                        clientName: 'Michael Brown',
-                        service: 'Beard Trim',
-                        phoneNumber: '(555) 345-6789',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
-                    },
-                    {
-                        id: '9',
-                        clientName: 'Emily Davis',
-                        service: 'Full Styling',
-                        phoneNumber: '(555) 456-7890',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
-                    },
-                    {
-                        id: '10',
-                        clientName: 'Robert Wilson',
-                        service: 'Shave',
-                        phoneNumber: '(555) 567-8901',
-                        dateTime: new Date(new Date().setHours(14, 30, 0, 0))
+                        service: {
+                            id: '104',
+                            name: 'Men\'s Cut',
+                            description: 'Men\'s haircut service',
+                            price: 140,
+                            duration: '1 hour',
+                            category: 'Hair'
+                        },
+                        notes: 'This is a note',
+                        start: new Date(new Date().setHours(9, 0, 0, 0)),
+                        end: new Date(new Date().setHours(10, 0, 0, 0)),
+                        customer: {
+                            notes: 'Prefers a clean cut. Avoids gel products.',
+                            id: 104,
+                            name: 'David Miller',
+                            email: 'david.miller@example.com',
+                            phone: '(555) 789-0123',
+                            avatar: 'https://randomuser.me/api/portraits/men/7.jpg'
+                        }
                     }
                 ];
 
-                setBookings(mockBookings);
-
-                // Convert bookings to calendar events
-                const calendarEvents = mockBookings.map((booking) => {
-                    const startTime = new Date(booking.dateTime);
-                    const endTime = new Date(booking.dateTime);
-                    endTime.setMinutes(endTime.getMinutes() + 60);
-
-                    return {
-                        id: booking.id,
-                        title: `${booking.clientName} - ${booking.service}`,
-                        start: startTime,
-                        end: endTime,
-                        extendedProps: {
-                            clientName: booking.clientName,
-                            service: booking.service,
-                            phoneNumber: booking.phoneNumber,
-                        },
-                    };
-                });
-
-                setEvents(calendarEvents);
+                setEvents(mockEvents);
             } catch (error) {
-                console.error('Error fetching bookings:', error);
+                console.error('Error fetching events:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchBookings();
-    }, [selectedDate]);
-
-    const handleEventClick = (info: any) => {
-        setSelectedEvent(info.event);
-        setSelectedBooking({
-            id: info.event.id,
-            clientName: info.event.extendedProps.clientName,
-            service: info.event.extendedProps.service,
-            phoneNumber: info.event.extendedProps.phoneNumber,
-            dateTime: info.event.start
-        });
-        setShowOverlay(true);
-    };
-
-    const renderEventContent = (eventInfo: any) => {
-        return (
-            <div className="event-content">
-                <div className="event-title">{eventInfo.event.title}</div>
-            </div>
-        );
-    };
-
-    // Filter bookings for the selected date
-    const filteredBookings = bookings.filter(booking =>
-        booking.dateTime.toDateString() === selectedDate.toDateString()
-    ).sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
-
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDate(new Date(e.target.value));
-    };
-
-    const handleBookingClick = (booking: Booking) => {
-        setSelectedBooking(booking);
-        setShowOverlay(true);
-    };
-
-    const handleCloseOverlay = () => {
-        setShowOverlay(false);
-        setSelectedBooking(null);
-        setSelectedEvent(null);
-    };
-
-    const toggleViewMode = () => {
-        setViewMode(viewMode === 'list' ? 'calendar' : 'list');
-    };
+        fetchEvents();
+    }, []);
 
     return (
-        <div >
-                <CustomCalendar
-                    events={events}
-                    onEventClick={(event) => {
-                        const booking: Booking = {
-                            id: event.id,
-                            clientName: event.extendedProps.clientName,
-                            service: event.extendedProps.service,
-                            phoneNumber: event.extendedProps.phoneNumber,
-                            dateTime: event.start
-                        };
-                        setSelectedBooking(booking);
-                        setShowOverlay(true);
-                    }}
-                />
+        <div>
+            <CustomCalendar
+                events={events}
+                onEventClick={(event) => {
+                    setSelectedEvent(event);
+                    setShowOverlay(true);
+                }}
+            />
         </div>
     );
 };

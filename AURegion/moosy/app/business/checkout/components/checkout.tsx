@@ -7,6 +7,7 @@ import ContactList, { ContactProps } from "@/app/business/clients/components/bus
 import PaymentMethods from "./payment";
 import ServiceSelector, { ServiceData } from "./service";
 import Link from "next/link";
+import { CalendarEvent } from "@/app/dashboard/components/booking";
 
 // Initialize Stripe with the publishable key
 const stripePromise = loadStripe(
@@ -27,7 +28,7 @@ interface Discount {
     percentage: number;
 }
 
-export default function Checkout() {
+export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const router = useRouter();
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);
@@ -42,9 +43,16 @@ export default function Checkout() {
     const [showOverall, setShowOverall] = useState<boolean>(true);
 
     // Fetch clients, services, and discounts on component mount
-    //   useEffect(() => {
+        //   useEffect(() => {
 
-    //   }, []);
+        //   }, []);
+
+    useEffect(() => {
+        if (booking) {
+            setSelectedClient(booking.customer);
+            setSelectedServices([booking.service]);
+        }
+    }, [booking]);
 
     // Calculate total amount based on services and discounts
     useEffect(() => {

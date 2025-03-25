@@ -78,8 +78,8 @@ export default function MainUniverse({ rawUser }: InitialUserProps) {
 
     return (
         <>
-            <SimpleSideBar>
-                <motion.div
+            {/* <SimpleSideBar> */}
+                {/* <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
@@ -87,10 +87,10 @@ export default function MainUniverse({ rawUser }: InitialUserProps) {
                         duration: 0.3,
                         ease: "easeInOut"
                     }}
-                >
+                > */}
                     <BookingList />
-                </motion.div>
-            </SimpleSideBar>
+                {/* </motion.div> */}
+            {/* </SimpleSideBar> */}
         </>
     );
 }
