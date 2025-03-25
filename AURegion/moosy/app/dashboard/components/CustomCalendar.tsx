@@ -281,7 +281,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
-                      className="event-chip bg-black/90 text-white px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-black hover:scale-[1.01] transition-all z-1 relative"
+                      className="event-chip bg-gray-200 text-gray-800 px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-300 hover:scale-[1.01] transition-all z-1 relative"
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent triggering the time slot click
                         handleEventClick(event);
@@ -356,7 +356,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                           // Mobile: Just show the count
                           eventsInSlot.length > 0 && (
                             <div 
-                              className="event-count bg-black text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mx-auto cursor-pointer shadow-md"
+                              className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mx-auto cursor-pointer shadow-md"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setCurrentDate(day);
@@ -371,7 +371,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                           eventsInSlot.map(event => (
                             <div
                               key={event.id}
-                              className="event-chip bg-black/90 text-white px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-black hover:scale-[1.01] transition-all"
+                              className="event-chip bg-gray-200 text-gray-800 px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-300 hover:scale-[1.01] transition-all"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEventClick(event);
@@ -431,7 +431,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     // Mobile: Only show event count
                     <div className="flex justify-end mt-auto mb-1">
                       <div 
-                        className="event-count bg-black text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-md"
+                        className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-md"
                         onClick={(e) => {
                           e.stopPropagation();
                           setCurrentDate(day);
@@ -448,7 +448,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         idx < 2 ? (
                           <div
                             key={event.id}
-                            className="event-chip bg-black/90 text-white p-2 text-xs rounded-xl cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:bg-black transition-all shadow-sm"
+                            className="event-chip bg-gray-200 text-gray-800 p-2 text-xs rounded-xl cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:bg-gray-300 transition-all shadow-sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleEventClick(event);
@@ -478,10 +478,26 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">
       {/* Calendar Header - Modernized design */}
       <div className="calendar-header flex flex-col sticky top-0 bg-white z-20 rounded-t-xl">
+        {/* Notification Bell - Positioned at the top left */}
+  
+
         {/* View switcher with responsive padding */}
         <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
           {/* View buttons with modern style */}
-          <div className="flex space-x-2 sm:space-x-3">
+          <div className="flex space-x-2 sm:space-x-3 items-center">
+            {/* Notification Bell - Inline with buttons */}
+            <button 
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2"
+              aria-label="Notifications"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              {/* Notification indicator */}
+              <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
+            </button>
+            
             <button 
               className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'day' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
               onClick={() => changeView('day')}
