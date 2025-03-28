@@ -1,17 +1,17 @@
 -- Filename: 20250327_123456_create_booking_system.sql
 
--- Create the moosy schema
-CREATE SCHEMA IF NOT EXISTS moosy;
+-- Create the public schema
+CREATE SCHEMA IF NOT EXISTS public;
 
 -- Create the UUID extension in the public schema (this is the recommended approach)
 DROP EXTENSION IF EXISTS "uuid-ossp";
 CREATE EXTENSION "uuid-ossp" WITH SCHEMA public;
 
--- Set the search path to include both public and moosy schemas
-SET search_path TO moosy, public;
+-- Set the search path to include both public and public schemas
+SET search_path TO public;
 
 -- Sub-table: currency (standalone table for currency codes)
-CREATE TABLE moosy.currency (
+CREATE TABLE public.currency (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     code VARCHAR(3) UNIQUE NOT NULL CHECK (code ~ '^[A-Z]{3}$'), -- ISO 4217 currency code (e.g., USD, EUR)
     name VARCHAR(100) NOT NULL, -- e.g., United States Dollar, Euro
@@ -21,28 +21,28 @@ CREATE TABLE moosy.currency (
 );
 
 -- Main table: companies
-CREATE TABLE moosy.companies (
+CREATE TABLE public.companies (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    currency_id UUID REFERENCES moosy.currency(id) NOT NULL, -- Each company has one currency
+    currency_id UUID REFERENCES public.currency(id) NOT NULL, -- Each company has one currency
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Main table: people (can belong to a company)
-CREATE TABLE moosy.people (
+CREATE TABLE public.people (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE SET NULL,
+    company_id UUID REFERENCES public.companies(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Sub-table: address (linked to companies or people)
-CREATE TABLE moosy.address (
+CREATE TABLE public.address (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
-    person_id UUID REFERENCES moosy.people(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
+    person_id UUID REFERENCES public.people(id) ON DELETE CASCADE,
     street VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
     state VARCHAR(100),
@@ -55,11 +55,11 @@ CREATE TABLE moosy.address (
 );
 
 -- Sub-table: personal_information (linked to people)
-CREATE TABLE moosy.personal_information (
+CREATE TABLE public.personal_information (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    person_id UUID UNIQUE REFERENCES moosy.people(id) ON DELETE CASCADE,
+    person_id UUID UNIQUE REFERENCES public.people(id) ON DELETE CASCADE,
     date_of_birth DATE,
     gender VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -67,10 +67,10 @@ CREATE TABLE moosy.personal_information (
 );
 
 -- Sub-table: contact_method (linked to companies or people)
-CREATE TABLE moosy.contact_method (
+CREATE TABLE public.contact_method (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
-    person_id UUID REFERENCES moosy.people(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
+    person_id UUID REFERENCES public.people(id) ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL CHECK (type IN ('email', 'phone', 'other')),
     value VARCHAR(255) NOT NULL,
     is_primary BOOLEAN DEFAULT FALSE,
@@ -81,9 +81,9 @@ CREATE TABLE moosy.contact_method (
 );
 
 -- Sub-table: login (linked to people)
-CREATE TABLE moosy.login (
+CREATE TABLE public.login (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    person_id UUID UNIQUE REFERENCES moosy.people(id) ON DELETE CASCADE,
+    person_id UUID UNIQUE REFERENCES public.people(id) ON DELETE CASCADE,
     username VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     last_login TIMESTAMP WITH TIME ZONE,
@@ -92,10 +92,10 @@ CREATE TABLE moosy.login (
 );
 
 -- Sub-table: role (linked to people within a company, allows multiple roles per person per company)
-CREATE TABLE moosy.role (
+CREATE TABLE public.role (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    person_id UUID REFERENCES moosy.people(id) ON DELETE CASCADE,
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
+    person_id UUID REFERENCES public.people(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
     role_name VARCHAR(50) NOT NULL CHECK (role_name IN ('owner', 'staff', 'customer', 'admin')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -103,9 +103,9 @@ CREATE TABLE moosy.role (
 );
 
 -- Sub-table: services (linked to companies)
-CREATE TABLE moosy.services (
+CREATE TABLE public.services (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     duration INTERVAL NOT NULL,
     price DECIMAL(10,2),
@@ -113,9 +113,9 @@ CREATE TABLE moosy.services (
 );
 
 -- Sub-table: timetable (linked to companies)
-CREATE TABLE moosy.timetable (
+CREATE TABLE public.timetable (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
     day_of_week INTEGER NOT NULL CHECK (day_of_week >= 0 AND day_of_week <= 6),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE moosy.timetable (
 );
 
 -- Sub-table: status (for tracking booking states)
-CREATE TABLE moosy.status (
+CREATE TABLE public.status (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50) UNIQUE NOT NULL CHECK (name IN ('pending', 'confirmed', 'cancelled', 'completed')),
     description TEXT,
@@ -132,30 +132,30 @@ CREATE TABLE moosy.status (
 );
 
 -- Insert default status values (moved up)
-INSERT INTO moosy.status (name, description) VALUES
+INSERT INTO public.status (name, description) VALUES
     ('pending', 'Booking is awaiting confirmation'),
     ('confirmed', 'Booking is confirmed'),
     ('cancelled', 'Booking has been cancelled'),
     ('completed', 'Booking has been completed');
 
 -- Function to get pending status ID
-CREATE OR REPLACE FUNCTION moosy.get_pending_status_id() 
+CREATE OR REPLACE FUNCTION public.get_pending_status_id() 
 RETURNS UUID AS $$
 BEGIN
-    RETURN (SELECT id FROM moosy.status WHERE name = 'pending');
+    RETURN (SELECT id FROM public.status WHERE name = 'pending');
 END;
 $$ LANGUAGE plpgsql;
 
 -- Sub-table: booking (linked to companies and people)
-CREATE TABLE moosy.booking (
+CREATE TABLE public.booking (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    customer_id UUID REFERENCES moosy.people(id) ON DELETE SET NULL,
-    staff_id UUID REFERENCES moosy.people(id) ON DELETE SET NULL,
-    service_id UUID REFERENCES moosy.services(id) ON DELETE CASCADE,
-    company_id UUID REFERENCES moosy.companies(id) ON DELETE CASCADE,
+    customer_id UUID REFERENCES public.people(id) ON DELETE SET NULL,
+    staff_id UUID REFERENCES public.people(id) ON DELETE SET NULL,
+    service_id UUID REFERENCES public.services(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
     start_time TIMESTAMP WITH TIME ZONE NOT NULL,
     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    status_id UUID REFERENCES moosy.status(id) DEFAULT moosy.get_pending_status_id(),
+    status_id UUID REFERENCES public.status(id) DEFAULT public.get_pending_status_id(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CHECK (end_time > start_time),
@@ -163,25 +163,25 @@ CREATE TABLE moosy.booking (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_booking_company_time ON moosy.booking(company_id, start_time, end_time);
-CREATE INDEX idx_booking_staff_time ON moosy.booking(staff_id, start_time, end_time);
+CREATE INDEX idx_booking_company_time ON public.booking(company_id, start_time, end_time);
+CREATE INDEX idx_booking_staff_time ON public.booking(staff_id, start_time, end_time);
 
 -- Function to check staff availability and assign staff
-CREATE OR REPLACE FUNCTION moosy.check_and_assign_staff()
+CREATE OR REPLACE FUNCTION public.check_and_assign_staff()
 RETURNS TRIGGER AS $$
 DECLARE
     available_staff RECORD;
 BEGIN
     SELECT p.id INTO available_staff
-    FROM moosy.people p
-    JOIN moosy.role r ON p.id = r.person_id
+    FROM public.people p
+    JOIN public.role r ON p.id = r.person_id
     WHERE r.company_id = NEW.company_id
     AND r.role_name = 'staff'
     AND NOT EXISTS (
         SELECT 1
-        FROM moosy.booking b
+        FROM public.booking b
         WHERE b.staff_id = p.id
-        AND b.status_id IN (SELECT id FROM moosy.status WHERE name IN ('pending', 'confirmed'))
+        AND b.status_id IN (SELECT id FROM public.status WHERE name IN ('pending', 'confirmed'))
         AND tsrange(b.start_time, b.end_time) && tsrange(NEW.start_time, NEW.end_time)
     )
     LIMIT 1;
@@ -197,24 +197,24 @@ $$ LANGUAGE plpgsql;
 
 -- Trigger to enforce staff availability
 CREATE TRIGGER trigger_check_and_assign_staff
-BEFORE INSERT OR UPDATE ON moosy.booking
-FOR EACH ROW EXECUTE FUNCTION moosy.check_and_assign_staff();
+BEFORE INSERT OR UPDATE ON public.booking
+FOR EACH ROW EXECUTE FUNCTION public.check_and_assign_staff();
 
 -- Enable RLS
-ALTER TABLE moosy.companies ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.people ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.address ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.personal_information ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.contact_method ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.login ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.role ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.services ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.timetable ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.status ENABLE ROW LEVEL SECURITY;
-ALTER TABLE moosy.booking ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.people ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.address ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.personal_information ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_method ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.login ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.role ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.timetable ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.status ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.booking ENABLE ROW LEVEL SECURITY;
 
 -- Insert default currency values
-INSERT INTO moosy.currency (code, name, symbol) VALUES
+INSERT INTO public.currency (code, name, symbol) VALUES
     ('USD', 'United States Dollar', '$'),
     ('EUR', 'Euro', '€'),
     ('VND', 'Vietnamese Dong', '₫'),
@@ -222,7 +222,7 @@ INSERT INTO moosy.currency (code, name, symbol) VALUES
     ('GBP', 'British Pound', '£');
 
 -- Insert default status values
--- INSERT INTO moosy.status (name, description) VALUES
+-- INSERT INTO public.status (name, description) VALUES
 --     ('pending', 'Booking is awaiting confirmation'),
 --     ('confirmed', 'Booking is confirmed'),
 --     ('cancelled', 'Booking has been cancelled'),
