@@ -51,162 +51,183 @@ const BookingList: React.FC = () => {
         const fetchEvents = async () => {
             setIsLoading(true);
             try {
-                // Mock data for demonstration
-                console.log("this is the shit", auth?.bookings);
-                const mockEvents: CalendarEvent[] = [
-                    {
-                        id: '1',
-                        service: {
-                            id: '101',
-                            name: 'Haircut',
-                            description: 'Basic haircut service',
-                            price: 100,
-                            duration: '1 hour',
-                            category: 'Hair'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(9, 0, 0, 0)),
-                        end: new Date(new Date().setHours(10, 0, 0, 0)),
-                        customer: {
-                            id: 123,
-                            name: 'John Smith',
-                            email: 'john.smith@example.com',
-                            phone: '(555) 123-4567',
-                            company: 'ABC Company',
-                            avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-                            lastContacted: '2023-05-15',
-                            notes: 'Regular client, prefers appointments in the morning'
-                        }
+                const mockEvents: CalendarEvent[] = auth?.bookings.map((booking) => ({
+                    id: booking.id,
+                    service: {
+                        id: booking.service.id,
+                        name: booking.service.name,
+                        description: booking.service.description,
+                        price: booking.service.price,
+                        duration: booking.service.duration,
+                        category: 'N/A' // Not provided in the booking data structure
                     },
-                    {
-                        id: '2',
-                        service: {
-                            id: '456',
-                            name: 'Color Treatment',
-                            description: 'Full color treatment service',
-                            price: 150,
-                            duration: '2 hours',
-                            category: 'Color'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(11, 0, 0, 0)),
-                        end: new Date(new Date().setHours(13, 0, 0, 0)),
-                        customer: {
-                            id: 456,
-                            name: 'Emily Johnson',
-                            email: 'emily.johnson@example.com',
-                            phone: '(555) 234-5678',
-                            avatar: 'https://randomuser.me/api/portraits/men/2.jpg'
-                        }
-                    },
-                    {
-                        id: '3',
-                        service: {
-                            id: '789',
-                            name: 'Beard Trim',
-                            description: 'Beard trimming and shaping',
-                            price: 200,
-                            duration: '30 minutes',
-                            category: 'Grooming'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(14, 0, 0, 0)),
-                        end: new Date(new Date().setHours(14, 30, 0, 0)),
-                        customer: {
-                            id: 789,
-                            name: 'Michael Brown',
-                            email: 'michael.brown@example.com',
-                            phone: '(555) 345-6789',
-                            avatar: 'https://randomuser.me/api/portraits/men/3.jpg'
-                        }
-                    },
-                    {
-                        id: '4',
-                        service: {
-                            id: '101',
-                            name: 'Full Highlights',
-                            description: 'Complete hair highlighting service',
-                            price: 250,
-                            duration: '2 hours',
-                            category: 'Color'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(15, 0, 0, 0)),
-                        end: new Date(new Date().setHours(17, 0, 0, 0)),
-                        customer: {
-                            id: 101,
-                            name: 'Sarah Davis',
-                            email: 'sarah.davis@example.com',
-                            phone: '(555) 456-7890',
-                            avatar: 'https://randomuser.me/api/portraits/men/4.jpg'
-                        }
-                    },
-                    {
-                        id: '5',
-                        service: {
-                            id: '102',
-                            name: 'Haircut & Style',
-                            description: 'Haircut with styling service',
-                            price: 120,
-                            duration: '1 hour',
-                            category: 'Hair'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(9, 0, 0, 0)),
-                        end: new Date(new Date().setHours(10, 0, 0, 0)),
-                        customer: {
-                            id: 102,
-                            name: 'Robert Wilson',
-                            email: 'robert.wilson@example.com',
-                            phone: '(555) 567-8901',
-                            avatar: 'https://randomuser.me/api/portraits/men/5.jpg'
-                        }
-                    },
-                    {
-                        id: '6',
-                        service: {
-                            id: '103',
-                            name: 'Blowout',
-                            description: 'Hair blowout and styling',
-                            price: 130,
-                            duration: '1 hour',
-                            category: 'Styling'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(11, 30, 0, 0)),
-                        end: new Date(new Date().setHours(12, 30, 0, 0)),
-                        customer: {
-                            id: 103,
-                            name: 'Jennifer Lee',
-                            email: 'jennifer.lee@example.com',
-                            phone: '(555) 678-9012',
-                            notes: 'Prefers volume and texture. Allergic to some hair products.',
-                            avatar: 'https://randomuser.me/api/portraits/men/6.jpg'
-                        }
-                    },
-                    {
-                        id: '7',
-                        service: {
-                            id: '104',
-                            name: 'Men\'s Cut',
-                            description: 'Men\'s haircut service',
-                            price: 140,
-                            duration: '1 hour',
-                            category: 'Hair'
-                        },
-                        notes: 'This is a note',
-                        start: new Date(new Date().setHours(9, 0, 0, 0)),
-                        end: new Date(new Date().setHours(10, 0, 0, 0)),
-                        customer: {
-                            notes: 'Prefers a clean cut. Avoids gel products.',
-                            id: 104,
-                            name: 'David Miller',
-                            email: 'david.miller@example.com',
-                            phone: '(555) 789-0123',
-                            avatar: 'https://randomuser.me/api/portraits/men/7.jpg'
-                        }
+                    notes: booking.customer.notes || '',
+                    start: new Date(booking.start_time),
+                    end: new Date(booking.end_time),
+                    customer: {
+                        id: parseInt(booking.customer.id),
+                        name: `${booking.customer.personal_information.first_name} ${booking.customer.personal_information.last_name}`,
+                        email: booking.customer.contact_method?.find(c => c.type === 'email')?.value || '',
+                        phone: booking.customer.contact_method?.find(c => c.type === 'phone')?.value || '',
+                        avatar: booking.customer.profile_image?.path || '',
+                        notes: booking.customer.notes || '',
                     }
-                ];
+                })) || [];
+                
+                // const mockEvents: CalendarEvent[] = [
+                //     {
+                //         id: '1',
+                //         service: {
+                //             id: '101',
+                //             name: 'Haircut',
+                //             description: 'Basic haircut service',
+                //             price: 100,
+                //             duration: '1 hour',
+                //             category: 'Hair'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(9, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(10, 0, 0, 0)),
+                //         customer: {
+                //             id: 123,
+                //             name: 'John Smith',
+                //             email: 'john.smith@example.com',
+                //             phone: '(555) 123-4567',
+                //             company: 'ABC Company',
+                //             avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+                //             lastContacted: '2023-05-15',
+                //             notes: 'Regular client, prefers appointments in the morning'
+                //         }
+                //     },
+                //     {
+                //         id: '2',
+                //         service: {
+                //             id: '456',
+                //             name: 'Color Treatment',
+                //             description: 'Full color treatment service',
+                //             price: 150,
+                //             duration: '2 hours',
+                //             category: 'Color'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(11, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(13, 0, 0, 0)),
+                //         customer: {
+                //             id: 456,
+                //             name: 'Emily Johnson',
+                //             email: 'emily.johnson@example.com',
+                //             phone: '(555) 234-5678',
+                //             avatar: 'https://randomuser.me/api/portraits/men/2.jpg'
+                //         }
+                //     },
+                //     {
+                //         id: '3',
+                //         service: {
+                //             id: '789',
+                //             name: 'Beard Trim',
+                //             description: 'Beard trimming and shaping',
+                //             price: 200,
+                //             duration: '30 minutes',
+                //             category: 'Grooming'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(14, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(14, 30, 0, 0)),
+                //         customer: {
+                //             id: 789,
+                //             name: 'Michael Brown',
+                //             email: 'michael.brown@example.com',
+                //             phone: '(555) 345-6789',
+                //             avatar: 'https://randomuser.me/api/portraits/men/3.jpg'
+                //         }
+                //     },
+                //     {
+                //         id: '4',
+                //         service: {
+                //             id: '101',
+                //             name: 'Full Highlights',
+                //             description: 'Complete hair highlighting service',
+                //             price: 250,
+                //             duration: '2 hours',
+                //             category: 'Color'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(15, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(17, 0, 0, 0)),
+                //         customer: {
+                //             id: 101,
+                //             name: 'Sarah Davis',
+                //             email: 'sarah.davis@example.com',
+                //             phone: '(555) 456-7890',
+                //             avatar: 'https://randomuser.me/api/portraits/men/4.jpg'
+                //         }
+                //     },
+                //     {
+                //         id: '5',
+                //         service: {
+                //             id: '102',
+                //             name: 'Haircut & Style',
+                //             description: 'Haircut with styling service',
+                //             price: 120,
+                //             duration: '1 hour',
+                //             category: 'Hair'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(9, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(10, 0, 0, 0)),
+                //         customer: {
+                //             id: 102,
+                //             name: 'Robert Wilson',
+                //             email: 'robert.wilson@example.com',
+                //             phone: '(555) 567-8901',
+                //             avatar: 'https://randomuser.me/api/portraits/men/5.jpg'
+                //         }
+                //     },
+                //     {
+                //         id: '6',
+                //         service: {
+                //             id: '103',
+                //             name: 'Blowout',
+                //             description: 'Hair blowout and styling',
+                //             price: 130,
+                //             duration: '1 hour',
+                //             category: 'Styling'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(11, 30, 0, 0)),
+                //         end: new Date(new Date().setHours(12, 30, 0, 0)),
+                //         customer: {
+                //             id: 103,
+                //             name: 'Jennifer Lee',
+                //             email: 'jennifer.lee@example.com',
+                //             phone: '(555) 678-9012',
+                //             notes: 'Prefers volume and texture. Allergic to some hair products.',
+                //             avatar: 'https://randomuser.me/api/portraits/men/6.jpg'
+                //         }
+                //     },
+                //     {
+                //         id: '7',
+                //         service: {
+                //             id: '104',
+                //             name: 'Men\'s Cut',
+                //             description: 'Men\'s haircut service',
+                //             price: 140,
+                //             duration: '1 hour',
+                //             category: 'Hair'
+                //         },
+                //         notes: 'This is a note',
+                //         start: new Date(new Date().setHours(9, 0, 0, 0)),
+                //         end: new Date(new Date().setHours(10, 0, 0, 0)),
+                //         customer: {
+                //             notes: 'Prefers a clean cut. Avoids gel products.',
+                //             id: 104,
+                //             name: 'David Miller',
+                //             email: 'david.miller@example.com',
+                //             phone: '(555) 789-0123',
+                //             avatar: 'https://randomuser.me/api/portraits/men/7.jpg'
+                //         }
+                //     }
+                // ];
 
                 setEvents(mockEvents);
             } catch (error) {

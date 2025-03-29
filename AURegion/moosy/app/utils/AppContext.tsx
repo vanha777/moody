@@ -23,27 +23,6 @@ export function AppProvider({ children }: AppProviderProps) {
 
     const setAuthentication = useCallback((loginData: LoginResponse) => {
         setAuth(loginData);
-        // Only access localStorage on the client side
-        if (typeof window !== 'undefined') {
-            try {
-                // Create JWT payload with user data and expiry
-                const payload = {
-                    userData: loginData,
-                    exp: Math.floor((Date.now() + (30 * 24 * 60 * 60 * 1000)) / 1000) // 1 month from now in seconds
-                };
-
-                // Sign the payload with private key to create JWT
-                const token = jwt.encode(payload, PrivateKey || 'fallback-secret-key');
-
-                // Store the signed JWT in localStorage
-                console.log("setting user session", token);
-                localStorage.setItem('userSession', token);
-            } catch (error) {
-                console.error('Error creating user session:', error);
-                // Handle the error gracefully - maybe clear the session
-                localStorage.removeItem('userSession');
-            }
-        }
     }, []);
 
     const getUser = useCallback(async () => {
