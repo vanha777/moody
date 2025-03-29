@@ -103,7 +103,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                     <div className="bg-white px-4 py-6 border-b">
                         <div className="flex items-center justify-start max-w-3xl mx-auto">
                             <Link
-                                href="/business"
+                                href="/"
                                 className="text-black hover:text-gray-700 mr-4"
                             >
                                 <svg

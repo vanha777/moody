@@ -1,7 +1,6 @@
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
 import Logo from '../../../public/apple.png';
-import { UserData } from '@/app/utils/AppContext';
 import { AppProvider, useAppContext } from "@/app/utils/AppContext";
 interface SimpleSideBarProps {
     children: React.ReactNode;
@@ -25,7 +24,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
             setActiveItem('marketing');
         } else if (pathname.includes('/business/settings')) {
             setActiveItem('settings');
-        } else if (pathname.includes('/business')) {
+        } else if (pathname.includes('/')) {
             setActiveItem('home');
         }
     }, [pathname]);
@@ -126,7 +125,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                     <li className="mt-32">
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
                             <div
-                                onClick={() => router.push('/dashboard')}
+                                onClick={() => handleNavigation('/business', 'home')}
                                 className="rounded-full bg-white p-4 relative flex items-center justify-center cursor-pointer"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,10 +134,10 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                             </div>
                         </div>
                     </li>
-                    <li >
+                    <li>
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
                             <div
-                                onClick={() => router.push(`/profile/${auth.userData?.id}/ideas`)}
+                                onClick={() => handleNavigation('/business/clients', 'clients')}
                                 className="rounded-full bg-white p-4 relative flex items-center justify-center cursor-pointer"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,7 +149,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                     <li>
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
                             <div
-                                onClick={() => router.push(`/profile/${auth.userData?.id}/offers`)}
+                                onClick={() => handleNavigation('/business/checkout', 'checkout')}
                                 className="rounded-full bg-white p-4 relative flex items-center justify-center cursor-pointer"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,7 +161,7 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                     <li>
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
                             <div
-                                onClick={() => router.push(`/profile/${auth.userData?.id}/deals`)}
+                                onClick={() => handleNavigation('/business/marketing', 'marketing')}
                                 className="rounded-full bg-white p-4 relative flex items-center justify-center cursor-pointer"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,26 +170,14 @@ const SimpleSideBar: React.FC<SimpleSideBarProps> = ({
                             </div>
                         </div>
                     </li>
-                    <li>
-                        <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
-                            <div
-                                onClick={() => router.push(`/profile/${auth.userData?.id}/partners`)}
-                                className="rounded-full bg-white p-4 relative flex items-center justify-center cursor-pointer"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </li>
                     <li className="mt-auto mb-4">
                         <div className="relative rounded-full p-[2px] before:absolute before:w-full before:h-full before:rounded-full before:transition-all before:duration-300 hover:before:bg-gradient-to-r hover:before:from-blue-600 hover:before:to-purple-600 before:opacity-0 hover:before:opacity-100">
                             <div
-                                onClick={() => router.push('/profile/1/settings')}
+                                onClick={() => handleNavigation('/business/settings', 'settings')}
                                 className="rounded-full bg-white p-2 relative flex items-center justify-center cursor-pointer"
                             >
                                 <img
-                                    src={auth.userData?.photo || Logo.src}
+                                    src={typeof auth?.company?.logo === 'string' ? auth?.company?.logo : Logo.src}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full ring-2 ring-transparent hover:ring-purple-600 transition-all duration-300"
                                     onError={(e) => { e.currentTarget.src = Logo.src }}

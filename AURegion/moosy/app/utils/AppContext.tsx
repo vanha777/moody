@@ -2,83 +2,13 @@
 import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 import { Db, Server, PrivateKey } from "@/app/utils/db";
 import jwt from "jwt-simple";
-
-export interface UserData {
-    id: string;
-    email?: string;
-    name?: string;
-    photo?: string;
-    type?: string;
-    x?: string;
-    github?: string;
-    website?: string;
-    instagram?: string;
-    linkedin?: string;
-    [key: string]: any;
-}
-
-export interface CollectionData {
-    name?: string;
-    symbol?: string;
-    size?: number;
-    uri?: string;
-    description?: string;
-    address?: string;
-    image?: string;
-}
-
-export interface GameData {
-    id?: string;
-    name?: string;
-    genre?: string;
-    publisher?: string;
-    photo?: string;
-    releaseDate?: string;
-    description?: string;
-    symbol?: string;
-    address?: string;
-}
-
-export interface NFTData {
-    address: string;
-    name: string;
-    description: string;
-    symbol: string;
-    image: string;
-    external_link: string;
-    owner: string;
-    supply?: number;
-    decimals?: number;
-}
-
-export interface TokenData {
-    address?: string;
-    image?: string;
-    name?: string;
-    symbol?: string;
-    description?: string;
-    uri?: string;
-}
-
-export interface AuthData {
-    accessToken: string | null;
-    refreshToken: string | null;
-    userData: UserData | null;
-    gameData: GameData[] | null;
-    tokenData: TokenData | null;
-    collectionData: CollectionData[] | null;
-    isAuthenticated: boolean;
-}
-
+import { LoginResponse } from '../dashboard/login/page';
+import { Auth } from '../auth';
 export interface AppContextData {
-    auth: AuthData;
-    setAccessToken: (accessToken: string) => void;
-    setUser: (userData: UserData) => void;
-    setGame: (gameData: GameData[]) => void;
-    setTokenData: (tokenData: TokenData | null) => void;
-    setCollectionData: (collectionData: CollectionData[] | null) => void;
+    auth: LoginResponse | null;
+    setAuthentication: (loginData: LoginResponse) => void;
     logout: () => void;
-    getUser: () => UserData | null;
+    getUser: () => LoginResponse | null;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -88,38 +18,17 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
-    const [auth, setAuth] = useState<AuthData>({
-        accessToken: null,
-        refreshToken: null,
-        userData: null,
-        gameData: null,
-        tokenData: null,
-        collectionData: null,
-        isAuthenticated: false,
+    const [auth, setAuth] = useState<LoginResponse | null>();
 
-    });
-
-    const setAccessToken = useCallback((accessToken: string) => {
-        setAuth(prev => ({
-            ...prev,
-            accessToken,
-            isAuthenticated: true,
-        }));
-    }, []);
-
-    const setUser = useCallback((userData: UserData) => {
-        setAuth(prev => ({
-            ...prev,
-            userData,
-        }));
-
+    const setAuthentication = useCallback((loginData: LoginResponse) => {
+        setAuth(loginData);
         // Only access localStorage on the client side
         if (typeof window !== 'undefined') {
             try {
                 // Create JWT payload with user data and expiry
                 const payload = {
-                    userData,
-                    exp: Math.floor((Date.now() + (2 * 60 * 60 * 1000)) / 1000) // 2 hours from now in seconds
+                    userData: loginData,
+                    exp: Math.floor((Date.now() + (30 * 24 * 60 * 60 * 1000)) / 1000) // 1 month from now in seconds
                 };
 
                 // Sign the payload with private key to create JWT
@@ -136,7 +45,6 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-
     const getUser = useCallback(() => {
         try {
             // Only access localStorage on the client side
@@ -148,62 +56,33 @@ export function AppProvider({ children }: AppProviderProps) {
             const token = localStorage.getItem('userSession');
 
             if (!token) {
-                setAuth(prev => ({ ...prev, userData: null }));
+                setAuth(null);
                 return null;
             }
 
             // Verify and decode the JWT
-            const decoded = jwt.decode(token, PrivateKey) as { userData: UserData; exp: number };
+            const decoded = jwt.decode(token, PrivateKey) as { userData: LoginResponse; exp: number };
             console.log("getting user session", decoded);
             // Check if token has expired
-            if (decoded.exp < Math.floor(Date.now() / 1000)) {
+            if (decoded.exp < Math.floor(Date.now() / 1000)) { // 1 month expiration time
                 localStorage.removeItem('userSession');
-                setAuth(prev => ({ ...prev, userData: null }));
+                setAuth(null);
                 return null;
             }
-            setAuth(prev => ({ ...prev, userData: decoded.userData }));
-
+            setAuth(decoded.userData);
             return decoded.userData;
         } catch (error) {
             // Only access localStorage on the client side
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('userSession');
             }
-            setAuth(prev => ({ ...prev, userData: null }));
+            setAuth(null);
             return null;
         }
     }, []);
 
-    const setGame = useCallback((gameData: GameData[]) => {
-        setAuth(prev => ({
-            ...prev,
-            gameData,
-        }));
-    }, []);
-
-    const setTokenData = useCallback((tokenData: TokenData | null) => {
-        setAuth(prev => ({
-            ...prev,
-            tokenData,
-        }));
-    }, []);
-
-    const setCollectionData = useCallback((collectionData: CollectionData[] | null) => {
-        setAuth(prev => ({
-            ...prev,
-            collectionData,
-        }));
-    }, []);
     const logout = useCallback(() => {
-        setAuth({
-            accessToken: null,
-            refreshToken: null,
-            userData: null,
-            gameData: null,
-            tokenData: null,
-            collectionData: null,
-            isAuthenticated: false,
-        });
+        setAuth(null);
         // Only access localStorage on the client side
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userSession');
@@ -211,13 +90,9 @@ export function AppProvider({ children }: AppProviderProps) {
     }, []);
 
     const value: AppContextData = {
-        auth,
-        setAccessToken,
-        setUser,
+        auth: auth || null,
+        setAuthentication,
         getUser,
-        setGame,
-        setTokenData,
-        setCollectionData,
         logout
     };
 

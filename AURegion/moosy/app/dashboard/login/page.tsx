@@ -4,17 +4,232 @@ import { BsApple } from 'react-icons/bs';
 import { AppProvider, useAppContext } from "@/app/utils/AppContext";
 import { Db, Server } from '@/app/utils/db'
 import { useState } from 'react';
+import { invoke } from '@tauri-apps/api/core'
+import { useRouter } from 'next/navigation'
+export interface LoginResponse {
+  roles: {
+    owner: Array<{
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    }>;
+    admin: Array<{
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    }>;
+    staff: Array<{
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    }>;
+    customer: Array<{
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      notes: string | null;
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    }>;
+  };
+  company: {
+    id: string;
+    name: string;
+    description: string;
+    logo: {
+      id: string;
+      type: string;
+      path: string;
+    };
+    currency: {
+      id: string;
+      code: string;
+      symbol: string;
+    };
+    timetable: Array<{
+      id: string;
+      company_id: string;
+      day_of_week: number;
+      start_time: string;
+      end_time: string;
+      timezone: string;
+    }>;
+    services_by_catalogue: Array<{
+      catalogue: {
+        id: string;
+        name: string;
+      };
+      services: Array<{
+        id: string;
+        name: string;
+        description: string;
+        duration: string;
+        price: number;
+      }>;
+    }>;
+    contact_method: Array<{
+      id: string;
+      type: string;
+      value: string;
+      is_primary: boolean;
+    }>;
+  };
+  bookings: Array<{
+    id: string;
+    customer: {
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      notes: string | null;
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    };
+    staff: {
+      id: string;
+      personal_information: {
+        first_name: string;
+        last_name: string;
+        date_of_birth: string | null;
+        gender: string | null;
+      };
+      profile_image: {
+        id: string;
+        type: string;
+        path: string;
+      } | null;
+      contact_method: Array<{
+        id: string;
+        type: string;
+        value: string;
+        is_primary: boolean;
+      }> | null;
+    } | null;
+    service: {
+      id: string;
+      name: string;
+      description: string;
+      duration: string;
+      price: number;
+    };
+    status: {
+      id: string;
+      name: string;
+      description: string;
+      created_at: string;
+    };
+    start_time: string;
+    end_time: string;
+  }>;
+}
+
+// Function to handle login
+async function handleLogin(username: string, password: string): Promise<LoginResponse | null> {
+  try {
+    const response: LoginResponse = await invoke('login', {
+      username: username,
+      password: password
+    })
+    console.log('Login successful:', response)
+    return response;
+  } catch (error) {
+    alert('Login failed')
+    console.error('Login failed:', error)
+    return null;
+  }
+}
 
 const SSOLogin = () => {
+  const router = useRouter();
+  const { setAuthentication } = useAppContext();
   const [isSpinning, setIsSpinning] = useState(false);
-  const [userType, setUserType] = useState('founder');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const handleSSOLogin = async (provider: string) => {
     setIsSpinning(true);
     const redirectUri = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    if (userType === "founder") {
-      window.location.href = `https://metaloot-cloud-d4ec.shuttle.app/v1/api/player/oauth/${provider}?redirect_uri=${redirectUri}/dashboard/oauth/callback/founder`;
-    } else {
-      window.location.href = `https://metaloot-cloud-d4ec.shuttle.app/v1/api/player/oauth/${provider}?redirect_uri=${redirectUri}/dashboard/oauth/callback/distributor`;
+    // if (userType === "founder") {
+    //   window.location.href = `https://metaloot-cloud-d4ec.shuttle.app/v1/api/player/oauth/${provider}?redirect_uri=${redirectUri}/dashboard/oauth/callback/founder`;
+    // } else {
+    //   window.location.href = `https://metaloot-cloud-d4ec.shuttle.app/v1/api/player/oauth/${provider}?redirect_uri=${redirectUri}/dashboard/oauth/callback/distributor`;
+    // }
+  };
+
+  const handleLoginSubmit = async (username: string, password: string) => {
+    const response = await handleLogin(username, password);
+    if (response) {
+      setAuthentication(response);
+      router.push('/');
     }
   };
 
@@ -42,19 +257,31 @@ const SSOLogin = () => {
           <p className="text-gray-500 text-xl">Share Ideas, Connect & Find Partners</p>
         </div>
 
-        {/* Add toggle switch */}
-        <div className="flex items-center justify-center gap-4">
-          <span className={`text-sm ${userType === 'founder' ? 'text-gray-800' : 'text-gray-500'}`}>Founder</span>
-          <input
-            type="checkbox"
-            className="toggle toggle-primary"
-            checked={userType === 'distributor'}
-            onChange={(e) => setUserType(e.target.checked ? 'distributor' : 'founder')}
-          />
-          <span className={`text-sm ${userType === 'distributor' ? 'text-gray-800' : 'text-gray-500'}`}>Business Partner</span>
-        </div>
-
         <div className="space-y-4 w-80">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
+                      text-gray-600 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-300"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
+                      text-gray-600 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-300"
+          />
+          <button
+            onClick={() => handleLoginSubmit(username, password)}
+            className="w-full px-6 py-3 bg-blue-500 rounded-lg text-white 
+                      hover:bg-blue-600 transition-all duration-300"
+          >
+            Login
+          </button>
+
           <button
             onClick={() => handleSSOLogin('google')}
             className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg

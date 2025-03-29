@@ -6,7 +6,8 @@ import BookingOverlay from './bookingOverlay';
 import CustomCalendar from './CustomCalendar';
 import { ContactProps } from '@/app/business/clients/components/businesses';
 import { ServiceData } from '@/app/business/checkout/components/service';
-
+import { useAppContext } from '@/app/utils/AppContext';
+import { useRouter } from 'next/navigation';
 export interface CalendarEvent {
     id: string;
     service: ServiceData
@@ -17,6 +18,8 @@ export interface CalendarEvent {
 }
 
 const BookingList: React.FC = () => {
+    const { auth } = useAppContext();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showOverlay, setShowOverlay] = useState<boolean>(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -35,6 +38,9 @@ const BookingList: React.FC = () => {
     };
 
     useEffect(() => {
+        // if (!auth) {
+        //     router.push("/dashboard");
+        // }
         updateCalendarView();
         window.addEventListener("resize", updateCalendarView);
         return () => window.removeEventListener("resize", updateCalendarView);
@@ -45,6 +51,7 @@ const BookingList: React.FC = () => {
             setIsLoading(true);
             try {
                 // Mock data for demonstration
+                console.log("this is the shit", auth);
                 const mockEvents: CalendarEvent[] = [
                     {
                         id: '1',
