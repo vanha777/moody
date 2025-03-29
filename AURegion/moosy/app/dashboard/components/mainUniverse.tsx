@@ -26,8 +26,8 @@ import BookingList from "./booking";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function MainUniverse() {
-    const router = useRouter();
-    const { auth, getUser } = useAppContext();
+    // const router = useRouter();
+    // const { auth, getUser } = useAppContext();
     // const [ideas, setIdeas] = useState<Idea[]>([]);
     // const [activeMenu, setActiveMenu] = useState("software");
     // const [activeView, setActiveView] = useState("view1");
@@ -43,39 +43,39 @@ export default function MainUniverse() {
     //     }
     // }, [auth.userData]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let initialUser: LoginResponse;
-                if (auth) {
-                    initialUser = auth;
-                } else {
-                    const user = getUser();
-                    if (!user) {
-                        throw new Error('No user found');
-                        router.push("/dashboard/login");
-                    }
-                    initialUser = user;
-                }
-                // setIsLoading(true);
-                console.log("this is data", initialUser);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                router.push("/dashboard/login");
-            } finally {
-                // setIsLoading(false);
-                // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
-                // router.push("/");
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             let initialUser: LoginResponse;
+    //             if (auth) {
+    //                 initialUser = auth;
+    //             } else {
+    //                 const user = getUser();
+    //                 if (!user) {
+    //                     throw new Error('No user found');
+    //                     router.push("/dashboard/login");
+    //                 }
+    //                 initialUser = user;
+    //             }
+    //             // setIsLoading(true);
+    //             console.log("this is data", initialUser);
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //             router.push("/dashboard/login");
+    //         } finally {
+    //             // setIsLoading(false);
+    //             // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
+    //             // router.push("/");
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
 
     return (
         <>
             {/* <SimpleSideBar> */}
-                {/* <motion.div
+            {/* <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
@@ -84,8 +84,8 @@ export default function MainUniverse() {
                         ease: "easeInOut"
                     }}
                 > */}
-                    <BookingList />
-                {/* </motion.div> */}
+            <BookingList />
+            {/* </motion.div> */}
             {/* </SimpleSideBar> */}
         </>
     );

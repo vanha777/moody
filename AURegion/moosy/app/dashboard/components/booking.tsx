@@ -38,9 +38,9 @@ const BookingList: React.FC = () => {
     };
 
     useEffect(() => {
-        // if (!auth) {
-        //     router.push("/dashboard");
-        // }
+        if (!auth) {
+            router.push("/");
+        }
         updateCalendarView();
         window.addEventListener("resize", updateCalendarView);
         return () => window.removeEventListener("resize", updateCalendarView);
@@ -51,7 +51,7 @@ const BookingList: React.FC = () => {
             setIsLoading(true);
             try {
                 // Mock data for demonstration
-                console.log("this is the shit", auth);
+                console.log("this is the shit", auth?.bookings);
                 const mockEvents: CalendarEvent[] = [
                     {
                         id: '1',
