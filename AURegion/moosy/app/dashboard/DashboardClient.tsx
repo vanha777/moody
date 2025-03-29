@@ -25,11 +25,11 @@ export default function DashboardClient({ rawUser }: InitialUserProps) {
                 if (rawUser) {
                     initialUser = JSON.parse(rawUser) as LoginResponse;
                 } else {
-                    const user = getUser();
+                    const user = await getUser();
                     if (!user) {
                         throw new Error('No user found');
                     }
-                    initialUser = user;
+                    initialUser = await user;
                 }
                 // setIsLoading(true);
                 console.log("this is data", initialUser);

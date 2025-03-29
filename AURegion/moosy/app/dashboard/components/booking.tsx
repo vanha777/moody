@@ -8,6 +8,7 @@ import { ContactProps } from '@/app/business/clients/components/businesses';
 import { ServiceData } from '@/app/business/checkout/components/service';
 import { useAppContext } from '@/app/utils/AppContext';
 import { useRouter } from 'next/navigation';
+import { getTimezoneOffset } from 'date-fns-tz';
 export interface CalendarEvent {
     id: string;
     service: ServiceData

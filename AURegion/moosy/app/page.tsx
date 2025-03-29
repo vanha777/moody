@@ -12,15 +12,24 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const { auth, getUser } = useAppContext();
+  const getAuth = async () => {
+    try {
+      const auth = await getUser();
+      console.log("auth", auth);
+      if (auth) {
+        return <MainUniverse />
+      } else {
+        router.push('/dashboard/login')
+      }
+    } catch (error) {
+      console.error("error", error);
+      router.push('/dashboard/login')
+    }
+  }
   const router = useRouter();
   if (auth) {
     return <MainUniverse />
   } else {
-    const user = getUser();
-    if (user) {
-      return <MainUniverse />
-    } else {
-      router.push('/dashboard/login')
-    }
+    getAuth();
   }
 }

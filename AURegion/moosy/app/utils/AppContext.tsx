@@ -4,11 +4,12 @@ import { Db, Server, PrivateKey } from "@/app/utils/db";
 import jwt from "jwt-simple";
 import { LoginResponse } from '../dashboard/login/page';
 import { Auth } from '../auth';
+import { invoke } from '@tauri-apps/api/core';
 export interface AppContextData {
     auth: LoginResponse | null;
     setAuthentication: (loginData: LoginResponse) => void;
     logout: () => void;
-    getUser: () => LoginResponse | null;
+    getUser: () => Promise<LoginResponse | null>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -45,37 +46,13 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    const getUser = useCallback(() => {
+    const getUser = useCallback(async () => {
         try {
-            // Only access localStorage on the client side
-            if (typeof window === 'undefined') {
-                return null;
-            }
-
-            // Get the stored JWT from localStorage
-            const token = localStorage.getItem('userSession');
-
-            if (!token) {
-                setAuth(null);
-                return null;
-            }
-
-            // Verify and decode the JWT
-            const decoded = jwt.decode(token, PrivateKey) as { userData: LoginResponse; exp: number };
-            console.log("getting user session", decoded);
-            // Check if token has expired
-            if (decoded.exp < Math.floor(Date.now() / 1000)) { // 1 month expiration time
-                localStorage.removeItem('userSession');
-                setAuth(null);
-                return null;
-            }
-            setAuth(decoded.userData);
-            return decoded.userData;
+            const response: LoginResponse = await invoke('get_auth_state')
+            setAuth(response);
+            return response;
         } catch (error) {
-            // Only access localStorage on the client side
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('userSession');
-            }
+            console.error('Error getting auth from BE:', error);
             setAuth(null);
             return null;
         }
