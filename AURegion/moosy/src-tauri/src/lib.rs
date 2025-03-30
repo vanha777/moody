@@ -1,21 +1,23 @@
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
-use tauri::{Manager, State};
-// Define the authentication data structure that matches the TypeScript interface
+use tauri::{Emitter, Manager, State};
+use sqlx::types::Uuid; // Add this dependency for UUID handling
+use std::sync::OnceLock;
+                // Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
 pub struct AuthData {
     pub roles: Roles,
     pub company: Company,
-    pub bookings: Vec<Booking>,
+    pub bookings: Option<Vec<Booking>>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Roles {
     pub owner: Vec<Person>,
-    pub admin: Vec<Person>,
-    pub staff: Vec<Person>,
-    pub customer: Vec<Customer>,
+    pub admin: Option<Vec<Person>>,
+    pub staff: Option<Vec<Person>>,
+    pub customer: Option<Vec<Customer>>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
@@ -63,11 +65,11 @@ pub struct Company {
     pub id: String,
     pub name: String,
     pub description: String,
-    pub logo: Image,
+    pub logo: Option<Image>,
     pub currency: Currency,
     pub timetable: Vec<Timetable>,
-    pub services_by_catalogue: Vec<ServiceCatalogue>,
-    pub contact_method: Vec<ContactMethod>,
+    pub services_by_catalogue: Option<Vec<ServiceCatalogue>>,
+    pub contact_method: Option<Vec<ContactMethod>>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
@@ -89,8 +91,8 @@ pub struct Timetable {
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
 pub struct ServiceCatalogue {
-    pub catalogue: Catalogue,
-    pub services: Vec<Service>,
+    pub catalogue: Option<Catalogue>,
+    pub services: Option<Vec<Service>>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
@@ -106,6 +108,11 @@ pub struct Service {
     pub description: Option<String>,
     pub duration: String,
     pub price: f64,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+pub struct BookingResponse {
+    pub booking: Booking,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
@@ -127,6 +134,18 @@ pub struct Status {
     pub created_at: String,
 }
 
+// Define a static DATABASE_URL that will be initialized once
+static DATABASE_URL: OnceLock<String> = OnceLock::new();
+
+// Helper function to get or initialize the DATABASE_URL
+fn get_database_url() -> &'static str {
+    DATABASE_URL.get_or_init(|| {
+        dotenv::var("DATABASE_URL").unwrap_or_else(|_| {
+            "postgres://".to_string()
+        })
+    })
+}
+
 #[tauri::command]
 async fn login(
     pool: State<'_, PgPool>,
@@ -141,24 +160,34 @@ async fn login(
     hasher.update(password.as_bytes());
     let password_hash = hex::encode(hasher.finalize());
 
-    println!("Attempting login with password hash: {}", password_hash);
-    
+    println!(
+        "Attempting login with username: {} and password hash: {}",
+        username, password_hash
+    );
+
     // Get the result as JSON Value instead of trying to directly map to AuthData
-    let result: Value = sqlx::query_scalar("SELECT public.get_company_details_by_owner($1, $2)")
-        .bind(&username)
-        .bind(&password_hash)
-        .fetch_one(&*pool)
-        .await
-        .map_err(|e| format!("Database error: {}", e.to_string()))?;
+    let result: Option<Value> =
+        sqlx::query_scalar("SELECT public.get_company_details_by_owner($1, $2)")
+            .bind(&username)
+            .bind(&password_hash)
+            .fetch_one(&*pool)
+            .await
+            .map_err(|e| {
+                println!("Database error: {}", e.to_string());
+                format!("Database error: {}", e.to_string())
+            })?;
 
     // Check if we got a NULL result or no result at all
-    if result.is_null() {
+    if result.is_none() {
+        println!("Invalid username or password");
         return Err("Invalid username or password".to_string());
     }
 
     // Deserialize the JSON value into AuthData
-    let auth_data: AuthData = serde_json::from_value(result)
-        .map_err(|e| format!("Failed to parse authentication data: {}", e))?;
+    let auth_data: AuthData = serde_json::from_value(result.unwrap()).map_err(|e| {
+        println!("Failed to parse authentication data: {}", e);
+        format!("Failed to parse authentication data: {}", e)
+    })?;
 
     // Save the authentication info after successful login
     save_auth(app, auth_data.clone())?;
@@ -169,11 +198,8 @@ async fn login(
 
 #[tauri::command]
 fn save_auth(app: tauri::AppHandle, data: AuthData) -> Result<(), String> {
-    let app_data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| e.to_string())?;
-    
+    let app_data_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+
     // Create the directory if it doesn't exist
     std::fs::create_dir_all(&app_data_dir)
         .map_err(|e| format!("Failed to create app data directory: {}", e))?;
@@ -205,8 +231,8 @@ fn read_auth(app: tauri::AppHandle) -> Result<AuthData, String> {
     }
 
     // Read the file content
-    let file_content =
-        std::fs::read_to_string(path).map_err(|e| format!("Failed to read auth file: {}", e))?;
+    let file_content = std::fs::read_to_string(path)
+        .map_err(|e: std::io::Error| format!("Failed to read auth file: {}", e))?;
 
     // Parse the JSON string into AuthData struct
     let auth_data: AuthData = serde_json::from_str(&file_content)
@@ -222,7 +248,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2) // Reduced for mobile
-                    .connect(&dotenv::var("DATABASE_URL").expect("DATABASE_URL must be set"))
+                    .connect(get_database_url())
                     .await
                     .expect("Failed to create pool")
             });
@@ -230,7 +256,7 @@ pub fn run() {
             app.manage(pool);
 
             // Read authentication data and store it in app state for later use
-            let app_handle = app.handle();
+            let app_handle: &tauri::AppHandle = app.handle();
             match read_auth(app_handle.clone()) {
                 Ok(auth_data) => {
                     // Store auth data in app state for later retrieval
@@ -257,7 +283,8 @@ pub fn run() {
             login,
             save_auth,
             read_auth,
-            get_auth_state
+            get_auth_state,
+            update_booking
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -274,4 +301,89 @@ fn get_auth_state(state: State<'_, AuthState>) -> Result<AuthData, String> {
         Some(auth_data) => Ok(auth_data),
         None => Err("Not authenticated".to_string()),
     }
+}
+
+#[tauri::command]
+async fn update_booking(
+    booking_id: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    // Get the current auth data
+    let mut auth_data = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+    // Query database for the updated booking information
+    // The issue might be that we need to call the function directly rather than using SELECT
+    // Also, using query_as instead of query_scalar to handle the JSON return type properly
+    println!("booking_id: {}", booking_id);
+    println!("company_id: {}", auth_data.company.id);
+    // let result: Option<Value> = sqlx::query_scalar("SELECT * FROM public.get_booking_details($1, $2)")
+    //     .bind(&booking_id)
+    //     .bind(&auth_data.company.id)
+    //     .fetch_one(&*pool)
+    //     .await
+    //     .map_err(|e| {
+    //         println!("Database error when fetching booking: {}", e.to_string());
+    //         format!("Database error when fetching booking: {}", e.to_string())
+    //     })?;
+
+    let booking_id_uuid =
+        Uuid::parse_str(&booking_id).map_err(|e| format!("Invalid booking ID: {}", e))?;
+    let company_id_uuid =
+        Uuid::parse_str(&auth_data.company.id).map_err(|e| format!("Invalid company ID: {}", e))?;
+    let result = sqlx::query_scalar::<_, Value>("SELECT public.get_booking_details($1, $2)")
+        .bind(booking_id_uuid)
+        .bind(company_id_uuid)
+        .fetch_one(&*pool)
+        .await
+        .map_err(|e| {
+            println!("Database error when fetching booking: {}", e);
+            format!("Database error when fetching booking: {}", e)
+        })?;
+
+    // Check if we got a result
+    if result.is_null() {
+        println!("Booking not found");
+        return Err("Booking not found".to_string());
+    }
+    // Parse the booking from the database result
+    let booking: BookingResponse = serde_json::from_value(result).map_err(|e| {
+        println!("Failed to parse booking data: {}", e);
+        format!("Failed to parse booking data: {}", e)
+    })?;
+
+    // Update the bookings in the auth data
+    let bookings = auth_data.bookings.get_or_insert_with(Vec::new);
+
+    // Find and update the existing booking or add a new one
+    let mut found = false;
+    for i in 0..bookings.len() {
+        if bookings[i].id == booking_id {
+            println!("booking found");
+            bookings[i] = booking.booking.clone();
+            found = true;
+            break;
+        }
+    }
+
+    if !found {
+        println!("booking not found, adding to bookings");
+        bookings.push(booking.booking);
+    }
+
+    // Save the updated auth data
+    save_auth(app.clone(), auth_data.clone())?;
+
+    // Update the application state
+    app.manage(AuthState(Some(auth_data.clone())));
+
+    // Emit an event to notify the frontend
+    app.emit("state-updated", true)
+        .map_err(|e| format!("Failed to emit event: {}", e))?;
+
+    // Return the updated auth data
+    Ok("200".to_string())
 }
