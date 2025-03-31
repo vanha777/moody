@@ -230,8 +230,8 @@ const SSOLogin = () => {
 
   const handleLoginSubmit = async (username: string, password: string) => {
     const response = await handleLogin(username, password);
-    if (response) {
-      setAuthentication(response);
+    if (response?.company.id) {
+      // setAuthentication(response);
       router.push('/');
     }
   };

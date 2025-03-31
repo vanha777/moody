@@ -4,7 +4,7 @@ use sqlx::{FromRow, PgPool};
 use std::sync::OnceLock;
 use tauri::{Emitter, Manager, State};
 // Define the authentication data structure that matches the TypeScript interface
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AuthData {
     // Never serialized.
     // #[serde(skip_serializing)]
@@ -17,7 +17,7 @@ pub struct AuthData {
     pub bookings: Option<Vec<Booking>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Roles {
     pub owner: Vec<Person>,
     pub admin: Option<Vec<Person>>,
@@ -25,7 +25,7 @@ pub struct Roles {
     pub customer: Option<Vec<Customer>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Person {
     pub id: String,
     pub personal_information: PersonalInfo,
@@ -33,7 +33,7 @@ pub struct Person {
     pub contact_method: Option<Vec<ContactMethod>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Customer {
     pub id: String,
     pub personal_information: PersonalInfo,
@@ -42,7 +42,7 @@ pub struct Customer {
     pub contact_method: Option<Vec<ContactMethod>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct PersonalInfo {
     pub first_name: String,
     pub last_name: String,
@@ -50,14 +50,14 @@ pub struct PersonalInfo {
     pub gender: Option<String>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Image {
     pub id: String,
     pub r#type: Option<String>,
     pub path: Option<String>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct ContactMethod {
     pub id: String,
     pub r#type: String,
@@ -65,7 +65,7 @@ pub struct ContactMethod {
     pub is_primary: bool,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Company {
     pub id: String,
     pub name: String,
@@ -77,14 +77,14 @@ pub struct Company {
     pub contact_method: Option<Vec<ContactMethod>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Currency {
     pub id: String,
     pub code: String,
     pub symbol: String,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Timetable {
     pub id: String,
     pub company_id: String,
@@ -94,19 +94,19 @@ pub struct Timetable {
     pub timezone: String,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct ServiceCatalogue {
     pub catalogue: Option<Catalogue>,
     pub services: Option<Vec<Service>>,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Catalogue {
     pub id: String,
     pub name: String,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Service {
     pub id: String,
     pub name: String,
@@ -115,12 +115,12 @@ pub struct Service {
     pub price: f64,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct BookingResponse {
     pub booking: Booking,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Booking {
     pub id: String,
     pub customer: Customer,
@@ -131,7 +131,7 @@ pub struct Booking {
     pub end_time: String,
 }
 
-#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Status {
     pub id: String,
     pub name: String,
@@ -198,6 +198,7 @@ async fn login(
         println!("Failed to parse authentication data: {}", e);
         format!("Failed to parse authentication data: {}", e)
     })?;
+
     // Save the authentication info after successful login
     let _ = save_auth(app, auth_data.clone())?;
 
@@ -222,6 +223,13 @@ fn save_auth(app: tauri::AppHandle, data: AuthData) -> Result<(), String> {
     // Write the formatted JSON to the file
     let _ = std::fs::write(path, formatted_json)
         .map_err(|e| format!("Failed to write auth file: {}", e))?;
+
+    // Initialize state with existing auth data
+    app.manage(AuthState(Some(data.clone())));
+
+    // Emit an event to notify the frontend
+    app.emit("state-updated", data)
+        .map_err(|e| format!("Failed to emit event: {}", e))?;
 
     Ok(())
 }
@@ -256,24 +264,74 @@ pub fn run() {
         .setup(|app| {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
-                    .max_connections(2) // Reduced for mobile
+                    .max_connections(2)
                     .connect(get_database_url())
                     .await
                     .expect("Failed to create pool")
             });
 
-            app.manage(pool);
+            app.manage(pool.clone());
 
             // Read authentication data and store it in app state for later use
             let app_handle: &tauri::AppHandle = app.handle();
             match read_auth(app_handle.clone()) {
                 Ok(auth_data) => {
-                    // Store auth data in app state for later retrieval
-                    app.manage(AuthState(Some(auth_data)));
+                    let _ = tauri::async_runtime::block_on(async {
+                        // Get the result as JSON Value instead of trying to directly map to AuthData
+                        let result: Option<Value> = sqlx::query_scalar(
+                            "SELECT public.get_company_details_by_owner($1, $2)",
+                        )
+                        .bind(&auth_data.username)
+                        .bind(&auth_data.password)
+                        .fetch_one(&pool)
+                        .await
+                        .map_err(|e| {
+                            println!("Database error when setup: {}", e.to_string());
+                            format!("Database error when setup: {}", e.to_string())
+                        })?;
+
+                        // Check if we got a NULL result or no result at all
+                        if result.is_none() {
+                            println!("Invalid username or password when setup");
+                            return Err("Invalid username or password when setup".to_string());
+                        }
+
+                        // Deserialize the JSON value into AuthData
+                        let new_auth_data: AuthData = serde_json::from_value(result.unwrap())
+                            .map_err(|e| {
+                                println!("Failed to parse authentication data when setup: {}", e);
+                                format!("Failed to parse authentication data when setup: {}", e)
+                            })?;
+
+                        let app_data_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+
+                        // Create the directory if it doesn't exist
+                        std::fs::create_dir_all(&app_data_dir).map_err(|e| {
+                            format!("Failed to create app data directory when setup: {}", e)
+                        })?;
+
+                        let path = app_data_dir.join("auth.json");
+
+                        // Serialize the AuthData struct to a formatted JSON string
+                        let formatted_json =
+                            serde_json::to_string_pretty(&new_auth_data).map_err(|e| {
+                                format!("Failed to serialize auth data when setup: {}", e)
+                            })?;
+
+                        // Write the formatted JSON to the file
+                        let _ = std::fs::write(path, formatted_json)
+                            .map_err(|e| format!("Failed to write auth file when setup: {}", e))?;
+
+                        // Initialize state with existing auth data
+                        app.manage(AuthState(Some(new_auth_data.clone())));
+
+                        app.emit("state-updated", new_auth_data)
+                            .map_err(|e| format!("Failed to emit event: {}", e))?;
+                        Ok(())
+                    })?;
                 }
                 Err(e) => {
-                    eprintln!("Error reading auth data: {}", e);
-                    // Still initialize with empty to avoid crashes
+                    eprintln!("Error reading auth data when setup: {}", e);
                     app.manage(AuthState(None));
                 }
             };
@@ -323,20 +381,15 @@ async fn fetch_latest_state(
         Some(data) => data.clone(),
         None => return Err("Not authenticated".to_string()),
     };
-
     // Reuse login with existing credentials to get fresh state
     let username = auth_data.username.clone();
     let password = auth_data.password.clone();
 
     // Call login function to refresh auth data
-    let _ = login(pool, username, password, app.clone(), true).await?;
+    let _ = login(pool, username, password, app, true).await?;
 
     // // Update the application state
     // app.manage(AuthState(Some(new_auth_data)));
-
-    // Emit an event to notify the frontend
-    app.emit("state-updated", true)
-        .map_err(|e| format!("Failed to emit event: {}", e))?;
 
     // Return the updated auth data
     Ok("200".to_string())

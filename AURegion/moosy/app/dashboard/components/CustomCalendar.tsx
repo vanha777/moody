@@ -20,6 +20,7 @@ import AddBookingOverlay from './addBookingOverlay';
 import SimpleSideBar from './simpleSideBar';
 import { motion } from 'framer-motion';
 import { CalendarEvent } from './booking';
+import { useAppContext } from '@/app/utils/AppContext';
 
 interface CustomCalendarProps {
   events: CalendarEvent[];
@@ -29,6 +30,7 @@ interface CustomCalendarProps {
 type CalendarView = 'day' | 'week' | 'month' | 'list';
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick }) => {
+  const { notifications, removeNotification } = useAppContext();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<CalendarView>('day');
   const [weekDays, setWeekDays] = useState<Date[]>([]);
@@ -38,13 +40,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showAddBooking, setShowAddBooking] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<Date | null>(null);
-  // const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showNotifications, setShowNotifications] = useState(false);
   // this is for testing purposes
-  const [currentTime, setCurrentTime] = useState(() => {
-    const today = new Date();
-    today.setHours(10, 0, 0, 0); // Set to 5 PM
-    return today;
-  });
+  // const [currentTime, setCurrentTime] = useState(() => {
+  //   const today = new Date();
+  //   today.setHours(10, 0, 0, 0); // Set to 5 PM
+  //   return today;
+  // });
 
   // Update current time every minute
   useEffect(() => {
@@ -485,18 +488,59 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
               <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
                 {/* View buttons with modern style */}
                 <div className="flex space-x-2 sm:space-x-3 items-center">
-                  {/* Notification Bell - Inline with buttons */}
-                  <button
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2"
-                    aria-label="Notifications"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    {/* Notification indicator */}
-                    <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
-                  </button>
+                  {/* Notification Bell - Clear on click outside */}
+                  <div className="dropdown">
+                    <div 
+                      tabIndex={0} 
+                      role="button" 
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2 cursor-pointer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                      {notifications && notifications.length > 0 && (
+                        <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
+                      )}
+                    </div>
+
+                    <ul 
+                      tabIndex={0} 
+                      className="dropdown-content menu bg-base-100 rounded-box z-[1] w-80 sm:w-96 p-2 shadow-lg mt-4"
+                      onBlur={(e) => {
+                        // Check if the related target is outside the dropdown
+                        if (!e.currentTarget.contains(e.relatedTarget as Node) && notifications?.length > 0) {
+                          notifications.forEach(notification => removeNotification(notification.id));
+                        }
+                      }}
+                    >
+                      <div className="p-2">
+                        <h3 className="text-sm font-semibold text-black mb-4">Notifications</h3>
+
+                        <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                          {notifications && notifications.length > 0 ? (
+                            notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                className="flex items-start p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors group"
+                              >
+                                <div className="flex-1">
+                                  <p className="text-sm text-black">{notification.message}</p>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {new Date(notification.timestamp).toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-8">
+                              <p className="text-sm text-gray-500">No notifications</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </ul>
+                  </div>
 
                   <button
                     className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'day' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}

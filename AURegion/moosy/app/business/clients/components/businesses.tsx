@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Db, Server } from "@/app/utils/db";
-import { AppProvider, useAppContext, UserData } from "@/app/utils/AppContext";
+import { useAppContext } from "@/app/utils/AppContext";
 import ManageIdeaForm from '@/app/dashboard/components/manageIdeas';
 import router from 'next/router';
 import CustomerDetails from './customerDetails';
@@ -103,15 +103,11 @@ export default function ContactList({
 
     // Otherwise fetch from database
     const fetchContacts = async () => {
-      let user = auth.userData;
-      if (!user) {
-        user = getUser();
-        if (!user) {
-          router.push('/not-found');
-          return;
-        }
+      if (!auth) {
+        router.push('/dashboard/login');
+        return;
       }
-
+      console.log("auth here xxx", auth.roles.customer);
       // Mock data for now - this would be replaced with actual DB fetch
       const mockContacts: ContactProps[] = [
         {

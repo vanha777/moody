@@ -1,7 +1,7 @@
 'use client'
 import Main from "./components/main";
 
-export default async function IdeaPage() {
+export default function IdeaPage() {
   return (
     <Main />
   )

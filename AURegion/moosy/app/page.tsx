@@ -14,12 +14,16 @@ export default function Dashboard() {
   const { auth, getUser } = useAppContext();
   const getAuth = async () => {
     try {
-      const auth = await getUser();
-      console.log("auth", auth);
-      if (auth) {
+      if (auth?.company.id) {
         return <MainUniverse />
       } else {
-        router.push('/dashboard/login')
+        const auth = await getUser();
+        console.log("auth", auth);
+        if (auth) {
+          return <MainUniverse />
+        } else {
+          router.push('/dashboard/login')
+        }
       }
     } catch (error) {
       console.error("error", error);

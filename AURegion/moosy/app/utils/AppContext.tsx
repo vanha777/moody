@@ -6,11 +6,24 @@ import { LoginResponse } from '../dashboard/login/page';
 import { Auth } from '../auth';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+
+// Add Notification type
+interface Notification {
+    id: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
+    timestamp: Date;
+}
+
 export interface AppContextData {
     auth: LoginResponse | null;
     setAuthentication: (loginData: LoginResponse) => void;
     logout: () => void;
     getUser: () => Promise<LoginResponse | null>;
+    // Add notifications to context
+    notifications: Notification[];
+    addNotification: (message: string, type: 'success' | 'error' | 'info') => void;
+    removeNotification: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -21,6 +34,23 @@ interface AppProviderProps {
 
 export function AppProvider({ children }: AppProviderProps) {
     const [auth, setAuth] = useState<LoginResponse | null>();
+    // Add notifications state
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    // Add notification management functions
+    const addNotification = useCallback((message: string, type: 'success' | 'error' | 'info') => {
+        const newNotification: Notification = {
+            id: Date.now().toString(),
+            message,
+            type,
+            timestamp: new Date()
+        };
+        setNotifications(prev => [...prev, newNotification]);
+    }, []);
+
+    const removeNotification = useCallback((id: string) => {
+        setNotifications(prev => prev.filter(notification => notification.id !== id));
+    }, []);
 
     const setAuthentication = useCallback((loginData: LoginResponse) => {
         setAuth(loginData);
@@ -28,7 +58,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
     const getUser = useCallback(async () => {
         try {
-            const response: LoginResponse = await invoke('get_auth_state')
+            const response: LoginResponse = await invoke('read_auth')
             setAuth(response);
             console.log("Auth state updated by BE:", response);
             return response;
@@ -48,10 +78,9 @@ export function AppProvider({ children }: AppProviderProps) {
     }, []);
 
     // Add useEffect to subscribe to specific database events
-    useEffect(() => {
+    // useEffect(() => {
         console.log("activate listening to bookings changes");
         if (auth?.company.id) {
-
             const subscribeBooking = async () => {
                 const channel = Auth.channel('tables_chan');
 
@@ -79,6 +108,8 @@ export function AppProvider({ children }: AppProviderProps) {
                         console.log("New booking added:", payload.new.id);
                         // Fetch the full booking details
                         fetchLatestUpdate(payload.new);
+                        // Add notification for successful update
+                        addNotification(`One Booking ${payload.new.id} has been created`, 'info');
                     }
                 );
 
@@ -95,6 +126,8 @@ export function AppProvider({ children }: AppProviderProps) {
                         console.log("Booking updated:", payload.new.id);
                         // Fetch the full booking details
                         fetchLatestUpdate(payload.new);
+                        // Add notification for successful update
+                        addNotification(`One Booking ${payload.new.id} has been re-scheduled`, 'info');
                     }
                 );
 
@@ -110,6 +143,8 @@ export function AppProvider({ children }: AppProviderProps) {
                     (payload) => {
                         console.log("Booking deleted:", payload.old.id);
                         fetchLatestUpdate(payload.old);
+                        // Add notification for successful update
+                        addNotification(`One Booking ${payload.old.id} has been cancelled`, 'info');
                         // For DELETE events, you might just want to remove the booking from your state
                         // As an alternative, you could also fetch all current bookings to refresh the state
                     }
@@ -127,8 +162,14 @@ export function AppProvider({ children }: AppProviderProps) {
                 console.log("activate listening to update state");
                 // Listen for the 'state-updated' event from the backend
                 const unlisten = listen('state-updated', (event) => {
-                    console.log("State updated event received:", event);
-                    getUser();
+                    console.log("XXXXXXXXXX State updated event received:", event.payload);
+                    // Type check the payload before setting it
+                    if (event.payload && typeof event.payload === 'object') {
+                        setAuth(event.payload as LoginResponse);
+                    } else {
+                        console.error("Invalid payload received:", event.payload);
+                    }
+                    // getUser();
                 });
                 // Clean up listener on unmount
                 return () => {
@@ -139,7 +180,7 @@ export function AppProvider({ children }: AppProviderProps) {
             fetchFullBookingDetails();
             subscribeBooking();
         }
-    }, [auth]);
+    // }, []);
 
     // UPDATE STATE BY BE EVENT
     // useEffect(() => {
@@ -162,7 +203,11 @@ export function AppProvider({ children }: AppProviderProps) {
         auth: auth || null,
         setAuthentication,
         getUser,
-        logout
+        logout,
+        // Add notifications to context value
+        notifications,
+        addNotification,
+        removeNotification
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
