@@ -1,12 +1,17 @@
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
-use tauri::{Emitter, Manager, State};
-use sqlx::types::Uuid; // Add this dependency for UUID handling
 use std::sync::OnceLock;
-                // Define the authentication data structure that matches the TypeScript interface
+use tauri::{Emitter, Manager, State};
+// Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone)]
 pub struct AuthData {
+    // Never serialized.
+    // #[serde(skip_serializing)]
+    pub username: String,
+    // Never serialized.
+    // #[serde(skip_serializing)]
+    pub password: String,
     pub roles: Roles,
     pub company: Company,
     pub bookings: Option<Vec<Booking>>,
@@ -139,11 +144,8 @@ static DATABASE_URL: OnceLock<String> = OnceLock::new();
 
 // Helper function to get or initialize the DATABASE_URL
 fn get_database_url() -> &'static str {
-    DATABASE_URL.get_or_init(|| {
-        dotenv::var("DATABASE_URL").unwrap_or_else(|_| {
-            "postgres://".to_string()
-        })
-    })
+    DATABASE_URL
+        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres://".to_string()))
 }
 
 #[tauri::command]
@@ -152,18 +154,26 @@ async fn login(
     username: String,
     password: String,
     app: tauri::AppHandle,
+    refresh: bool,
 ) -> Result<AuthData, String> {
     println!("username: {}", username);
 
     // Create SHA256 hash of the password
     let mut hasher = Sha256::new();
-    hasher.update(password.as_bytes());
-    let password_hash = hex::encode(hasher.finalize());
+    let password_hash = match refresh {
+        true => password,
+        false => {
+            hasher.update(password.as_bytes());
+            hex::encode(hasher.finalize())
+        }
+    };
 
     println!(
         "Attempting login with username: {} and password hash: {}",
         username, password_hash
     );
+
+    // send request to edge function get token
 
     // Get the result as JSON Value instead of trying to directly map to AuthData
     let result: Option<Value> =
@@ -188,9 +198,8 @@ async fn login(
         println!("Failed to parse authentication data: {}", e);
         format!("Failed to parse authentication data: {}", e)
     })?;
-
     // Save the authentication info after successful login
-    save_auth(app, auth_data.clone())?;
+    let _ = save_auth(app, auth_data.clone())?;
 
     // Return the result
     Ok(auth_data)
@@ -211,7 +220,7 @@ fn save_auth(app: tauri::AppHandle, data: AuthData) -> Result<(), String> {
         .map_err(|e| format!("Failed to serialize auth data: {}", e))?;
 
     // Write the formatted JSON to the file
-    std::fs::write(path, formatted_json)
+    let _ = std::fs::write(path, formatted_json)
         .map_err(|e| format!("Failed to write auth file: {}", e))?;
 
     Ok(())
@@ -284,7 +293,7 @@ pub fn run() {
             save_auth,
             read_auth,
             get_auth_state,
-            update_booking
+            fetch_latest_state
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -304,81 +313,26 @@ fn get_auth_state(state: State<'_, AuthState>) -> Result<AuthData, String> {
 }
 
 #[tauri::command]
-async fn update_booking(
-    booking_id: String,
+async fn fetch_latest_state(
     pool: State<'_, PgPool>,
     state: State<'_, AuthState>,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
     // Get the current auth data
-    let mut auth_data = match &state.0 {
+    let auth_data = match &state.0 {
         Some(data) => data.clone(),
         None => return Err("Not authenticated".to_string()),
     };
-    // Query database for the updated booking information
-    // The issue might be that we need to call the function directly rather than using SELECT
-    // Also, using query_as instead of query_scalar to handle the JSON return type properly
-    println!("booking_id: {}", booking_id);
-    println!("company_id: {}", auth_data.company.id);
-    // let result: Option<Value> = sqlx::query_scalar("SELECT * FROM public.get_booking_details($1, $2)")
-    //     .bind(&booking_id)
-    //     .bind(&auth_data.company.id)
-    //     .fetch_one(&*pool)
-    //     .await
-    //     .map_err(|e| {
-    //         println!("Database error when fetching booking: {}", e.to_string());
-    //         format!("Database error when fetching booking: {}", e.to_string())
-    //     })?;
 
-    let booking_id_uuid =
-        Uuid::parse_str(&booking_id).map_err(|e| format!("Invalid booking ID: {}", e))?;
-    let company_id_uuid =
-        Uuid::parse_str(&auth_data.company.id).map_err(|e| format!("Invalid company ID: {}", e))?;
-    let result = sqlx::query_scalar::<_, Value>("SELECT public.get_booking_details($1, $2)")
-        .bind(booking_id_uuid)
-        .bind(company_id_uuid)
-        .fetch_one(&*pool)
-        .await
-        .map_err(|e| {
-            println!("Database error when fetching booking: {}", e);
-            format!("Database error when fetching booking: {}", e)
-        })?;
+    // Reuse login with existing credentials to get fresh state
+    let username = auth_data.username.clone();
+    let password = auth_data.password.clone();
 
-    // Check if we got a result
-    if result.is_null() {
-        println!("Booking not found");
-        return Err("Booking not found".to_string());
-    }
-    // Parse the booking from the database result
-    let booking: BookingResponse = serde_json::from_value(result).map_err(|e| {
-        println!("Failed to parse booking data: {}", e);
-        format!("Failed to parse booking data: {}", e)
-    })?;
+    // Call login function to refresh auth data
+    let _ = login(pool, username, password, app.clone(), true).await?;
 
-    // Update the bookings in the auth data
-    let bookings = auth_data.bookings.get_or_insert_with(Vec::new);
-
-    // Find and update the existing booking or add a new one
-    let mut found = false;
-    for i in 0..bookings.len() {
-        if bookings[i].id == booking_id {
-            println!("booking found");
-            bookings[i] = booking.booking.clone();
-            found = true;
-            break;
-        }
-    }
-
-    if !found {
-        println!("booking not found, adding to bookings");
-        bookings.push(booking.booking);
-    }
-
-    // Save the updated auth data
-    save_auth(app.clone(), auth_data.clone())?;
-
-    // Update the application state
-    app.manage(AuthState(Some(auth_data.clone())));
+    // // Update the application state
+    // app.manage(AuthState(Some(new_auth_data)));
 
     // Emit an event to notify the frontend
     app.emit("state-updated", true)

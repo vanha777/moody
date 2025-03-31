@@ -228,7 +228,7 @@ const BookingList: React.FC = () => {
                 //         }
                 //     }
                 // ];
-
+                console.log("booking rendered", mockEvents);
                 setEvents(mockEvents);
             } catch (error) {
                 console.error('Error fetching events:', error);
@@ -238,7 +238,7 @@ const BookingList: React.FC = () => {
         };
 
         fetchEvents();
-    }, []);
+    }, [auth?.bookings]);
 
     return (
         <div>
