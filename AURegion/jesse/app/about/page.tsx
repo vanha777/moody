@@ -169,7 +169,7 @@ export default function About() {
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <div className="flex flex-col items-center justify-center h-full">
                     <Image
-                      src="/studio_1.jpg"
+                      src="/room-2.jpg"
                       alt="Jess Glow"
                       fill
                       className="object-cover rounded-xl"
