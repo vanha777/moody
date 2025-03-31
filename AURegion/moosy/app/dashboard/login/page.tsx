@@ -132,65 +132,67 @@ export interface LoginResponse {
       is_primary: boolean;
     }>;
   };
-  bookings: Array<{
+  bookings: Array<BookingResponse>;
+}
+
+export interface BookingResponse {
+  id: string;
+  customer: {
     id: string;
-    customer: {
-      id: string;
-      personal_information: {
-        first_name: string;
-        last_name: string;
-        date_of_birth: string | null;
-        gender: string | null;
-      };
-      notes: string | null;
-      profile_image: {
-        id: string;
-        type: string;
-        path: string;
-      } | null;
-      contact_method: Array<{
-        id: string;
-        type: string;
-        value: string;
-        is_primary: boolean;
-      }> | null;
+    personal_information: {
+      first_name: string;
+      last_name: string;
+      date_of_birth: string | null;
+      gender: string | null;
     };
-    staff: {
+    notes: string | null;
+    profile_image: {
       id: string;
-      personal_information: {
-        first_name: string;
-        last_name: string;
-        date_of_birth: string | null;
-        gender: string | null;
-      };
-      profile_image: {
-        id: string;
-        type: string;
-        path: string;
-      } | null;
-      contact_method: Array<{
-        id: string;
-        type: string;
-        value: string;
-        is_primary: boolean;
-      }> | null;
+      type: string;
+      path: string;
     } | null;
-    service: {
+    contact_method: Array<{
       id: string;
-      name: string;
-      description: string;
-      duration: string;
-      price: number;
+      type: string;
+      value: string;
+      is_primary: boolean;
+    }> | null;
+  };
+  staff: {
+    id: string;
+    personal_information: {
+      first_name: string;
+      last_name: string;
+      date_of_birth: string | null;
+      gender: string | null;
     };
-    status: {
+    profile_image: {
       id: string;
-      name: string;
-      description: string;
-      created_at: string;
-    };
-    start_time: string;
-    end_time: string;
-  }>;
+      type: string;
+      path: string;
+    } | null;
+    contact_method: Array<{
+      id: string;
+      type: string;
+      value: string;
+      is_primary: boolean;
+    }> | null;
+  } | null;
+  service: {
+    id: string;
+    name: string;
+    description: string;
+    duration: string;
+    price: number;
+  };
+  status: {
+    id: string;
+    name: string;
+    description: string;
+    created_at: string;
+  };
+  start_time: string;
+  end_time: string;
 }
 
 // Function to handle login
@@ -198,7 +200,8 @@ async function handleLogin(username: string, password: string): Promise<LoginRes
   try {
     const response: LoginResponse = await invoke('login', {
       username: username,
-      password: password
+      password: password,
+      refresh: false
     })
     console.log('Login successful:', response)
     return response;
