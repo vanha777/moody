@@ -8,6 +8,7 @@ import PaymentMethods from "./payment";
 import ServiceSelector, { ServiceData } from "./service";
 import Link from "next/link";
 import { CalendarEvent } from "@/app/dashboard/components/booking";
+import { useAppContext } from "@/app/utils/AppContext";
 
 // Initialize Stripe with the publishable key
 const stripePromise = loadStripe(
@@ -29,6 +30,7 @@ interface Discount {
 }
 
 export default function Checkout({ booking }: { booking?: CalendarEvent }) {
+    const { auth } = useAppContext();
     const router = useRouter();
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);

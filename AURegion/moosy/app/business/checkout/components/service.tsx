@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
+import { use, useEffect, useState } from 'react';
+import { useAppContext } from '@/app/utils/AppContext';
+import { useRouter } from 'next/navigation';
 interface ServiceProps {
   onSelectService: (serviceData: ServiceData) => void;
   isOpen: boolean;
@@ -18,37 +19,39 @@ export interface ServiceData {
 }
 
 export default function ServiceSelector({ onSelectService, isOpen, onClose }: ServiceProps) {
+  const { auth } = useAppContext();
+  const router = useRouter();
   const [customPrice, setCustomPrice] = useState<string>('');
   const [customDescription, setCustomDescription] = useState<string>('');
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [selectedCatalogue, setSelectedCatalogue] = useState<string>('all');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Mock service data - in a real app, this would come from props or an API
-  const mockServices: ServiceData[] = [
-    {
-      id: '1',
-      name: 'Basic Consultation',
-      description: 'Initial consultation to discuss needs and requirements',
-      price: 99.99,
-      duration: '1 hour',
-      category: 'Consultation'
-    },
-    {
-      id: '2',
-      name: 'Premium Support',
-      description: 'Advanced support with priority response',
-      price: 199.99,
-      duration: '2 hours',
-      category: 'Support'
-    },
-    {
-      id: '3',
-      name: 'Custom Development',
-      description: 'Tailored development services for specific needs',
-      price: 499.99,
-      duration: 'Variable',
-      category: 'Development'
+  useEffect(() => {
+    if (!auth) {
+      router.push("/dashboard/login")
     }
-  ];
+  }, []);
+
+  const catalogues = auth?.company?.services_by_catalogue || [];
+  
+  const services = selectedCatalogue === 'all' 
+    ? catalogues.flatMap(catalogue => 
+        catalogue.services.map(service => ({
+          ...service,
+          category: catalogue.catalogue.name
+        }))
+      )
+    : catalogues
+        .find(cat => cat.catalogue.id === selectedCatalogue)
+        ?.services.map(service => ({
+          ...service,
+          category: catalogues.find(cat => cat.catalogue.id === selectedCatalogue)?.catalogue.name || ''
+        })) || [];
+
+  const selectedCatalogueName = selectedCatalogue === 'all' 
+    ? 'All Categories' 
+    : catalogues.find(cat => cat.catalogue.id === selectedCatalogue)?.catalogue.name || 'All Categories';
 
   const handleCustomSubmit = () => {
     const price = parseFloat(customPrice);
@@ -79,16 +82,72 @@ export default function ServiceSelector({ onSelectService, isOpen, onClose }: Se
       <div className="h-full w-full p-6 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-black">Select Service</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-black hover:text-gray-600"
           >
             ✕
           </button>
         </div>
-        
+
+        {/* Innovative Dropdown */}
+        <div className="relative mb-6">
+          <div
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">
+                {selectedCatalogueName}
+              </span>
+            </div>
+            <svg
+              className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-10">
+              <div 
+                className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                  selectedCatalogue === 'all' ? 'bg-gray-50' : ''
+                }`}
+                onClick={() => {
+                  setSelectedCatalogue('all');
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <span className="text-gray-600">All Categories</span>
+              </div>
+              {catalogues.map((cat) => (
+                <div
+                  key={cat.catalogue.id}
+                  className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    selectedCatalogue === cat.catalogue.id ? 'bg-gray-50' : ''
+                  }`}
+                  onClick={() => {
+                    setSelectedCatalogue(cat.catalogue.id);
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">{cat.catalogue.name}</span>
+                    <span className="text-gray-400 text-sm">{cat.services.length} services</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="space-y-4">
-          {mockServices.map((service) => (
+          {services.map((service) => (
             <div
               key={service.id}
               onClick={() => onSelectService(service)}
