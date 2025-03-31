@@ -64,13 +64,13 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
           >
             {/* Gradient background box */}
-            <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
-            </div>
+            {/* <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
+            </div> */}
 
             {/* Image container */}
             <div className="relative p-6">
               <img
-                src={isMobile ? "/hero2.jpg" : "/hero2.jpg"}
+                src={isMobile ? "/heroLashes.png" : "/heroLashes.png"}
                 alt="Hero Image"
                 className="w-full h-full object-cover rounded-[24px]"
               />

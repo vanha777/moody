@@ -38,7 +38,7 @@ export default function Statements() {
       >
         <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-center mb-8">
           <span className="text-[#3A3A3A] relative">
-            WHY CHOOSE US?
+          Why Choose Us?
             <motion.div
               className="absolute left-1/2 -bottom-4 h-0.5 w-24 bg-[#D1B882] rounded-full -translate-x-1/2"
               initial={{ width: 0, opacity: 0 }}
@@ -78,7 +78,7 @@ export default function Statements() {
           {/* Left subsection */}
           <div className="flex-1 flex items-center justify-center">
             <motion.img
-              src="/statement1.jpg"
+              src="/statement.png"
               alt="Is This You?"
               className="w-80 h-80 md:w-[700px] md:h-[700px] rounded-full object-cover shadow-xl border-4 border-[#D1B882]"
               initial={{ opacity: 0, x: -50 }}
@@ -94,7 +94,8 @@ export default function Statements() {
           {/* Right subsection */}
           <div className="flex-1 flex items-center justify-center">
             <motion.img
-              src="/jesseStatement2.png"
+              // src="/jesseStatement2.png"
+              src="/statement2.JPG"
               alt="Another perspective"
               className="w-48 md:w-72 h-auto rounded-[90px] border-4 border-[#D1B882]"
               style={{
