@@ -105,7 +105,7 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                 ease: "easeInOut"
             }}
         >
-            <div className="p-6">
+            <div className={`${selectedAutomation ? 'fixed inset-0 bg-white z-50' : 'p-6'}`}>
                 {!selectedAutomation && (
                     <button
                         onClick={close}
@@ -154,60 +154,64 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                         </div>
                     </>
                 ) : (
-                    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
-                        <div className="relative">
-                            {/* Back button */}
-                            <button
-                                onClick={() => setSelectedAutomation(null)}
-                                className="absolute top-4 sm:top-6 left-4 sm:left-6 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-                            >
-                                <svg
-                                    className="w-5 h-5 mr-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                                    />
-                                </svg>
-                                <span className="font-medium">Back</span>
-                            </button>
-
-                            {/* Header Section */}
-                            <div className="border-b border-gray-200 p-4 sm:p-6 pt-16 sm:pt-20">
-                                <div className="flex justify-end mb-4">
+                    <div className="h-full flex flex-col">
+                        {/* iPhone-style header */}
+                        <div className="bg-gray-50 border-b border-gray-200">
+                            <div className="safe-area-top bg-gray-50" style={{ paddingTop: 'env(safe-area-inset-top, 20px)' }}>
+                                <div className="px-4 py-3 flex items-center justify-between">
+                                    <button
+                                        onClick={() => setSelectedAutomation(null)}
+                                        className="flex items-center text-blue-600 font-medium"
+                                    >
+                                        <svg
+                                            className="w-5 h-5 mr-1"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M15 19l-7-7 7-7"
+                                            />
+                                        </svg>
+                                        Back
+                                    </button>
                                     <div
                                         className="cursor-pointer"
                                         onClick={() => toggleAutomation(selectedAutomation)}
                                     >
                                         {automations.find(a => a.id === selectedAutomation)?.enabled ? (
-                                            <FaToggleOn size={28} className="text-green-600" />
+                                            <FaToggleOn size={46} className="text-black" />
                                         ) : (
-                                            <FaToggleOff size={28} className="text-gray-400" />
+                                            <FaToggleOff size={46} className="text-black" />
                                         )}
                                     </div>
                                 </div>
-
-                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                                    {automations.find(a => a.id === selectedAutomation)?.title}
-                                </h2>
-                                <p className="text-sm sm:text-base text-gray-600 mt-1">
-                                    {automations.find(a => a.id === selectedAutomation)?.description}
-                                </p>
                             </div>
+                        </div>
 
-                            {/* Content Section */}
-                            <div className="p-4 sm:p-6 space-y-6">
-                                <div>
+                        {/* Scrollable content */}
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="p-4 space-y-6">
+                                {/* Title and description */}
+                                <div className="mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-900">
+                                        {automations.find(a => a.id === selectedAutomation)?.title}
+                                    </h2>
+                                    <p className="text-gray-600 mt-1">
+                                        {automations.find(a => a.id === selectedAutomation)?.description}
+                                    </p>
+                                </div>
+
+                                {/* Message content */}
+                                <div className="bg-white rounded-lg">
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Message Content
                                     </label>
                                     <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base"
+                                        className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base"
                                         rows={4}
                                         value={automations.find(a => a.id === selectedAutomation)?.message || ''}
                                         onChange={(e) => updateMessage(selectedAutomation, e.target.value)}
@@ -215,11 +219,11 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                     />
                                 </div>
 
-                                <div>
+                                {/* Image upload section */}
+                                <div className="bg-white rounded-lg">
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Attachment Image
                                     </label>
-
                                     {automations.find(a => a.id === selectedAutomation)?.image ? (
                                         <div className="relative w-full h-40 sm:h-48 mb-2 rounded-lg overflow-hidden">
                                             <img
@@ -255,16 +259,19 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                         </div>
                                     )}
                                 </div>
-
-                                {/* Status Footer */}
-                                <div className="flex items-center justify-between pt-4 mt-6 border-t border-gray-200">
-                                    <span className="text-sm font-medium text-gray-600">
-                                        Status: <span className={`${automations.find(a => a.id === selectedAutomation)?.enabled ? 'text-green-700' : 'text-gray-500'}`}>
-                                            {automations.find(a => a.id === selectedAutomation)?.enabled ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </span>
-                                </div>
                             </div>
+                        </div>
+
+                        {/* iPhone-style bottom safe area */}
+                        <div className={`${automations.find(a => a.id === selectedAutomation)?.enabled ? 'bg-green-200' : 'bg-gray-50'} border-t border-gray-200`}>
+                            <div className="p-4">
+                                <span className="text-sm font-medium text-gray-600">
+                                    Status: <span className={`${automations.find(a => a.id === selectedAutomation)?.enabled ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {automations.find(a => a.id === selectedAutomation)?.enabled ? 'Active' : 'Inactive'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className="safe-area-bottom" style={{ paddingBottom: 'env(safe-area-inset-bottom, 20px)' }} />
                         </div>
                     </div>
                 )}

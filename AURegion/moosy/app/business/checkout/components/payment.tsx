@@ -59,7 +59,7 @@ export default function PaymentMethods({
   const handleClose = () => {
     // Handle closing internally
     // You could redirect to home page or order confirmation page
-    window.location.href = '/business'; // Or use Next.js router
+    window.location.href = '/'; // Or use Next.js router
   };
 
   const paymentMethods = [

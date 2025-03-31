@@ -17,27 +17,23 @@ import {
     IoStorefrontSharp
 } from "react-icons/io5";
 import { MdGeneratingTokens, MdOutlineGeneratingTokens, MdOutlineWebhook, MdWebhook } from "react-icons/md";
-import { CollectionData, GameData, UserData } from '@/app/utils/AppContext'
-import { AppProvider, useAppContext } from "@/app/utils/AppContext";
+import { LoginResponse } from '../login/page';
+import { useAppContext } from "@/app/utils/AppContext";
 import SimpleLoading from "./simpleLoading";
 import IdeaComponent, { Idea } from "./ideaComponent";
 import SimpleSideBar from "./simpleSideBar";
 import BookingList from "./booking";
 import { useRouter, useSearchParams } from "next/navigation";
 
-interface InitialUserProps {
-    rawUser?: any;
-}
-
-export default function MainUniverse({ rawUser }: InitialUserProps) {
-    const router = useRouter();
-    const { auth, setTokenData, setAccessToken, setCollectionData, setUser, setGame, logout, getUser } = useAppContext();
-    const [ideas, setIdeas] = useState<Idea[]>([]);
-    const [activeMenu, setActiveMenu] = useState("software");
-    const [activeView, setActiveView] = useState("view1");
-    const [selectedGameData, setSelectedGameData] = useState<GameData | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showCalendar, setShowCalendar] = useState(false);
+export default function MainUniverse() {
+    // const router = useRouter();
+    // const { auth, getUser } = useAppContext();
+    // const [ideas, setIdeas] = useState<Idea[]>([]);
+    // const [activeMenu, setActiveMenu] = useState("software");
+    // const [activeView, setActiveView] = useState("view1");
+    // const [selectedGameData, setSelectedGameData] = useState<GameData | null>(null);
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [showCalendar, setShowCalendar] = useState(false);
 
     // useEffect(() => {
     //     console.log("this is auth", auth);
@@ -47,106 +43,50 @@ export default function MainUniverse({ rawUser }: InitialUserProps) {
     //     }
     // }, [auth.userData]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let initialUser: UserData;
-                if (rawUser) {
-                    initialUser = JSON.parse(rawUser) as UserData;
-                } else {
-                    const user = getUser();
-                    if (!user) {
-                        throw new Error('No user found');
-                    }
-                    initialUser = user;
-                }
-                // setIsLoading(true);
-                console.log("this is data", initialUser);
-                setUser(initialUser);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                router.push("/dashboard/login");
-            } finally {
-                // setIsLoading(false);
-                // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
-                // router.push("/");
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             let initialUser: LoginResponse;
+    //             if (auth) {
+    //                 initialUser = auth;
+    //             } else {
+    //                 const user = getUser();
+    //                 if (!user) {
+    //                     throw new Error('No user found');
+    //                     router.push("/dashboard/login");
+    //                 }
+    //                 initialUser = user;
+    //             }
+    //             // setIsLoading(true);
+    //             console.log("this is data", initialUser);
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //             router.push("/dashboard/login");
+    //         } finally {
+    //             // setIsLoading(false);
+    //             // alert("Thank you for registering with CoLaunch!, Dashboard will publicly accessible soon!");
+    //             // router.push("/");
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.3,
-                delayChildren: 0.2,
-            },
-        },
-    };
-
-    const industries = [
-        {
-            id: "software",
-            label: "Software",
-            icon: IoCodeSlashOutline,
-            selectedIcon: IoCodeSlashSharp
-        },
-        {
-            id: "healthcare",
-            label: "Healthcare",
-            icon: MdOutlineGeneratingTokens,
-            selectedIcon: MdGeneratingTokens
-        },
-        {
-            id: "fintech",
-            label: "Fintech",
-            icon: IoStorefrontOutline,
-            selectedIcon: IoImagesSharp
-        },
-        {
-            id: "ecommerce",
-            label: "E-Commerce",
-            icon: IoStorefrontOutline,
-            selectedIcon: IoStorefrontSharp
-        },
-        {
-            id: "ai",
-            label: "AI & ML",
-            icon: IoStatsChartOutline,
-            selectedIcon: IoStatsChartSharp
-        },
-        {
-            id: "blockchain",
-            label: "Blockchain",
-            icon: IoSettingsOutline,
-            selectedIcon: IoSettingsSharp
-        }
-    ];
+    //     fetchData();
+    // }, []);
 
     return (
         <>
-            {isLoading ? (
-                <SimpleLoading />
-            ) : (
-                <>
-                    <SimpleSideBar>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 20 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: "easeInOut"
-                            }}
-                        >
-                            <BookingList />
-                        </motion.div>
-                    </SimpleSideBar>
-                </>
-            )}
+            {/* <SimpleSideBar> */}
+            {/* <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{
+                        duration: 0.3,
+                        ease: "easeInOut"
+                    }}
+                > */}
+            <BookingList />
+            {/* </motion.div> */}
+            {/* </SimpleSideBar> */}
         </>
     );
 }

@@ -9,25 +9,25 @@ export default function Hero() {
 
   const services = [
     {
-      title: "Lashes",
-      description: "Whether you prefer classic lashes for timeless elegance or hybrid lashes for a fuller, voluminous look, we've got you covered to enhance your natural beauty.",
-      image: "/lashes.jpg"
+      title: "LASHES",
+      description: "Whether you want soft and natural or bold and dramatic, we’ve got the perfect lash for you!  From classic extensions to custom volume designs, refills, and lash lifts & tints, we'll make sure you 'woke up like this pretty' everyday. ",
+      image: "/lashes.png"
     },
     {
-      title: "Brow Shaping & Tinting",
-      description: "Get perfectly shaped and tinted brows that beautifully frame your face.",
-      image: "/brows2.png"
+      title: "BROWS",
+      description: "Get the shape and definition you’ve been dreaming of with our brow lamination, waxing, and tinting services. We’ll smooth, define, and enhance your brows, giving you a natural, fuller look that’s perfectly tailored to your vibe",
+      image: "/brow_2.png"
     },
     {
-      title: "Facials",
+      title: "FACIALS",
       description: "Refresh and hydrate your skin with rejuvenating facials, leaving you with a glowing, radiant look.",
-      image: "/facial.jpg"
+      image: "/facial_home.png"
     },
-    {
-      title: "Refill",
-      description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
-      image: "/refills.jpg"
-    }
+    // {
+    //   title: "Refill",
+    //   description: "Revive your lashes with a quick, expert touch-up, restoring fullness and flair in no time!",
+    //   image: "/refills.jpg"
+    // }
   ]
 
   useEffect(() => {
@@ -42,16 +42,24 @@ export default function Hero() {
   return (
     <>
       {/* <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10"> */}
-        <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10">
+      <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10 pt-20">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
-          <motion.p
-            className="text-center text-[#D1B882] text-sm md:text-base font-semibold uppercase tracking-wider mb-12"
+          <motion.h1
+            className="text-4xl md:text-5xl lg:text-7xl font-bold text-center mb-8 pb-28"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Our Premium Services
-          </motion.p>
+            <span className="text-[#3A3A3A] relative">
+              What We Offer
+              <motion.div
+                className="absolute left-1/2 -bottom-4 h-0.5 w-24 bg-[#D1B882] rounded-full -translate-x-1/2"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 96, opacity: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              />
+            </span>
+          </motion.h1>
 
           {services.map((service, index) => (
             <motion.div
@@ -63,7 +71,7 @@ export default function Hero() {
             >
               {/* Content */}
               <div className="w-full md:w-1/2">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                <h2 className="text-4xl md:text-5xl lg:text-4xl font-bold mb-6">
                   <span className="text-black whitespace-pre-line">
                     {service.title}
                   </span>
@@ -79,7 +87,7 @@ export default function Hero() {
                   {/* Gradient background box */}
                   <div className="absolute inset-4 -rotate-6 rounded-[30px] bg-[#D1B882] transform hover:rotate-0 transition-transform duration-300">
                   </div>
-                  
+
                   {/* Image container */}
                   <div className="relative p-6">
                     <img
@@ -95,7 +103,7 @@ export default function Hero() {
 
           {/* Centered Book Now button */}
           <motion.div
-            className="flex justify-center"
+            className="flex justify-center pb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}

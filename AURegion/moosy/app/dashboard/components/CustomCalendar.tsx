@@ -1,33 +1,25 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  format, 
-  addDays, 
-  startOfWeek, 
-  endOfWeek, 
-  isSameDay, 
-  addWeeks, 
-  subWeeks, 
-  startOfMonth, 
-  endOfMonth, 
-  addMonths, 
-  subMonths, 
+import {
+  format,
+  addDays,
+  startOfWeek,
+  endOfWeek,
+  isSameDay,
+  addWeeks,
+  subWeeks,
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  subMonths,
   isSameMonth
 } from 'date-fns';
 import BookingOverlay from './bookingOverlay';
 import AddBookingOverlay from './addBookingOverlay';
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  extendedProps: {
-    clientName: string;
-    service: string;
-    phoneNumber: string;
-  };
-}
+import SimpleSideBar from './simpleSideBar';
+import { motion } from 'framer-motion';
+import { CalendarEvent } from './booking';
 
 interface CustomCalendarProps {
   events: CalendarEvent[];
@@ -53,30 +45,30 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     today.setHours(10, 0, 0, 0); // Set to 5 PM
     return today;
   });
-  
+
   // Update current time every minute
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 15 * 60 * 1000); // Update every 15 minutes
-    
+
     return () => clearInterval(timeInterval);
   }, []);
-  
+
   // Check if we're on mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkIfMobile);
     };
   }, []);
-  
+
   // Set up hours display (8am-8pm)
   useEffect(() => {
     const hours = [];
@@ -90,47 +82,47 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const generateWeekDays = useCallback((date: Date) => {
     const start = startOfWeek(date, { weekStartsOn: 1 }); // Start on Monday
     const days = [];
-    
+
     for (let i = 0; i < 7; i++) {
       days.push(addDays(start, i));
     }
-    
+
     return days;
   }, []);
-  
+
   // Set up month display
   const generateMonthDays = useCallback((date: Date) => {
     const start = startOfMonth(date);
     const end = endOfMonth(date);
-    
+
     // Start from the Monday of the week that contains the first day of the month
     const monthStart = startOfWeek(start, { weekStartsOn: 1 });
-    
+
     // End on the Sunday of the week that contains the last day of the month
     const monthEnd = endOfWeek(end, { weekStartsOn: 1 });
-    
+
     const weeks: Date[][] = [];
     let week: Date[] = [];
     let currentDay = monthStart;
-    
+
     // Generate array of dates for the month view
     while (currentDay <= monthEnd) {
       if (week.length === 7) {
         weeks.push(week);
         week = [];
       }
-      
+
       week.push(new Date(currentDay));
       currentDay = addDays(currentDay, 1);
     }
-    
+
     if (week.length > 0) {
       weeks.push(week);
     }
-    
+
     return weeks;
   }, []);
-  
+
   // Initialize weekDays and monthDays
   useEffect(() => {
     if (currentView === 'day') {
@@ -146,7 +138,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const getEventsForDay = (day: Date) => {
     return events.filter(event => isSameDay(new Date(event.start), day));
   };
-  
+
   // Get events for a specific day and hour
   const getEventsForTimeSlot = (day: Date, hour: number) => {
     return events.filter(event => {
@@ -222,29 +214,29 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     const timePercentage = (currentMinute / 60) * 100;
     const isCurrentTimeInRange = currentHour >= 8 && currentHour <= 20;
     const showTimeIndicator = isSameDay(currentDate, now) && isCurrentTimeInRange;
-    
+
     return (
       <div className="day-view relative">
         <div className="time-grid">
           {displayHours.map((timeDisplay, hourIndex) => {
             const hour = hourIndex + 8; // Starting at 8 AM
             const eventsInSlot = getEventsForTimeSlot(currentDate, hour);
-            
+
             // Helper function to create date with specific hour
             const createDateTimeForHour = () => {
               const selectedDateTime = new Date(currentDate);
               selectedDateTime.setHours(hour, 0, 0, 0);
               return selectedDateTime;
             };
-            
+
             return (
               <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50 relative">
-                <div 
-                  className="time-label flex h-full text-xs font-semibold text-gray-500 cursor-pointer" 
+                <div
+                  className="time-label flex h-full text-xs font-semibold text-gray-500 cursor-pointer"
                   onClick={() => {
                     // Create new date object for the selected time slot
                     const selectedDateTime = createDateTimeForHour();
-                    
+
                     // Open the booking form with the selected date/time
                     setShowAddBooking(true);
                     // Store the selected date/time (for passing to overlay)
@@ -253,12 +245,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                 >
                   {timeDisplay}
                 </div>
-                <div 
+                <div
                   className="time-slot p-2 min-h-20 flex flex-col gap-2 relative hover:bg-gray-50/50 transition-all duration-200 cursor-pointer"
                   onClick={() => {
                     // Create new date object for the selected time slot
                     const selectedDateTime = createDateTimeForHour();
-                    
+
                     // Open the booking form with the selected date/time
                     setShowAddBooking(true);
                     // Store the selected date/time (for passing to overlay)
@@ -267,8 +259,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                 >
                   {/* Current time indicator - updated with z-index */}
                   {showTimeIndicator && currentHour === hour && (
-                    <div 
-                      className="absolute left-0 right-0 z-0 pointer-events-none" 
+                    <div
+                      className="absolute left-0 right-0 z-0 pointer-events-none"
                       style={{ top: `${timePercentage}%` }}
                     >
                       <div className="flex items-center">
@@ -277,7 +269,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                       </div>
                     </div>
                   )}
-                  
+
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
@@ -287,7 +279,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         handleEventClick(event);
                       }}
                     >
-                      {event.title}
+                      {event.customer.name} - {event.service.name}
                     </div>
                   ))}
                 </div>
@@ -307,8 +299,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           <div className="time-gutter"></div>
           <div className="grid grid-cols-7">
             {weekDays.map((day, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="day-header p-2 text-center font-medium"
                 onClick={() => {
                   if (isMobile) {
@@ -327,11 +319,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             ))}
           </div>
         </div>
-        
+
         <div className="time-grid">
           {displayHours.map((timeDisplay, hourIndex) => {
             const hour = hourIndex + 8; // Starting at 8 AM
-            
+
             return (
               <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray">
                 <div className="time-label flex h-full text-xs font-semibold text-gray-500">
@@ -340,10 +332,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                 <div className="grid grid-cols-7">
                   {weekDays.map((day, dayIndex) => {
                     const eventsInSlot = getEventsForTimeSlot(day, hour);
-                    
+
                     return (
-                      <div 
-                        key={dayIndex} 
+                      <div
+                        key={dayIndex}
                         className={`time-slot p-2 min-h-20 flex flex-col gap-2 relative ${isSameDay(day, new Date()) ? 'bg-gray-50/70' : 'hover:bg-gray-50/30'} transition-all duration-200`}
                         onClick={() => {
                           if (isMobile) {
@@ -355,7 +347,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         {isMobile ? (
                           // Mobile: Just show the count
                           eventsInSlot.length > 0 && (
-                            <div 
+                            <div
                               className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mx-auto cursor-pointer shadow-md"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -377,7 +369,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                                 handleEventClick(event);
                               }}
                             >
-                              {event.title}
+                              {event.service.name}
                             </div>
                           ))
                         )}
@@ -396,7 +388,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   // Render month view with modern mobile-friendly design
   const renderMonthView = () => {
     if (monthDays.length === 0) return null;
-    
+
     return (
       <div className="month-view p-2 sm:p-4 h-full flex flex-col">
         <div className="grid grid-cols-7 text-center font-medium mb-3">
@@ -404,16 +396,16 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             <div key={index} className="p-1 sm:p-2 text-sm text-gray-500">{day}</div>
           ))}
         </div>
-        
+
         <div className="grid grid-cols-7 gap-1.5 sm:gap-3 flex-grow min-h-[70vh]">
           {monthDays.flat().map((day, index) => {
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isToday = isSameDay(day, new Date());
             const dayEvents = getEventsForDay(day);
-            
+
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`day-cell rounded-2xl p-1.5 sm:p-2.5 flex flex-col overflow-hidden transition-all duration-200 hover:bg-gray-50/70 ${isCurrentMonth ? '' : 'bg-gray-50/30 text-gray-400'} ${isToday ? 'ring-1 ring-black/20 shadow-sm' : ''} cursor-pointer`}
                 onClick={() => {
                   setCurrentDate(day);
@@ -425,12 +417,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     {format(day, 'd')}
                   </span>
                 </div>
-                
+
                 {dayEvents.length > 0 && (
                   isMobile ? (
                     // Mobile: Only show event count
                     <div className="flex justify-end mt-auto mb-1">
-                      <div 
+                      <div
                         className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-md"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -454,7 +446,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                               handleEventClick(event);
                             }}
                           >
-                            {format(new Date(event.start), 'h:mm')} {event.title}
+                            {format(new Date(event.start), 'h:mm')} {event.service.name}
                           </div>
                         ) : (idx === 2 ? (
                           <div key="more" className="text-xs font-medium text-black/70 pl-1.5 flex items-center">
@@ -474,137 +466,149 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     );
   };
   return (
-    <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">
-      {/* Calendar Header - Modernized design */}
-      <div className="calendar-header flex flex-col sticky top-0 bg-white z-20 rounded-t-xl">
-        {/* Notification Bell - Positioned at the top left */}
-  
-
-        {/* View switcher with responsive padding */}
-        <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
-          {/* View buttons with modern style */}
-          <div className="flex space-x-2 sm:space-x-3 items-center">
-            {/* Notification Bell - Inline with buttons */}
-            <button 
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2"
-              aria-label="Notifications"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              {/* Notification indicator */}
-              <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
-            </button>
-            
-            <button 
-              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'day' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
-              onClick={() => changeView('day')}
-            >
-              Today
-            </button>
-            {/* Only show week view button on desktop */}
-            {!isMobile && (
-              <button 
-                className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'week' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
-                onClick={() => changeView('week')}
-              >
-                Week
-              </button>
-            )}
-            <button 
-              className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'month' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
-              onClick={() => changeView('month')}
-            >
-              {isMobile ? 'Calendar' : 'Month'}
-            </button>
-          </div>
-          
-          {/* Add booking button with modern style */}
-          <button 
-            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-md transition-all ${showAddBooking ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
-            onClick={() => setShowAddBooking(true)}
+    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+      {/* <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">*/}
+      {!selectedEvent && !showAddBooking ? (
+        <SimpleSideBar>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut"
+            }}
           >
-            <span className="text-lg sm:text-xl font-bold">+</span>
-          </button>
-        </div>
-        
-        {/* Date navigation - Modern style */}
-        <div className="flex justify-center items-center py-3 px-3 sm:py-4 sm:px-5 bg-gray-50/50 rounded-xl mx-3 mb-3">
-          <div className="flex items-center space-x-4 sm:space-x-8">
-            <button 
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-100 transition-all shadow-sm"
-              onClick={goToPrevious}
-              aria-label="Previous"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            
-            {/* Minimalist date display with stacked layout */}
-            <div className="flex flex-col items-center">
-              {currentView === 'day' ? (
-                /* Day view - show day with big date */
-                <>
-                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
-                    {format(currentDate, 'EEEE')}
+            {/* Calendar Header - Modernized design */}
+            <div className="calendar-header flex flex-col sticky top-0 bg-white z-20 rounded-t-xl">
+              {/* View switcher with responsive padding */}
+              <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
+                {/* View buttons with modern style */}
+                <div className="flex space-x-2 sm:space-x-3 items-center">
+                  {/* Notification Bell - Inline with buttons */}
+                  <button
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2"
+                    aria-label="Notifications"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    {/* Notification indicator */}
+                    <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
+                  </button>
+
+                  <button
+                    className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'day' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                    onClick={() => changeView('day')}
+                  >
+                    Today
+                  </button>
+                  {/* Only show week view button on desktop */}
+                  {!isMobile && (
+                    <button
+                      className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'week' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                      onClick={() => changeView('week')}
+                    >
+                      Week
+                    </button>
+                  )}
+                  <button
+                    className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'month' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                    onClick={() => changeView('month')}
+                  >
+                    {isMobile ? 'Calendar' : 'Month'}
+                  </button>
+                </div>
+
+                {/* Add booking button with modern style */}
+                <button
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-md transition-all ${showAddBooking ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
+                  onClick={() => setShowAddBooking(true)}
+                >
+                  <span className="text-lg sm:text-xl font-bold">+</span>
+                </button>
+              </div>
+
+              {/* Date navigation - Modern style */}
+              <div className="flex justify-center items-center py-3 px-3 sm:py-4 sm:px-5 bg-gray-50/50 rounded-xl mx-3 mb-3">
+                <div className="flex items-center space-x-4 sm:space-x-8">
+                  <button
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-100 transition-all shadow-sm"
+                    onClick={goToPrevious}
+                    aria-label="Previous"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  {/* Minimalist date display with stacked layout */}
+                  <div className="flex flex-col items-center">
+                    {currentView === 'day' ? (
+                      /* Day view - show day with big date */
+                      <>
+                        <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
+                          {format(currentDate, 'EEEE')}
+                        </div>
+                        <div className="text-lg sm:text-3xl font-bold">
+                          {format(currentDate, 'd')}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          {format(currentDate, 'MMMM yyyy')}
+                        </div>
+                      </>
+                    ) : currentView === 'week' ? (
+                      /* Week view - show week range */
+                      <>
+                        <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
+                          Week
+                        </div>
+                        <div className="text-lg sm:text-3xl font-bold whitespace-nowrap">
+                          {safeFormat(weekDays[0], 'd')} - {safeFormat(weekDays[6], 'd')}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          {safeFormat(weekDays[0], 'MMM')} {weekDays[0]?.getFullYear() !== weekDays[6]?.getFullYear() ? safeFormat(weekDays[0], 'yyyy') : ''}
+                          {weekDays[0]?.getMonth() !== weekDays[6]?.getMonth() ? ` - ${safeFormat(weekDays[6], 'MMM')}` : ''}
+                          {safeFormat(weekDays[6], 'yyyy')}
+                        </div>
+                      </>
+                    ) : (
+                      /* Month view - show month and year */
+                      <>
+                        <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
+                          {format(currentDate, 'yyyy')}
+                        </div>
+                        <div className="text-lg sm:text-3xl font-bold">
+                          {format(currentDate, 'MMMM')}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="text-lg sm:text-3xl font-bold">
-                    {format(currentDate, 'd')}
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    {format(currentDate, 'MMMM yyyy')}
-                  </div>
-                </>
-              ) : currentView === 'week' ? (
-                /* Week view - show week range */
-                <>
-                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
-                    Week
-                  </div>
-                  <div className="text-lg sm:text-3xl font-bold whitespace-nowrap">
-                    {safeFormat(weekDays[0], 'd')} - {safeFormat(weekDays[6], 'd')}
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    {safeFormat(weekDays[0], 'MMM')} {weekDays[0]?.getFullYear() !== weekDays[6]?.getFullYear() ? safeFormat(weekDays[0], 'yyyy') : ''} 
-                    {weekDays[0]?.getMonth() !== weekDays[6]?.getMonth() ? ` - ${safeFormat(weekDays[6], 'MMM')}` : ''} 
-                    {safeFormat(weekDays[6], 'yyyy')}
-                  </div>
-                </>
-              ) : (
-                /* Month view - show month and year */
-                <>
-                  <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium">
-                    {format(currentDate, 'yyyy')}
-                  </div>
-                  <div className="text-lg sm:text-3xl font-bold">
-                    {format(currentDate, 'MMMM')}
-                  </div>
-                </>
-              )}
+
+                  <button
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-100 transition-all shadow-sm"
+                    onClick={goToNext}
+                    aria-label="Next"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
-            
-            <button 
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-100 transition-all shadow-sm"
-              onClick={goToNext}
-              aria-label="Next"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Calendar Content */}
-      <div className="calendar-content overflow-auto flex-grow px-2 relative pb-4 md:pb-0">
-        {currentView === 'day' && renderDayView()}
-        {currentView === 'week' && renderWeekView()}
-        {currentView === 'month' && renderMonthView()}
-      </div>
-      
+
+            {/* Calendar Content */}
+            <div className="calendar-content overflow-auto flex-grow px-2 relative pb-4 md:pb-0">
+              {currentView === 'day' && renderDayView()}
+              {currentView === 'week' && renderWeekView()}
+              {currentView === 'month' && renderMonthView()}
+            </div>
+          </motion.div>
+        </SimpleSideBar>
+      ) : null}
+
       {/* Booking Overlay */}
       {selectedEvent && (
         <BookingOverlay
@@ -612,7 +616,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           onClose={() => setSelectedEvent(null)}
         />
       )}
-      
+
       {/* Add Booking Overlay */}
       {showAddBooking && (
         <AddBookingOverlay

@@ -57,9 +57,9 @@ export default function About() {
         >
           <motion.div variants={itemVariants}>
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold my-32 mb-8">
-              <span className="text-black">What You’ll Find at</span>{' '}
+              <span className="text-black">A Lil' Bit</span>{' '}
               <span className="text-[#D1B882]">
-                Jess Glow
+                About Us
               </span>
             </h1>
 
@@ -78,42 +78,7 @@ export default function About() {
             variants={itemVariants}
             className="prose prose-lg max-w-none"
           >
-            <div className="flex flex-col md:flex-row gap-16 items-center">
-              <div className="w-full md:w-1/2">
-                <h2 className="text-xl md:text-2xl font-bold mb-4 text-[#D1B882]">
-                  Jess Glow
-                </h2>
-                <p className="text-gray-700">
-                  Jess Glow isn’t a big, busy salon—it’s your cozy, private retreat. Here, beauty is personal. Whether you’re getting lash extensions, brow shaping, or just taking a moment for yourself, we ensure every service is done with precision, patience, and genuine care.
-                </p>
-              </div>
-              <div className="w-full md:w-1/2 relative aspect-video">
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <Image
-                      src="/store.jpeg"
-                      alt="Jess Glow"
-                      fill
-                      className="object-cover rounded-xl"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 text-center text-sm text-white">
-                      <p className="font-medium">Jess Glow</p>
-                      <p className="text-gray-300">2025 all rights reserved</p>
-                      <a
-                        href="https://jessglow.vercel.app/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#9945FF] hover:underline"
-                      >
-                        www.jessglow.com
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">
               {teamMembers.map((member, index) => (
                 <motion.div
                   key={index}
@@ -164,14 +129,14 @@ export default function About() {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </div> */}
 
-            <div className="my-48"></div>
+            <div></div>
 
             <div className="flex flex-col md:flex-row-reverse gap-16 items-center my-16">
               <div className="w-full md:w-1/2">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 text-[#D1B882]">
-                  A'lil bit about the owner - Jessie
+                  Meet the owner - Jessie
                 </h2>
                 <p className="text-gray-700">
                   "I’ve always loved beauty and dreamed of having my own studio one day—but I never expected it to happen this fast. In 2023, an unexpected opportunity led me into the beauty industry, and I took the leap to start my own business. It’s been an incredible journey of learning, growing, and perfecting my craft with every client I meet."
@@ -180,11 +145,48 @@ export default function About() {
               <div className="w-full md:w-1/2 relative aspect-[16/12]">
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
-                    src="/jesseExpertise.JPG"
+                    src="/jess_1.png"
                     alt="Our Expertise"
                     fill
                     className="object-cover"
                   />
+                </div>
+              </div>
+            </div>
+
+            <div className="my-48"></div>
+
+            <div className="flex flex-col md:flex-row gap-16 items-center">
+              <div className="w-full md:w-1/2">
+                <h2 className="text-xl md:text-2xl font-bold mb-4 text-[#D1B882]">
+                  What you will find at Jess Glow
+                </h2>
+                <p className="text-gray-700">
+                  Jess Glow isn’t a big, busy salon—it’s your cozy, private retreat. Here, beauty is personal. Whether you’re getting lash extensions, brow shaping, or just taking a moment for yourself, we ensure every service is done with precision, patience, and genuine care.
+                </p>
+              </div>
+              <div className="w-full md:w-1/2 relative aspect-video">
+                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <Image
+                      src="/studio_1.jpg"
+                      alt="Jess Glow"
+                      fill
+                      className="object-cover rounded-xl"
+                    />
+                    {/* <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 text-center text-sm text-white">
+                      <p className="font-medium">Jess Glow</p>
+                      <p className="text-gray-300">2025 all rights reserved</p>
+                      <a
+                        href="https://jessglow.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#9945FF] hover:underline"
+                      >
+                        www.jessglow.com
+                      </a>
+                    </div> */}
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,22 +207,22 @@ export default function About() {
                   <div id="slide1" className="carousel-item relative w-full aspect-[16/12]">
                     <div className="relative w-full h-full">
                       <Image
-                        src="/example1.jpg"
+                        src="/customer.png"
                         alt="Our Salon"
                         fill
                         className="object-cover"
                       />
                     </div>
                     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                      <a href="#slide5" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❮</a>
+                      <a href="#slide6" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❮</a>
                       <a href="#slide2" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❯</a>
                     </div>
                   </div>
                   <div id="slide2" className="carousel-item relative w-full aspect-[16/12]">
                     <div className="relative w-full h-full">
                       <Image
-                        src="/example2.jpg"
-                        alt="Our Designs"
+                        src="/example5.png"
+                        alt="Our Salon"
                         fill
                         className="object-cover"
                       />
@@ -233,8 +235,8 @@ export default function About() {
                   <div id="slide3" className="carousel-item relative w-full aspect-[16/12]">
                     <div className="relative w-full h-full">
                       <Image
-                        src="/example3.JPG"
-                        alt="Our Expertise"
+                        src="/example2.jpg"
+                        alt="Our Designs"
                         fill
                         className="object-cover"
                       />
@@ -247,8 +249,8 @@ export default function About() {
                   <div id="slide4" className="carousel-item relative w-full aspect-[16/12]">
                     <div className="relative w-full h-full">
                       <Image
-                        src="/example4.png"
-                        alt="Our Services"
+                        src="/example3.JPG"
+                        alt="Our Expertise"
                         fill
                         className="object-cover"
                       />
@@ -261,7 +263,7 @@ export default function About() {
                   <div id="slide5" className="carousel-item relative w-full aspect-[16/12]">
                     <div className="relative w-full h-full">
                       <Image
-                        src="/example5.png"
+                        src="/example4.png"
                         alt="Our Services"
                         fill
                         className="object-cover"
@@ -269,6 +271,20 @@ export default function About() {
                     </div>
                     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
                       <a href="#slide4" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❮</a>
+                      <a href="#slide6" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❯</a>
+                    </div>
+                  </div>
+                  <div id="slide6" className="carousel-item relative w-full aspect-[16/12]">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src="/example1.jpg"
+                        alt="Our Services"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                      <a href="#slide5" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❮</a>
                       <a href="#slide1" className="btn btn-circle bg-[#D1B882] border-none text-white hover:bg-[#e0cda2]">❯</a>
                     </div>
                   </div>

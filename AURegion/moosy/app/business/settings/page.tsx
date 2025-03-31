@@ -1,7 +1,6 @@
-import type { Metadata } from 'next'
+'use client'
 import Main from './components/main';
 
-export const revalidate = 0
 export default async function IdeaPage() {
     return (
         <Main />

@@ -261,9 +261,9 @@ export default function Promotions({ close }: { close: () => void }) {
                 onClick={() => togglePromotion(selectedPromotion)}
               >
                 {promotions.find(p => p.id === selectedPromotion)?.enabled ? (
-                  <FaToggleOn size={28} className="text-black" />
+                  <FaToggleOn size={46} className="text-black" />
                 ) : (
-                  <FaToggleOff size={28} className="text-gray-300" />
+                  <FaToggleOff size={46} className="text-gray-300" />
                 )}
               </div>
             </div>

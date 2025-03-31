@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     url: 'https://www.jessglow.com/',
     images: [
       {
-        url: 'https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png',
+        url: 'https://xzjrkgzptjqoyxxeqchy.supabase.co/storage/v1/object/public/media/jess.png',
         alt: 'Jess Glow - Eyebrows & Lashes Salon in Morley',
       },
     ],
@@ -48,18 +48,18 @@ export default function RootLayout({
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://jessglow.vercel.app" />
+        <meta property="og:url" content="https://jessglow.com" />
         <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
         <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
-        <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
+        <meta property="og:image" content="https://xzjrkgzptjqoyxxeqchy.supabase.co/storage/v1/object/public/media/jess.png" />
         <meta property="og:image:alt" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://jessglow.vercel.app/" />
+        <meta name="twitter:url" content="https://jessglow.com" />
         <meta name="twitter:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
         <meta name="twitter:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
-        <meta name="twitter:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
+        <meta name="twitter:image" content="https://xzjrkgzptjqoyxxeqchy.supabase.co/storage/v1/object/public/media/jess.png" />
         <meta name="twitter:image:alt" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
         <meta name="twitter:site" content="@jessglow" />
         <meta name="twitter:creator" content="@jessglow" />
@@ -67,13 +67,13 @@ export default function RootLayout({
         {/* Telegram */}
         <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
         <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
-        <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
-        <meta property="og:url" content="https://jessglow.vercel.app/" />
+        <meta property="og:image" content="https://xzjrkgzptjqoyxxeqchy.supabase.co/storage/v1/object/public/media/jess.png" />
+        <meta property="og:url" content="https://jessglow.com" />
 
         {/* Discord */}
         <meta property="og:title" content="Jess Glow - Eyebrows & Lashes Salon in Morley" />
         <meta property="og:description" content="At Jess Glow, we focus on the little details that make a difference, ensuring every visit leaves you feeling refreshed, confident, and truly valued" />
-        <meta property="og:image" content="https://vbfejmafjqgcfrzxewcd.supabase.co/storage/v1/object/public/general//Black_Simple_Creative_Agency_Logo-removebg-preview.png" />
+        <meta property="og:image" content="https://xzjrkgzptjqoyxxeqchy.supabase.co/storage/v1/object/public/media/jess.png" />
         <meta property="og:type" content="website" />
       </Head>
       <body suppressHydrationWarning={true} className={inter.className}>

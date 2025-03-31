@@ -36,7 +36,7 @@ export default function Footer() {
             transition={{ duration: 0.5 }}
           >
             <Image
-              src="/x.png"
+              src="/xxxx.png"
               alt="Jess Glow Logo"
               width={320}
               height={40}
