@@ -323,7 +323,7 @@ Refill after 4+ weeks : A new full set will be required 
                 </div>
 
                 <a
-                  href="https://colaunch-it.vercel.app/booking"
+                  href="https://colaunch-it.vercel.app/booking/jess-glow"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-[#D1B882] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300 text-lg font-semibold"
