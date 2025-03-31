@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Db, Server } from "@/app/utils/db";
 import { useAppContext } from "@/app/utils/AppContext";
-import ManageIdeaForm from '@/app/dashboard/components/manageIdeas';
 import router from 'next/router';
 import CustomerDetails from './customerDetails';
 import AddCustomer from './addCustomer';

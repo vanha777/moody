@@ -1,5 +1,4 @@
 'use client'
-import SimpleNavBar from "@/app/dashboard/components/simpleNavBar";
 import SimpleSideBar from "@/app/dashboard/components/simpleSideBar";
 import BusinessPerformance from "./profile";
 import { motion } from "framer-motion";

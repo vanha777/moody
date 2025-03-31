@@ -27,3 +27,4 @@ dotenv = "0.15.0"
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uuid"] }
 sha2 = "0.10.8"
 hex = "0.4.3"
+tauri-plugin-notification = "2.2.2" # Use the latest v2 version

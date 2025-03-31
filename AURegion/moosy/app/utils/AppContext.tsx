@@ -6,6 +6,11 @@ import { LoginResponse } from '../dashboard/login/page';
 import { Auth } from '../auth';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import {
+    isPermissionGranted,
+    requestPermission,
+    sendNotification,
+} from '@tauri-apps/plugin-notification';
 
 // Add Notification type
 interface Notification {
@@ -32,13 +37,32 @@ interface AppProviderProps {
     children: ReactNode;
 }
 
+// Add this helper function
+// async function sendTauriNotification(title: string, message: string) {
+//     try {
+//         let permissionGranted = await isPermissionGranted();
+//         if (!permissionGranted) {
+//             const permission = await requestPermission();
+//             permissionGranted = permission === 'granted';
+//         }
+//         if (permissionGranted) {
+//             await sendNotification({
+//                 title,
+//                 body: message,
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Failed to send notification:', error);
+//     }
+// }
+
 export function AppProvider({ children }: AppProviderProps) {
     const [auth, setAuth] = useState<LoginResponse | null>();
     // Add notifications state
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     // Add notification management functions
-    const addNotification = useCallback((message: string, type: 'success' | 'error' | 'info') => {
+    const addNotification = useCallback(async (message: string, type: 'success' | 'error' | 'info') => {
         const newNotification: Notification = {
             id: Date.now().toString(),
             message,
@@ -46,6 +70,10 @@ export function AppProvider({ children }: AppProviderProps) {
             timestamp: new Date()
         };
         setNotifications(prev => [...prev, newNotification]);
+
+        // Send Tauri notification with appropriate title based on type
+        // const title = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize first letter
+        // await sendTauriNotification(title, message);
     }, []);
 
     const removeNotification = useCallback((id: string) => {
@@ -79,107 +107,107 @@ export function AppProvider({ children }: AppProviderProps) {
 
     // Add useEffect to subscribe to specific database events
     // useEffect(() => {
-        console.log("activate listening to bookings changes");
-        if (auth?.company.id) {
-            const subscribeBooking = async () => {
-                const channel = Auth.channel('tables_chan');
+    console.log("activate listening to bookings changes");
+    if (auth?.company.id) {
+        const subscribeBooking = async () => {
+            const channel = Auth.channel('tables_chan');
 
-                // Handler function to fetch full booking details using Supabase client
-                const fetchLatestUpdate = async (booking: any) => {
-                    try {
-                        const response = await invoke('fetch_latest_state');
-                        console.log("New Booking updated At:", response);
-                    } catch (error) {
-                        console.error("Error fetching full booking details:", error);
-                    }
-                };
-
-                // Subscribe to INSERT events
-                channel.on(
-                    "postgres_changes",
-                    {
-                        event: "INSERT",
-                        schema: "public",
-                        table: "booking",
-                        filter: `company_id=eq.${auth.company.id}`,
-
-                    },
-                    (payload) => {
-                        console.log("New booking added:", payload.new.id);
-                        // Fetch the full booking details
-                        fetchLatestUpdate(payload.new);
-                        // Add notification for successful update
-                        addNotification(`One Booking ${payload.new.id} has been created`, 'info');
-                    }
-                );
-
-                // Subscribe to UPDATE events
-                channel.on(
-                    "postgres_changes",
-                    {
-                        event: "UPDATE",
-                        schema: "public",
-                        table: "booking",
-                        filter: `company_id=eq.${auth.company.id}`
-                    },
-                    (payload) => {
-                        console.log("Booking updated:", payload.new.id);
-                        // Fetch the full booking details
-                        fetchLatestUpdate(payload.new);
-                        // Add notification for successful update
-                        addNotification(`One Booking ${payload.new.id} has been re-scheduled`, 'info');
-                    }
-                );
-
-                // Subscribe to DELETE events
-                channel.on(
-                    "postgres_changes",
-                    {
-                        event: "DELETE",
-                        schema: "public",
-                        table: "booking",
-                        filter: `company_id=eq.${auth.company.id}`
-                    },
-                    (payload) => {
-                        console.log("Booking deleted:", payload.old.id);
-                        fetchLatestUpdate(payload.old);
-                        // Add notification for successful update
-                        addNotification(`One Booking ${payload.old.id} has been cancelled`, 'info');
-                        // For DELETE events, you might just want to remove the booking from your state
-                        // As an alternative, you could also fetch all current bookings to refresh the state
-                    }
-                );
-
-                const subscription = channel.subscribe();
-
-                // Clean up subscription on unmount
-                return () => {
-                    subscription.unsubscribe();
-                };
+            // Handler function to fetch full booking details using Supabase client
+            const fetchLatestUpdate = async (booking: any) => {
+                try {
+                    const response = await invoke('fetch_latest_state');
+                    console.log("New Booking updated At:", response);
+                } catch (error) {
+                    console.error("Error fetching full booking details:", error);
+                }
             };
-            // Function to fetch full booking details
-            const fetchFullBookingDetails = async () => {
-                console.log("activate listening to update state");
-                // Listen for the 'state-updated' event from the backend
-                const unlisten = listen('state-updated', (event) => {
-                    console.log("XXXXXXXXXX State updated event received:", event.payload);
-                    // Type check the payload before setting it
-                    if (event.payload && typeof event.payload === 'object') {
-                        setAuth(event.payload as LoginResponse);
-                    } else {
-                        console.error("Invalid payload received:", event.payload);
-                    }
-                    // getUser();
-                });
-                // Clean up listener on unmount
-                return () => {
-                    console.log("unlisten listening to update state");
-                    unlisten.then(unlistenFn => unlistenFn());
-                };
+
+            // Subscribe to INSERT events
+            channel.on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "booking",
+                    filter: `company_id=eq.${auth.company.id}`,
+
+                },
+                (payload) => {
+                    console.log("New booking added:", payload.new.id);
+                    // Fetch the full booking details
+                    fetchLatestUpdate(payload.new);
+                    // Add notification for successful update
+                    addNotification(`One Booking ${payload.new.id} has been created`, 'info');
+                }
+            );
+
+            // Subscribe to UPDATE events
+            channel.on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "booking",
+                    filter: `company_id=eq.${auth.company.id}`
+                },
+                (payload) => {
+                    console.log("Booking updated:", payload.new.id);
+                    // Fetch the full booking details
+                    fetchLatestUpdate(payload.new);
+                    // Add notification for successful update
+                    addNotification(`One Booking ${payload.new.id} has been re-scheduled`, 'info');
+                }
+            );
+
+            // Subscribe to DELETE events
+            channel.on(
+                "postgres_changes",
+                {
+                    event: "DELETE",
+                    schema: "public",
+                    table: "booking",
+                    filter: `company_id=eq.${auth.company.id}`
+                },
+                (payload) => {
+                    console.log("Booking deleted:", payload.old.id);
+                    fetchLatestUpdate(payload.old);
+                    // Add notification for successful update
+                    addNotification(`One Booking ${payload.old.id} has been cancelled`, 'info');
+                    // For DELETE events, you might just want to remove the booking from your state
+                    // As an alternative, you could also fetch all current bookings to refresh the state
+                }
+            );
+
+            const subscription = channel.subscribe();
+
+            // Clean up subscription on unmount
+            return () => {
+                subscription.unsubscribe();
             };
-            fetchFullBookingDetails();
-            subscribeBooking();
-        }
+        };
+        // Function to fetch full booking details
+        const fetchFullBookingDetails = async () => {
+            console.log("activate listening to update state");
+            // Listen for the 'state-updated' event from the backend
+            const unlisten = listen('state-updated', (event) => {
+                console.log("XXXXXXXXXX State updated event received:", event.payload);
+                // Type check the payload before setting it
+                if (event.payload && typeof event.payload === 'object') {
+                    setAuth(event.payload as LoginResponse);
+                } else {
+                    console.error("Invalid payload received:", event.payload);
+                }
+                // getUser();
+            });
+            // Clean up listener on unmount
+            return () => {
+                console.log("unlisten listening to update state");
+                unlisten.then(unlistenFn => unlistenFn());
+            };
+        };
+        fetchFullBookingDetails();
+        subscribeBooking();
+    }
     // }, []);
 
     // UPDATE STATE BY BE EVENT

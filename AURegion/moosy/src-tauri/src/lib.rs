@@ -145,7 +145,7 @@ static DATABASE_URL: OnceLock<String> = OnceLock::new();
 // Helper function to get or initialize the DATABASE_URL
 fn get_database_url() -> &'static str {
     DATABASE_URL
-        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres://".to_string()))
+        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres".to_string()))
 }
 
 #[tauri::command]
@@ -262,10 +262,12 @@ fn read_auth(app: tauri::AppHandle) -> Result<AuthData, String> {
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            // Initialize notification plugin
+            // app.handle().plugin(tauri_plugin_notification::init())?;
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect(get_database_url())
+                    .connect("postgres:")
                     .await
                     .expect("Failed to create pool")
             });
