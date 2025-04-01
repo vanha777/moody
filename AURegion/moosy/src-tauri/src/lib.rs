@@ -613,7 +613,7 @@ async fn add_customer(
     state: State<'_, AuthState>,
 ) -> Result<Value, String> {
     // Get the current auth data to ensure user is authenticated
-    let PROXY_AUTHENTICATE = match &state.0 {
+    let auth = match &state.0 {
         Some(data) => data.clone(),
         None => return Err("Not authenticated".to_string()),
     };
