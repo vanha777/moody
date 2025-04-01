@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
 import { ContactProps } from './businesses';
-
+import { useAppContext } from '../../../utils/AppContext';
 interface AddCustomerProps {
     onClose: () => void;
     // onSave: (customer: ContactProps) => void;
 }
 
 const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
+    const { addCustomer } = useAppContext();
     const [formData, setFormData] = useState<Partial<ContactProps>>({});
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Creating New Customer Form data:", formData);
-        // onSave(formData as ContactProps);
+        try {
+            addCustomer(formData as ContactProps);
+        } catch (error) {
+            console.error("Error adding customer:", error);
+        } finally {
+            onClose();
+        }
         // onClose();
+        // onSave(formData as ContactProps);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -3,7 +3,7 @@ use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
 use std::sync::OnceLock;
-use tauri::{Emitter, Manager, State};
+use tauri::{http::header::PROXY_AUTHENTICATE, Emitter, Manager, State};
 
 // Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -269,7 +269,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postg")
+                    .connect("postgres:")
                     .await
                     .expect("Failed to create pool")
             });
@@ -586,4 +586,61 @@ async fn checkout_booking(
         None => (),
     };
     Ok(payment_result) // Return the UUID from the tuple
+}
+
+// First, define the struct for the customer input
+#[derive(serde::Deserialize)]
+struct CustomerInput {
+    avatar: Option<String>,
+    phone: String,
+    first_name: String,
+    last_name: String,
+    date_of_birth: Option<String>,
+    gender: Option<String>,
+    email: Option<String>,
+    street: Option<String>,
+    city: Option<String>,
+    state: Option<String>,
+    zip: Option<String>,
+    country: Option<String>,
+    notes: Option<String>,
+}
+
+#[tauri::command]
+async fn add_customer(
+    customer: CustomerInput,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+) -> Result<Value, String> {
+    // Get the current auth data to ensure user is authenticated
+    let PROXY_AUTHENTICATE = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Execute the create_or_update_customer function
+    let result: Option<Value> = sqlx::query_scalar(
+        "SELECT * FROM public.create_or_update_customer($1, $2::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"
+    )
+    .bind(&customer.phone)
+    .bind(&auth.company.id)
+    .bind(&customer.first_name)
+    .bind(&customer.last_name)
+    .bind(customer.date_of_birth.as_deref())
+    .bind(customer.gender.as_deref())
+    .bind(customer.email.as_deref())
+    .bind(customer.street.as_deref())
+    .bind(customer.city.as_deref())
+    .bind(customer.state.as_deref())
+    .bind(customer.zip.as_deref())
+    .bind(customer.country.as_deref())
+    .bind(customer.notes.as_deref())
+    .fetch_one(&*pool)
+    .await
+    .map_err(|e| format!("Failed to create/update customer: {}", e))?;
+
+    match result {
+        Some(customer_data) => Ok(customer_data),
+        None => Err("Failed to create/update customer".to_string()),
+    }
 }

@@ -11,6 +11,7 @@ import {
     requestPermission,
     sendNotification,
 } from '@tauri-apps/plugin-notification';
+import { ContactProps } from '../business/clients/components/businesses';
 
 // Add Notification type
 interface Notification {
@@ -32,6 +33,7 @@ export interface AppContextData {
     cancelBooking: (bookingId: string) => Promise<any>;
     rescheduleBooking: (bookingId: string, newDate: Date, endTime: Date) => Promise<any>;
     checkoutBooking: (customerId: string, amount: number, method: string,currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    addCustomer: (customer: any) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -121,6 +123,15 @@ export function AppProvider({ children }: AppProviderProps) {
     const rescheduleBooking = useCallback(async (bookingId: string, newDate: Date, endTime: Date) => {
         try {
             const response = await invoke('reschedule_booking', { bookingId, newDate, endTime })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+    const addCustomer = useCallback(async (customer: ContactProps) => {
+        try {
+            const response = await invoke('add_customer', { customer })
             return response;
         } catch (error) {
             return error;
@@ -277,7 +288,8 @@ export function AppProvider({ children }: AppProviderProps) {
         addNotification,
         removeNotification,
         rescheduleBooking,
-        checkoutBooking
+        checkoutBooking,
+        addCustomer
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
