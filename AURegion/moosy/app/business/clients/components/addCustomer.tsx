@@ -12,8 +12,9 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Creating New Customer Form data:", formData);
         // onSave(formData as ContactProps);
-        onClose();
+        // onClose();
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

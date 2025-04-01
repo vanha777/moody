@@ -29,6 +29,9 @@ export interface AppContextData {
     notifications: Notification[];
     addNotification: (message: string, type: 'success' | 'error' | 'info') => void;
     removeNotification: (id: string) => void;
+    cancelBooking: (bookingId: string) => Promise<any>;
+    rescheduleBooking: (bookingId: string, newDate: Date, endTime: Date) => Promise<any>;
+    checkoutBooking: (customerId: string, amount: number, method: string,currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -105,6 +108,35 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
+    const cancelBooking = useCallback(async (bookingId: string) => {
+        try {
+            const response = await invoke('cancel_booking', { bookingId })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+
+    const rescheduleBooking = useCallback(async (bookingId: string, newDate: Date, endTime: Date) => {
+        try {
+            const response = await invoke('reschedule_booking', { bookingId, newDate, endTime })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+    const checkoutBooking = useCallback(async (customerId: string, amount: number, method: string,currencyId: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => {
+        try {
+            const response = await invoke('checkout_booking', { bookingId, customerId, servicesId, discountsId, currencyId, method, amount,status:"completed" })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+
     // Add useEffect to subscribe to specific database events
     // useEffect(() => {
     console.log("activate listening to bookings changes");
@@ -133,11 +165,11 @@ export function AppProvider({ children }: AppProviderProps) {
 
                 },
                 (payload) => {
-                    console.log("New booking added:", payload.new.id);
+                    console.log("New booking added:", payload.new);
                     // Fetch the full booking details
                     fetchLatestUpdate(payload.new);
                     // Add notification for successful update
-                    addNotification(`One Booking ${payload.new.id} has been created`, 'info');
+                    addNotification(`New booking notice at ${payload.new.created_at}`, 'info');
                 }
             );
 
@@ -151,11 +183,12 @@ export function AppProvider({ children }: AppProviderProps) {
                     filter: `company_id=eq.${auth.company.id}`
                 },
                 (payload) => {
-                    console.log("Booking updated:", payload.new.id);
+                    console.log("Booking updated:", payload.new);
                     // Fetch the full booking details
                     fetchLatestUpdate(payload.new);
                     // Add notification for successful update
-                    addNotification(`One Booking ${payload.new.id} has been re-scheduled`, 'info');
+                    const localTime = new Date(payload.new.start_time).toLocaleString();
+                    addNotification(`Booking updated notice at ${localTime}`, 'info');
                 }
             );
 
@@ -169,10 +202,10 @@ export function AppProvider({ children }: AppProviderProps) {
                     filter: `company_id=eq.${auth.company.id}`
                 },
                 (payload) => {
-                    console.log("Booking deleted:", payload.old.id);
+                    console.log("Booking deleted:", payload.old);
                     fetchLatestUpdate(payload.old);
                     // Add notification for successful update
-                    addNotification(`One Booking ${payload.old.id} has been cancelled`, 'info');
+                    addNotification(`Cancellation notice`, 'info');
                     // For DELETE events, you might just want to remove the booking from your state
                     // As an alternative, you could also fetch all current bookings to refresh the state
                 }
@@ -190,6 +223,9 @@ export function AppProvider({ children }: AppProviderProps) {
             console.log("activate listening to update state");
             // Listen for the 'state-updated' event from the backend
             const unlisten = listen('state-updated', (event) => {
+                //Debug
+                // addNotification(`LISTENING UPDATED`, 'info');
+                //End,
                 console.log("XXXXXXXXXX State updated event received:", event.payload);
                 // Type check the payload before setting it
                 if (event.payload && typeof event.payload === 'object') {
@@ -202,6 +238,9 @@ export function AppProvider({ children }: AppProviderProps) {
             // Clean up listener on unmount
             return () => {
                 console.log("unlisten listening to update state");
+                //Debug
+                // addNotification(`UNLISTENING`, 'info');
+                //End,
                 unlisten.then(unlistenFn => unlistenFn());
             };
         };
@@ -232,10 +271,13 @@ export function AppProvider({ children }: AppProviderProps) {
         setAuthentication,
         getUser,
         logout,
+        cancelBooking,
         // Add notifications to context value
         notifications,
         addNotification,
-        removeNotification
+        removeNotification,
+        rescheduleBooking,
+        checkoutBooking
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

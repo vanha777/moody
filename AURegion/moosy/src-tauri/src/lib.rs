@@ -1,8 +1,10 @@
+use futures::future::try_join_all;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
 use std::sync::OnceLock;
 use tauri::{Emitter, Manager, State};
+
 // Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AuthData {
@@ -145,7 +147,7 @@ static DATABASE_URL: OnceLock<String> = OnceLock::new();
 // Helper function to get or initialize the DATABASE_URL
 fn get_database_url() -> &'static str {
     DATABASE_URL
-        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres".to_string()))
+        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres://postgres.xzjrkgzptjqoyxxeqchy:CjjJhnWvTlf7nRpY@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres".to_string()))
 }
 
 #[tauri::command]
@@ -267,7 +269,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postgres:")
+                    .connect("postg")
                     .await
                     .expect("Failed to create pool")
             });
@@ -353,7 +355,10 @@ pub fn run() {
             save_auth,
             read_auth,
             get_auth_state,
-            fetch_latest_state
+            fetch_latest_state,
+            cancel_booking,
+            reschedule_booking,
+            checkout_booking
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -395,4 +400,190 @@ async fn fetch_latest_state(
 
     // Return the updated auth data
     Ok("200".to_string())
+}
+
+#[tauri::command]
+async fn cancel_booking(
+    booking_id: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    // Get the current auth data to ensure user is authenticated
+    let _ = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Execute SQL query to update the booking status
+    // Convert the booking_id string to UUID since the database expects UUID type
+    let status_id = "e11e739f-44a8-4b2a-958d-c4d5ad73db88";
+
+    match sqlx::query("UPDATE booking SET status_id = $1::uuid WHERE id = $2::uuid")
+        .bind(status_id)
+        .bind(booking_id.clone())
+        .execute(&*pool)
+        .await
+    {
+        Ok(result) => {
+            if result.rows_affected() == 0 {
+                return Err(format!("No booking found with ID: {}", booking_id));
+            }
+
+            // Fetch the latest state to ensure the app has up-to-date data
+            let _ = fetch_latest_state(pool, state, app).await?;
+
+            Ok(format!("Booking {} successfully cancelled", booking_id))
+        }
+        Err(e) => Err(format!("Failed to cancel booking: {}", e)),
+    }
+}
+
+#[tauri::command]
+async fn reschedule_booking(
+    booking_id: String,
+    new_date: String,
+    end_time: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    // Get the current auth data to ensure user is authenticated
+    let _ = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Execute SQL query to update the booking status
+    // Convert the booking_id string to UUID since the database expects UUID type
+    let status_id = "e11e739f-44a8-4b2a-958d-c4d5ad73db88";
+
+    match sqlx::query("UPDATE booking SET start_time = $1::timestamp, end_time = $2::timestamp WHERE id = $3::uuid")
+        .bind(new_date)
+        .bind(end_time)
+        .bind(booking_id.clone())
+        .execute(&*pool)
+        .await
+    {
+        Ok(result) => {
+            if result.rows_affected() == 0 {
+                return Err(format!("No booking found with ID: {}", booking_id));
+            }
+
+            // Fetch the latest state to ensure the app has up-to-date data
+            let _ = fetch_latest_state(pool, state, app).await?;
+
+            Ok(format!("Booking {} successfully rescheduled", booking_id))
+        }
+        Err(e) => Err(format!("Failed to reschedule booking: {}", e)),
+    }
+}
+
+#[tauri::command]
+async fn checkout_booking(
+    booking_id: Option<String>,
+    customer_id: String,
+    services_id: Option<Vec<String>>,
+    discounts_id: Option<Vec<String>>,
+    currency_id: String,
+    method: String,
+    amount: f64,
+    status: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<sqlx::types::Uuid, String> {
+    // Get the current auth data to ensure user is authenticated
+    let data = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    let payment_result = sqlx::query_as::<_, (sqlx::types::Uuid,)>(
+        "INSERT INTO public.payments (amount, currency_id, payment_method, person_id, company_id, status) 
+         VALUES ($1, $2::uuid, $3, $4::uuid, $5::uuid, $6)
+         RETURNING id"
+    )
+    .bind(amount)
+    .bind(currency_id)
+    .bind(method)
+    .bind(customer_id)
+    .bind(data.company.id)  // Use company ID from auth data directly
+    .bind(status)
+    .fetch_one(&*pool)
+    .await
+    .map_err(|e| format!("Failed to process payment: {}", e))?.0;
+
+    // update booking status & link booking to payment
+    match booking_id {
+        Some(id) => {
+            let id = id.clone();
+            // Update booking status
+            sqlx::query("UPDATE booking SET status_id = $1::uuid WHERE id = $2::uuid")
+                .bind("0758ec7a-8cf6-4247-923c-cdbdfeb214db") // completed status id
+                .bind(id.clone())
+                .execute(&*pool)
+                .await
+                .map_err(|e| format!("Failed to update booking status: {}", e))?;
+
+            // Link booking to payment
+            let payment_id = payment_result.to_string();
+            let pool = pool.clone();
+            sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+                .bind(payment_id)
+                .bind(id)
+                .bind("booking")
+                .execute(&*pool)
+                .await
+                .map_err(|e| format!("Failed to link booking to payment: {}", e))?;
+        }
+        None => (),
+    };
+
+    // link services to payment
+    match services_id {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                let pool = pool.clone();
+                let payment_id = payment_id.clone();
+                let id = id.clone();
+                async move {
+                    sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+                        .bind(payment_id)
+                        .bind(id)
+                        .bind("services")
+                        .execute(&*pool)
+                        .await
+                        .map_err(|e| format!("Failed to link service to payment: {}", e))
+                }
+            });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };
+
+    // link discounts to payment
+    match discounts_id {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                let pool = pool.clone();
+                let payment_id = payment_id.clone();
+                let id = id.clone();
+                async move {
+                    sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+                        .bind(payment_id)
+                        .bind(id)
+                        .bind("discounts")
+                        .execute(&*pool)
+                        .await
+                        .map_err(|e| format!("Failed to link discount to payment: {}", e))
+                }
+            });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };
+    Ok(payment_result) // Return the UUID from the tuple
 }

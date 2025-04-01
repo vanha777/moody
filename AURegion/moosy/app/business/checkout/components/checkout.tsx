@@ -256,12 +256,14 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
             )}
 
             {/* Payment view */}
-            {!showOverall && (
+            {!showOverall && auth && booking && selectedClient && (
                 <PaymentMethods
                     amount={amount}
                     selectedServices={selectedServices}
                     selectedDiscounts={selectedDiscounts}
                     customerInfo={selectedClient}
+                    bookingId={booking.id}
+                    currencyId={auth.company.currency.id}
                     onClose={() => setShowOverall(true)}
                 />
             )}

@@ -16,10 +16,16 @@ export interface CalendarEvent {
     start: Date;
     end: Date;
     customer: ContactProps
+    status: {
+        id: string;
+        name: string;
+        description: string;
+        created_at: string;
+    };
 }
 
 const BookingList: React.FC = () => {
-    const { auth } = useAppContext();
+    const { auth, getUser } = useAppContext();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showOverlay, setShowOverlay] = useState<boolean>(false);
@@ -39,8 +45,9 @@ const BookingList: React.FC = () => {
     };
 
     useEffect(() => {
+        getUser();
         if (!auth) {
-            router.push("/");
+            router.push("/dashboard/login");
         }
         updateCalendarView();
         window.addEventListener("resize", updateCalendarView);
@@ -53,6 +60,7 @@ const BookingList: React.FC = () => {
             try {
                 const mockEvents: CalendarEvent[] = auth?.bookings.map((booking) => ({
                     id: booking.id,
+                    status: booking.status,
                     service: {
                         id: booking.service.id,
                         name: booking.service.name,
@@ -65,7 +73,7 @@ const BookingList: React.FC = () => {
                     start: new Date(booking.start_time),
                     end: new Date(booking.end_time),
                     customer: {
-                        id: parseInt(booking.customer.id),
+                        id: booking.customer.id,
                         name: `${booking.customer.personal_information.first_name} ${booking.customer.personal_information.last_name}`,
                         email: booking.customer.contact_method?.find(c => c.type === 'email')?.value || '',
                         phone: booking.customer.contact_method?.find(c => c.type === 'phone')?.value || '',
@@ -73,7 +81,7 @@ const BookingList: React.FC = () => {
                         notes: booking.customer.notes || '',
                     }
                 })) || [];
-                
+
                 // const mockEvents: CalendarEvent[] = [
                 //     {
                 //         id: '1',

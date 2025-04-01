@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarEvent } from './booking';
 import { useRouter } from 'next/navigation';
+import { useAppContext } from '@/app/utils/AppContext';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 interface BookingOverlayProps {
   booking: CalendarEvent;
@@ -49,6 +51,7 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
   onCancel,
   onCharge
 }) => {
+  const { cancelBooking, rescheduleBooking } = useAppContext();
   const router = useRouter();
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [newDate, setNewDate] = useState<Date>(booking.start);
@@ -57,12 +60,43 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleReschedule = () => {
-    if (onReschedule) {
-      onReschedule(newDate);
+  const handleReschedule = async (booking: CalendarEvent, newDate: Date) => {
+    try {
+      const duration = booking.service.duration; // Assuming format "HH:MM:SS"
+      console.log("Duration", duration);
+      
+      // Parse duration string (HH:MM:SS) into milliseconds
+      const [hours, minutes, seconds] = duration.split(':').map(Number);
+      const durationMs = (hours * 3600 + minutes * 60 + seconds) * 1000;
+
+      // Convert local time to UTC using the system's timezone
+      const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const localDate = toZonedTime(newDate, localTimezone);
+      const utcStartDate = fromZonedTime(newDate, localTimezone);
+      
+      // Calculate UTC end time by adding duration to UTC start time
+      const utcEndDate = new Date(utcStartDate.getTime() + durationMs);
+
+      console.log("Detected local timezone:", localTimezone);
+      console.log("Original local time:", newDate.toLocaleString());
+      console.log("Converted UTC start time:", utcStartDate.toUTCString());
+      console.log("Calculated UTC end time:", utcEndDate.toUTCString());
+      console.log("Duration (hours.ConcurrentModificationException):", durationMs / (1000 * 60 * 60));
+      console.log("Time difference (hours):", 
+        (utcStartDate.getTime() - localDate.getTime()) / (1000 * 60 * 60)
+      );
+
+      const response = await rescheduleBooking(booking.id, utcStartDate,utcEndDate);
+      console.log("Rescheduling booking response", response);
+      if (onReschedule) {
+        onReschedule(utcStartDate);
+      }
+    } catch (error) {
+      console.error("Error rescheduling booking", error);
+    } finally {
+      setIsRescheduling(false);
+      setSuccessMessage("Appointment successfully rescheduled!");
     }
-    setIsRescheduling(false);
-    setSuccessMessage("Appointment successfully rescheduled!");
   };
 
   const handleCharge = () => {
@@ -72,12 +106,21 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
     setIsCharging(false);
   };
 
-  const handleCancel = () => {
+  const handleCancel = async (bookingId: string) => {
     if (onCancel) {
       onCancel();
     }
-    setConfirmingCancel(false);
-    setSuccessMessage("Appointment successfully cancelled!");
+    try {
+      const response = await cancelBooking(bookingId);
+      console.log("Cancel Booking response", response);
+      if (response) {
+        setSuccessMessage("Appointment successfully cancelled!");
+      }
+    } catch (error) {
+      console.error("Error cancelling booking", error);
+    } finally {
+      setConfirmingCancel(false);
+    }
   };
 
   const handleCheckout = () => {
@@ -90,8 +133,8 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
     <div className="fixed inset-0 bg-white z-50 min-h-screen overflow-y-auto">
       {/* Header */}
       <div className="flex items-center px-4 py-6 border-b border-gray-200">
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="text-black p-2"
           aria-label="Go back"
         >
@@ -125,7 +168,7 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
             <p className="text-gray-600">Service</p>
             <p className="font-medium">{booking.service.name}</p>
           </div>
-          
+
           <div className="space-y-2">
             <p className="text-gray-600">Date & Time</p>
             <p className="font-medium">
@@ -147,20 +190,20 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
       {/* Action Buttons */}
       {!isRescheduling && !isCharging && !confirmingCancel && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 space-y-2">
-          <button 
+          <button
             className="w-full py-3 bg-black text-white rounded-lg font-medium"
             onClick={handleCheckout}
           >
             Check Out
           </button>
           <div className="flex space-x-2">
-            <button 
+            <button
               className="flex-1 py-3 border border-black rounded-lg font-medium"
               onClick={() => setIsRescheduling(true)}
             >
               Reschedule
             </button>
-            <button 
+            <button
               className="flex-1 py-3 border border-black rounded-lg font-medium text-red-600"
               onClick={() => setConfirmingCancel(true)}
             >
@@ -224,15 +267,15 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
           </div>
 
           <div className="flex space-x-2">
-            <button 
+            <button
               className="flex-1 py-3 border border-black rounded-lg"
               onClick={() => setIsRescheduling(false)}
             >
               Cancel
             </button>
-            <button 
+            <button
               className="flex-1 py-3 bg-black text-white rounded-lg"
-              onClick={handleReschedule}
+              onClick={() => handleReschedule(booking, newDate)}
             >
               Confirm
             </button>
@@ -256,13 +299,13 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
             </label>
           </div>
           <div className="flex space-x-2 mt-2">
-            <button 
+            <button
               className="flex-1 py-3 border border-black rounded-lg"
               onClick={() => setIsCharging(false)}
             >
               Cancel
             </button>
-            <button 
+            <button
               className="flex-1 py-3 bg-black text-white rounded-lg"
               onClick={handleCharge}
             >
@@ -275,15 +318,15 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
           <h4 className="font-semibold mb-2 text-error">Cancel Appointment?</h4>
           <p className="mb-2">This action cannot be undone.</p>
           <div className="flex space-x-2">
-            <button 
+            <button
               className="flex-1 py-3 border border-black rounded-lg"
               onClick={() => setConfirmingCancel(false)}
             >
               Back
             </button>
-            <button 
+            <button
               className="flex-1 py-3 bg-red-600 text-white rounded-lg"
-              onClick={handleCancel}
+              onClick={() => handleCancel(booking.id)}
             >
               Confirm Cancellation
             </button>

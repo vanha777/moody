@@ -40,7 +40,7 @@ export interface IdeaProps {
 }
 
 export interface ContactProps {
-  id?: number;
+  id: string;
   name: string;
   email: string;
   phone?: string;

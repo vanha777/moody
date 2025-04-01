@@ -5,22 +5,29 @@ import Image from 'next/image';
 import { ContactProps } from '../../clients/components/businesses';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { ServiceResponse } from '@/app/dashboard/login/page';
+import { useAppContext } from '@/app/utils/AppContext';
 
 interface PaymentMethodProps {
   amount: number;
-  selectedServices: any[];
-  selectedDiscounts: any[];
-  customerInfo?: ContactProps | null;
+  selectedServices: any[] | null;
+  selectedDiscounts: any[] | null;
+  customerInfo: ContactProps;
+  bookingId: string | null;
+  currencyId: string;
   onClose: () => void;
 }
 
-export default function PaymentMethods({ 
+export default function PaymentMethods({
   amount,
   selectedServices,
   selectedDiscounts,
   customerInfo,
+  bookingId,
+  currencyId,
   onClose,
 }: PaymentMethodProps) {
+  const { auth, checkoutBooking } = useAppContext();
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle');
@@ -37,15 +44,22 @@ export default function PaymentMethods({
 
   const handlePaymentSubmit = async () => {
     if (!selectedMethod || !customerInfo) return;
-    
     setIsProcessing(true);
     setPaymentStatus('processing');
-    
     try {
       // Your payment processing logic here
       // await processPayment({ ... });
-      
-      setPaymentStatus('completed');
+      const response = await checkoutBooking(
+        customerInfo.id,
+        amount,
+        selectedMethod,
+        currencyId,
+        bookingId || undefined,
+        selectedServices?.map(service => service.id),
+        selectedDiscounts?.map(discount => discount.id)
+      );
+      console.log("Payment response ", response);
+
       // Handle completion internally instead of calling parent
       // You could redirect to a success page or show a modal
     } catch (error) {
@@ -53,6 +67,7 @@ export default function PaymentMethods({
       console.error('Payment failed:', error);
     } finally {
       setIsProcessing(false);
+      setPaymentStatus('completed');
     }
   };
 
@@ -89,11 +104,10 @@ export default function PaymentMethods({
             {paymentMethods.map((method) => (
               <div
                 key={method.id}
-                className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all ${
-                  selectedMethod === method.id
-                    ? 'border-black bg-gray-100'
-                    : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
-                }`}
+                className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all ${selectedMethod === method.id
+                  ? 'border-black bg-gray-100'
+                  : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                  }`}
                 onClick={() => handleMethodSelect(method.id)}
               >
                 <div className="w-12 h-12 relative mb-2">
@@ -130,10 +144,10 @@ export default function PaymentMethods({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ 
+                transition={{
                   type: "spring",
                   stiffness: 260,
-                  damping: 20 
+                  damping: 20
                 }}
               >
                 <CheckCircle className="w-16 h-16 text-black mb-4" />
@@ -161,7 +175,7 @@ export default function PaymentMethods({
           ) : (
             <>
               <button
-                onClick={handlePaymentSubmit}
+                onClick={() => handlePaymentSubmit()}
                 disabled={!selectedMethod || isProcessing}
                 className={`relative w-full h-12 rounded-lg font-medium
                   ${!selectedMethod || isProcessing
@@ -190,7 +204,7 @@ export default function PaymentMethods({
                   'Complete Payment'
                 )}
               </button>
-              
+
               {paymentStatus === 'error' && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}

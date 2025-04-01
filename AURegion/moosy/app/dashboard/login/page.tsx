@@ -117,13 +117,7 @@ export interface LoginResponse {
         id: string;
         name: string;
       };
-      services: Array<{
-        id: string;
-        name: string;
-        description: string;
-        duration: string;
-        price: number;
-      }>;
+      services: Array<ServiceResponse>;
     }>;
     contact_method: Array<{
       id: string;
@@ -178,13 +172,7 @@ export interface BookingResponse {
       is_primary: boolean;
     }> | null;
   } | null;
-  service: {
-    id: string;
-    name: string;
-    description: string;
-    duration: string;
-    price: number;
-  };
+  service: ServiceResponse;
   status: {
     id: string;
     name: string;
@@ -193,6 +181,14 @@ export interface BookingResponse {
   };
   start_time: string;
   end_time: string;
+}
+
+export interface ServiceResponse {
+  id: string;
+  name: string;
+  description: string;
+  duration: string;
+  price: number;
 }
 
 // Function to handle login
