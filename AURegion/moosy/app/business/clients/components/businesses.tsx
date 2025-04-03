@@ -42,6 +42,8 @@ export interface IdeaProps {
 export interface ContactProps {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   company?: string;
@@ -52,8 +54,8 @@ export interface ContactProps {
     street?: string;
     city?: string;
     state?: string;
+    postal_code?: string;
     country?: string;
-    zip?: string;
   };
   isFavorite?: boolean;
   lastVisited?: Date;
@@ -83,7 +85,8 @@ function transformCustomerToContact(customer: any): ContactProps {
     phone: customer.contact_method?.find((m: { type: string; }) => m.type === 'phone')?.value,
     avatar: customer.profile_image?.path,
     notes: customer.notes || '',
-    lastVisited: undefined // You might want to store this separately or add to your customer schema
+    lastVisited: undefined, // You might want to store this separately or add to your customer schema
+    address: customer.address
   };
 }
 

@@ -25,6 +25,7 @@ pub struct Roles {
     pub admin: Option<Vec<Person>>,
     pub staff: Option<Vec<Person>>,
     pub customer: Option<Vec<Customer>>,
+    pub address: Option<Address>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -33,6 +34,7 @@ pub struct Person {
     pub personal_information: PersonalInfo,
     pub profile_image: Option<Image>,
     pub contact_method: Option<Vec<ContactMethod>>,
+    pub address: Option<Address>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -42,6 +44,16 @@ pub struct Customer {
     pub notes: Option<String>,
     pub profile_image: Option<Image>,
     pub contact_method: Option<Vec<ContactMethod>>,
+    pub address: Option<Address>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct Address {
+    pub street: Option<String>,
+    pub city: Option<String>,
+    pub state: Option<String>,
+    pub postal_code: Option<String>,
+    pub country: Option<String>,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -269,7 +281,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postgres:")
+                    .connect("postgres")
                     .await
                     .expect("Failed to create pool")
             });
@@ -358,7 +370,11 @@ pub fn run() {
             fetch_latest_state,
             cancel_booking,
             reschedule_booking,
-            checkout_booking
+            checkout_booking,
+            add_customer,
+            edit_customer,
+            delete_customer,
+            checkout_walkin
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -591,19 +607,18 @@ async fn checkout_booking(
 // First, define the struct for the customer input
 #[derive(serde::Deserialize)]
 struct CustomerInput {
+    id: Option<String>,
     avatar: Option<String>,
     phone: String,
+    #[serde(rename = "firstName")]
     first_name: String,
+    #[serde(rename = "lastName")]
     last_name: String,
     date_of_birth: Option<String>,
     gender: Option<String>,
     email: Option<String>,
-    street: Option<String>,
-    city: Option<String>,
-    state: Option<String>,
-    zip: Option<String>,
-    country: Option<String>,
     notes: Option<String>,
+    address: Option<Address>,
 }
 
 #[tauri::command]
@@ -611,7 +626,8 @@ async fn add_customer(
     customer: CustomerInput,
     pool: State<'_, PgPool>,
     state: State<'_, AuthState>,
-) -> Result<Value, String> {
+    app: tauri::AppHandle,
+) -> Result<sqlx::types::Uuid, String> {
     // Get the current auth data to ensure user is authenticated
     let auth = match &state.0 {
         Some(data) => data.clone(),
@@ -619,28 +635,217 @@ async fn add_customer(
     };
 
     // Execute the create_or_update_customer function
-    let result: Option<Value> = sqlx::query_scalar(
-        "SELECT * FROM public.create_or_update_customer($1, $2::uuid, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"
+    let result: Option<sqlx::types::Uuid> = sqlx::query_scalar(
+        "SELECT public.create_or_update_customer($1, $2::uuid, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13)"
     )
     .bind(&customer.phone)
     .bind(&auth.company.id)
     .bind(&customer.first_name)
     .bind(&customer.last_name)
-    .bind(customer.date_of_birth.as_deref())
-    .bind(customer.gender.as_deref())
-    .bind(customer.email.as_deref())
-    .bind(customer.street.as_deref())
-    .bind(customer.city.as_deref())
-    .bind(customer.state.as_deref())
-    .bind(customer.zip.as_deref())
-    .bind(customer.country.as_deref())
-    .bind(customer.notes.as_deref())
-    .fetch_one(&*pool)
-    .await
-    .map_err(|e| format!("Failed to create/update customer: {}", e))?;
+    .bind(customer.date_of_birth)
+    .bind(customer.gender)
+    .bind(customer.email)
+    .bind(customer.address.as_ref().map(|a| a.street.clone()))
+    .bind(customer.address.as_ref().map(|a| a.city.clone()))
+    .bind(customer.address.as_ref().map(|a| a.state.clone()))
+    .bind(customer.address.as_ref().map(|a| a.postal_code.clone()))  // This is p_postal_code in the SQL function
+    .bind(customer.address.as_ref().map(|a| a.country.clone()))
+    .bind(customer.notes)  // This is p_note in the SQL function
+        .fetch_one(&*pool)
+        .await
+        .map_err(|e| format!("Failed to create/update customer: {}", e))?;
 
     match result {
-        Some(customer_data) => Ok(customer_data),
+        Some(customer_id) => {
+            let _ = fetch_latest_state(pool, state, app).await?;
+            Ok(customer_id)
+        }
         None => Err("Failed to create/update customer".to_string()),
     }
+}
+
+#[tauri::command]
+async fn edit_customer(
+    customer: CustomerInput,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<sqlx::types::Uuid, String> {
+    // Get the current auth data to ensure user is authenticated
+    let auth = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Execute the update_person_by_id function
+    let result: Option<sqlx::types::Uuid> = sqlx::query_scalar(
+        "SELECT public.update_person_by_id($1::uuid, $2, $3, $4::date, $5, $6, $7, $8, $9, $10, $11, $12)"
+    )
+        .bind(&customer.id)
+        .bind(&customer.first_name)
+        .bind(&customer.last_name)
+        .bind(&customer.date_of_birth)
+        .bind(&customer.gender)
+        .bind(&customer.email)
+        .bind(customer.address.as_ref().map(|a| a.street.clone()))
+        .bind(customer.address.as_ref().map(|a| a.city.clone()))
+        .bind(customer.address.as_ref().map(|a| a.state.clone()))
+        .bind(customer.address.as_ref().map(|a| a.postal_code.clone()))  // This is p_postal_code in the SQL function
+        .bind(customer.address.as_ref().map(|a| a.country.clone()))
+        .bind(&customer.notes)  // This is p_note in the SQL function
+        .fetch_one(&*pool)
+        .await
+        .map_err(|e| format!("Failed to update customer: {}", e))?;
+
+    match result {
+        Some(customer_id) => {
+            let _ = fetch_latest_state(pool, state, app).await?;
+            Ok(customer_id)
+        }
+        None => Err("Failed to create/update customer".to_string()),
+    }
+}
+
+#[tauri::command]
+async fn delete_customer(
+    customer_id: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<sqlx::types::Uuid, String> {
+    // Get the current auth data to ensure user is authenticated
+    let auth = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Parse the customer_id string into a UUID
+    let customer_uuid = sqlx::types::Uuid::parse_str(&customer_id)
+        .map_err(|e| format!("Invalid customer ID format: {}", e))?;
+
+    // Execute the delete operation
+    let result = sqlx::query!(
+        "DELETE FROM people WHERE id = $1 RETURNING id",
+        customer_uuid
+    )
+    .fetch_optional(&*pool)
+    .await
+    .map_err(|e| format!("Failed to delete customer: {}", e))?;
+
+    match result {
+        Some(record) => {
+            let _ = fetch_latest_state(pool, state, app).await?;
+            Ok(record.id)
+        }
+        None => Err("Customer not found".to_string()),
+    }
+}
+
+#[tauri::command]
+async fn checkout_walkin(
+    customer_id: String,
+    services_id: Option<Vec<String>>,
+    discounts_id: Option<Vec<String>>,
+    currency_id: String,
+    method: String,
+    amount: f64,
+    status: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<sqlx::types::Uuid, String> {
+    // Get the current auth data to ensure user is authenticated
+    let data = match &state.0 {
+        Some(data) => data.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    let payment_result = sqlx::query_as::<_, (sqlx::types::Uuid,)>(
+        "INSERT INTO public.payments (amount, currency_id, payment_method, person_id, company_id, status) 
+         VALUES ($1, $2::uuid, $3, $4::uuid, $5::uuid, $6)
+         RETURNING id"
+    )
+    .bind(amount)
+    .bind(currency_id)
+    .bind(method)
+    .bind(customer_id)
+    .bind(data.company.id)  // Use company ID from auth data directly
+    .bind(status)
+    .fetch_one(&*pool)
+    .await
+    .map_err(|e| format!("Failed to process payment: {}", e))?.0;
+
+    // update booking status & link booking to payment
+    // match booking_id {
+    //     Some(id) => {
+    //         let id = id.clone();
+    //         // Update booking status
+    //         sqlx::query("UPDATE booking SET status_id = $1::uuid WHERE id = $2::uuid")
+    //             .bind("0758ec7a-8cf6-4247-923c-cdbdfeb214db") // completed status id
+    //             .bind(id.clone())
+    //             .execute(&*pool)
+    //             .await
+    //             .map_err(|e| format!("Failed to update booking status: {}", e))?;
+
+    //         // Link booking to payment
+    //         let payment_id = payment_result.to_string();
+    //         let pool = pool.clone();
+    //         sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+    //             .bind(payment_id)
+    //             .bind(id)
+    //             .bind("booking")
+    //             .execute(&*pool)
+    //             .await
+    //             .map_err(|e| format!("Failed to link booking to payment: {}", e))?;
+    //     }
+    //     None => (),
+    // };
+
+    //  link services to payment
+    match services_id {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                let pool = pool.clone();
+                let payment_id = payment_id.clone();
+                let id = id.clone();
+                async move {
+                    sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+                        .bind(payment_id)
+                        .bind(id)
+                        .bind("services")
+                        .execute(&*pool)
+                        .await
+                        .map_err(|e| format!("Failed to link service to payment: {}", e))
+                }
+            });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };
+
+    // link discounts to payment
+    match discounts_id {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                let pool = pool.clone();
+                let payment_id = payment_id.clone();
+                let id = id.clone();
+                async move {
+                    sqlx::query("INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) VALUES ($1::uuid, $2::uuid, $3)")
+                        .bind(payment_id)
+                        .bind(id)
+                        .bind("discounts")
+                        .execute(&*pool)
+                        .await
+                        .map_err(|e| format!("Failed to link discount to payment: {}", e))
+                }
+            });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };
+    let _ = fetch_latest_state(pool, state, app).await?;
+    Ok(payment_result) // Return the UUID from the tuple
 }

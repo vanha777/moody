@@ -88,6 +88,13 @@ export interface LoginResponse {
         value: string;
         is_primary: boolean;
       }> | null;
+      address: {
+        street: string | null;
+        city: string | null;
+        state: string | null;
+        postalCode: string | null;
+        country: string | null;
+      } | null;
     }>;
   };
   company: {

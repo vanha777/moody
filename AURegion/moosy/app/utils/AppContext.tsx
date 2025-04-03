@@ -32,8 +32,11 @@ export interface AppContextData {
     removeNotification: (id: string) => void;
     cancelBooking: (bookingId: string) => Promise<any>;
     rescheduleBooking: (bookingId: string, newDate: Date, endTime: Date) => Promise<any>;
-    checkoutBooking: (customerId: string, amount: number, method: string,currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    checkoutBooking: (customerId: string, amount: number, method: string, currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
     addCustomer: (customer: any) => Promise<any>;
+    editCustomer: (customer: any) => Promise<any>;
+    deleteCustomer: (customerId: string) => Promise<any>;
+    checkoutWalkin: (customerId: string, amount: number, method: string, currency: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -138,9 +141,38 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    const checkoutBooking = useCallback(async (customerId: string, amount: number, method: string,currencyId: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => {
+    const editCustomer = useCallback(async (customer: ContactProps) => {
         try {
-            const response = await invoke('checkout_booking', { bookingId, customerId, servicesId, discountsId, currencyId, method, amount,status:"completed" })
+            const response = await invoke('edit_customer', { customer })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+    const deleteCustomer = useCallback(async (customerId: string) => {
+        try {
+            console.log("customer Id to delete: ", customerId);
+            const response = await invoke('delete_customer', { customerId })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+    const checkoutBooking = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => {
+        try {
+            const response = await invoke('checkout_booking', { bookingId, customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+    const checkoutWalkin = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, servicesId?: string[], discountsId?: string[]) => {
+        try {
+            console.log("checkoutWalkin: ", customerId, amount, method, currencyId, servicesId, discountsId);
+            const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
             return response;
         } catch (error) {
             return error;
@@ -289,7 +321,10 @@ export function AppProvider({ children }: AppProviderProps) {
         removeNotification,
         rescheduleBooking,
         checkoutBooking,
-        addCustomer
+        addCustomer,
+        editCustomer,
+        deleteCustomer,
+        checkoutWalkin
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

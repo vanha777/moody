@@ -94,6 +94,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     };
 
     const handleProceedToPayment = () => {
+        // console.log("Proceed to Payment: ", selectedClient, selectedServices, selectedDiscounts, amount,booking);
         setShowOverall(false);
     };
 
@@ -256,13 +257,13 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
             )}
 
             {/* Payment view */}
-            {!showOverall && auth && booking && selectedClient && (
+            {!showOverall && auth && selectedClient && (
                 <PaymentMethods
                     amount={amount}
                     selectedServices={selectedServices}
                     selectedDiscounts={selectedDiscounts}
                     customerInfo={selectedClient}
-                    bookingId={booking.id}
+                    bookingId={booking?.id}
                     currencyId={auth.company.currency.id}
                     onClose={() => setShowOverall(true)}
                 />

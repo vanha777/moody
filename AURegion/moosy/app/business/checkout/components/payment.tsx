@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ContactProps } from '../../clients/components/businesses';
 import { motion } from 'framer-motion';
@@ -13,7 +13,7 @@ interface PaymentMethodProps {
   selectedServices: any[] | null;
   selectedDiscounts: any[] | null;
   customerInfo: ContactProps;
-  bookingId: string | null;
+  bookingId?: string | null;
   currencyId: string;
   onClose: () => void;
 }
@@ -27,10 +27,19 @@ export default function PaymentMethods({
   currencyId,
   onClose,
 }: PaymentMethodProps) {
-  const { auth, checkoutBooking } = useAppContext();
+  const { auth, checkoutBooking, checkoutWalkin } = useAppContext();
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle');
+
+  useEffect(() => {
+    console.log("Payment Methods Customer Info: ", customerInfo);
+    console.log("Payment Methods Booking ID: ", bookingId);
+    console.log("Payment Methods Amount: ", amount);
+    console.log("Payment Methods Currency ID: ", currencyId);
+    console.log("Payment Methods Selected Services: ", selectedServices);
+    console.log("Payment Methods Selected Discounts: ", selectedDiscounts);
+  }, []);
 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method);
@@ -47,21 +56,32 @@ export default function PaymentMethods({
     setIsProcessing(true);
     setPaymentStatus('processing');
     try {
-      // Your payment processing logic here
-      // await processPayment({ ... });
-      const response = await checkoutBooking(
-        customerInfo.id,
-        amount,
-        selectedMethod,
-        currencyId,
-        bookingId || undefined,
-        selectedServices?.map(service => service.id),
-        selectedDiscounts?.map(discount => discount.id)
-      );
-      console.log("Payment response ", response);
+      if (bookingId) {
+        // checkout a booking
+        const response = await checkoutBooking(
+          customerInfo.id,
+          amount,
+          selectedMethod,
+          currencyId,
+          bookingId || undefined,
+          selectedServices?.map(service => service.id),
+          selectedDiscounts?.map(discount => discount.id)
+        );
+        console.log("Payment booking response ", response);
+      }
+      else {
+        // process a payment without a booking
+        const response = await checkoutWalkin(
+          customerInfo.id,
+          amount,
+          selectedMethod,
+          currencyId,
+          selectedServices?.map(service => service.id),
+          selectedDiscounts?.map(discount => discount.id)
+        );
+        console.log("Payment walkin customer response ", response);
+      }
 
-      // Handle completion internally instead of calling parent
-      // You could redirect to a success page or show a modal
     } catch (error) {
       setPaymentStatus('error');
       console.error('Payment failed:', error);
