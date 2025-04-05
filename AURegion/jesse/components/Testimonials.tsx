@@ -49,7 +49,7 @@ export default function Testimonials() {
   ]
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden">
       {/* <section className="py-20 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden"> */}
       <div className="container mx-auto px-4 relative z-10">
         <motion.div

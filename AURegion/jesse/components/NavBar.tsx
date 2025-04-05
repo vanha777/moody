@@ -31,10 +31,9 @@ export default function NavBar() {
                                 <details>
                                     <summary className="font-medium">Services</summary>
                                     <ul className="p-2 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] rounded-md border border-[#D1B882]">
-                                        <li><Link href="/services/lashes&refill" className="font-medium">Lashes & Refill</Link></li>
-                                        <li><Link href="/services/brow&tint" className="font-medium">Brow & Lint</Link></li>
+                                        <li><Link href="/services/eyelashes" className="font-medium">Eyelashes</Link></li>
+                                        <li><Link href="/services/eyebrows" className="font-medium">Eyebrows</Link></li>
                                         <li><Link href="/services/facials" className="font-medium">Facials</Link></li>
-                                        <li><Link href="/services/lift" className="font-medium">Lift</Link></li>
                                     </ul>
                                 </details>
                             </li>
@@ -72,10 +71,9 @@ export default function NavBar() {
                             <details>
                                 <summary className="text-black hover:text-black transition-colors font-medium text-lg">Services</summary>
                                 <ul className="p-2 bg-gradient-to-r from-[#FFF5E6] to-[#FFF0DB] rounded-md border border-[#D1B882] z-50">
-                                    <li><Link href="/services/lashes&refill" className="text-black font-medium">Lashes & Refill</Link></li>
-                                    <li><Link href="/services/brow&lint" className="text-black font-medium">Brow & Lint</Link></li>
+                                    <li><Link href="/services/eyelashes" className="text-black font-medium">Eyelashes</Link></li>
+                                    <li><Link href="/services/eyebrows" className="text-black font-medium">Eyebrows</Link></li>
                                     <li><Link href="/services/facials" className="text-black font-medium">Facials</Link></li>
-                                    <li><Link href="/services/lift" className="text-black font-medium">Lift</Link></li>
                                 </ul>
                             </details>
                         </li>

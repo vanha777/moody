@@ -102,6 +102,27 @@ export default function PricingHero() {
       ]
     },
     {
+      title: "Lash Lift",
+      description: "Lash Lift is a semi-permanent treatment that enhances your natural curl, giving your lashes a lifted, voluminous look without extensions.",
+      image: "/lift.png",
+      subServices: [
+        {
+          name: "Korean Lash Lift + Collagen",
+          // description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
+          price: "85",
+          duration: "45 min",
+          // image: "/3.png"
+        },
+        {
+          name: "Lash Tint & Lift ",
+          description: "",
+          price: "95",
+          duration: "25 min",
+          image: ""
+        }
+      ]
+    },
+    {
       title: "Lash Refill",
       description: `
       Refill from 2-4  weeks : $70-$120 (varies by design) . 
@@ -115,84 +136,84 @@ Refill after 4+ weeks : A new full set will be required 
           // description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
           price: "70 - 100",
           duration: "1h",
-          image: "/baby_doll.png"
+          // image: "/baby_doll.png"
         },
         {
           name: "Angle wings",
           // description: "Lifted, elongated, and a little dramatic! This winged lash style enhances your eye shape for a flirty, cat-eye effect.",
           price: "70 - 100",
           duration: "1h",
-          image: "/fairy_wings.png"
+          // image: "/fairy_wings.png"
         },
         {
           name: "Wet Look",
           // description: "Bold, glossy, and full of drama! This lash style gives that freshly-coated mascara effect—perfect for a sultry, high-impact look.",
           price: "70 - 100",
           duration: "1h",
-          image: "/wet_look.png"
+          // image: "/wet_look.png"
         },
         {
           name: "Anime",
           // description: "Big, bright, and doll-like! Inspired by anime characters, these lashes open up your eyes for a wide-eyed, playful effect.",
           price: "70 - 100",
           duration: "1h",
-          image: "/animate.png"
+          // image: "/animate.png"
         },
         {
           name: "Sunflower",
           // description: "A unique spiky lash style that combines narrow, well-defined fans with longer spikes for a bold, textured look.",
           price: "80 - 110",
           duration: "1h",
-          image: "/sun_flower.png"
+          // image: "/sun_flower.png"
         },
         {
           name: "Multi layer",
           // description: "Full, fluffy, and dimensional! This style uses different lengths and layers to create texture and depth for a voluminous but airy look.",
           price: "85 - 110",
           duration: "1h",
-          image: "/multi_layer.png"
+          // image: "/multi_layer.png"
         },
         {
           name: "Wispy Katun Thai",
           // description: "Light, soft, and feathery with a touch of luxury—perfect for a natural yet elevated look.",
           price: "90 - 120",
           duration: "1h",
-          image: "/wispy_katun_thai.png"
+          // image: "/wispy_katun_thai.png"
         },
         {
           name: "Glow foxy eyes (Signature)",
           // description: "Bold and lifted! These lashes create a foxy, winged effect that elongates and defines your eyes for a sultry, cat-eye look.",
           price: "95 - 125",
           duration: "1h",
-          image: "/glow_fox_eye_(Signature).png"
+          // image: "/glow_fox_eye_(Signature).png"
         },
         {
           name: "Individual (classic)",
           // description: "Simple, timeless, and naturally beautiful. A single extension is applied to each lash for a soft, effortless enhancement.",
           price: "65 - 95",
           duration: "1h",
-          image: "/individual.png"
+          // image: "/individual.png"
         },
         {
           name: "Hybrid",
           // description: " A little classic, a little volume! Hybrid lashes mix single extensions and volume fans for a wispy, fuller-but-still-natural look.",
           price: "70 - 100",
           duration: "1h",
-          image: "/hybrid_lash.png"
+          // image: "/hybrid_lash.png"
         },
         {
           name: "Natural volume 3D-5D",
           // description: "Soft and fluttery! Multiple lightweight extensions create a fuller look, without being too dramatic.",
           price: "80 - 110",
           duration: "1h",
-          image: "/nature_volume_3D-5D.png"
+          // image: "/nature_volume_3D-5D.png"
         },
         {
           name: "Glow mega volume 10D-14D",
           description: "",
           price: "90 - 120",
           duration: "1h",
-          image: "/glow_mega_volume_10D-14D.png"
+          image: ""
         }
       ]
     }
