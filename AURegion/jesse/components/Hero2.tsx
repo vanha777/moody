@@ -48,7 +48,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <button
-                onClick={() => window.open("https://colaunch-it.vercel.app/booking/jess-glow", "_blank")}
+                onClick={() => window.open("https://moosy.vercel.app/booking/jess-glow", "_blank")}
                 className="bg-[#D1B882] text-white px-8 py-4 rounded-full text-lg md:text-xl font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#E2CA94]"
               >
                 Book Now
