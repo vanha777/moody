@@ -72,7 +72,7 @@ export default function Hero() {
               <img
                 src={isMobile ? "/heroLashes.png" : "/heroLashes.png"}
                 alt="Hero Image"
-                className="w-full h-full object-cover rounded-[24px]"
+                className="w-full h-full object-cover rounded-[24px] border-4 border-[#D1B882]"
               />
             </div>
           </motion.div>

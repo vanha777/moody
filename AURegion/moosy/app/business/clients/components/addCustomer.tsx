@@ -1,24 +1,82 @@
-import React, { useState } from 'react';
+'use_client'
+import React, { useState, useEffect } from 'react';
 import { ContactProps } from './businesses';
-
+import { useAppContext } from '../../../utils/AppContext';
 interface AddCustomerProps {
     onClose: () => void;
-    // onSave: (customer: ContactProps) => void;
+    customer?: ContactProps;
 }
 
-const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
-    const [formData, setFormData] = useState<Partial<ContactProps>>({});
+const AddCustomer: React.FC<AddCustomerProps> = ({ onClose, customer }) => {
+    const { auth, addCustomer, editCustomer } = useAppContext();
+    const [formData, setFormData] = useState<Partial<ContactProps>>({
+        address: {
+            country: 'Australia'
+        }
+    });
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // Initialize form with customer data if editing
+    useEffect(() => {
+        if (auth?.company.id) {
+            if (customer) {
+                setFormData({
+                    ...customer,
+                    address: {
+                        street: customer.address?.street || '',
+                        city: customer.address?.city || '',
+                        state: customer.address?.state || '',
+                        postal_code: customer.address?.postal_code || '',
+                        country: customer.address?.country || 'Australia'
+                    }
+                });
+
+                if (customer.avatar) {
+                    setAvatarPreview(customer.avatar);
+                }
+            }
+        }
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // onSave(formData as ContactProps);
-        onClose();
+        try {
+            console.log("Debug Customer Data: ", formData);
+            formData.firstName = formData.name?.split(' ')[0] || '';
+            formData.lastName = formData.name?.split(' ').slice(1).join(' ') || '';
+            if (customer) {
+                // If customer exists, we're editing
+                const response = await editCustomer(formData);
+                console.log("Response from editCustomer:", response);
+            } else {
+                // If no customer, we're creating new
+                const response = await addCustomer(formData);
+                console.log("Response from addCustomer:", response);
+            }
+        } catch (error) {
+            console.error("Error saving customer:", error);
+        } finally {
+            onClose();
+            // Redirect to clients page after successful operation
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Handle nested properties (like address.country)
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setFormData(prev => ({
+                ...prev,
+                [parent]: {
+                    ...(prev[parent as keyof typeof prev] as object || {}),
+                    [child]: value
+                }
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +104,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                     </svg>
                     Cancel
                 </button>
-                <h1 className="text-lg font-semibold">Add New Customer</h1>
+                <h1 className="text-lg font-semibold">{customer ? 'Edit Customer' : 'Add New Customer'}</h1>
                 <div className="w-20"></div> {/* Spacer for centering */}
             </div>
 
@@ -89,6 +147,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             required
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.name}
                         />
                     </div>
 
@@ -99,6 +158,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             name="phone"
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.phone}
                         />
                     </div>
 
@@ -110,6 +170,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             required
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.email}
                         />
                     </div>
 
@@ -120,6 +181,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             name="company"
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.company}
                         />
                     </div>
 
@@ -132,6 +194,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             placeholder="Street"
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.address?.street}
                         />
                         <div className="grid grid-cols-2 gap-2">
                             <input
@@ -140,6 +203,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                                 placeholder="City"
                                 className="p-2 border border-gray-200 rounded-lg"
                                 onChange={handleChange}
+                                defaultValue={formData.address?.city}
                             />
                             <input
                                 type="text"
@@ -147,14 +211,25 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                                 placeholder="State"
                                 className="p-2 border border-gray-200 rounded-lg"
                                 onChange={handleChange}
+                                defaultValue={formData.address?.state}
                             />
                         </div>
                         <input
                             type="text"
-                            name="address.zip"
-                            placeholder="ZIP Code"
+                            name="address.postal_code"
+                            placeholder="Post Code"
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             onChange={handleChange}
+                            defaultValue={formData.address?.postal_code}
+                        />
+                        <input
+                            hidden
+                            type="text"
+                            name="address.country"
+                            placeholder="Country"
+                            className="p-2 border border-gray-200 rounded-lg"
+                            onChange={handleChange}
+                            defaultValue={formData.address?.country || 'Australia'}
                         />
                     </div>
 
@@ -165,6 +240,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                             className="w-full p-2 border border-gray-200 rounded-lg"
                             rows={3}
                             onChange={handleChange}
+                            defaultValue={formData.notes}
                         />
                     </div>
                 </div>
@@ -175,7 +251,7 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose }) => {
                         type="submit"
                         className="w-full py-2 bg-black text-white rounded-lg font-medium"
                     >
-                        Save Customer
+                        {customer ? 'Update Customer' : 'Save Customer'}
                     </button>
                 </div>
             </form>

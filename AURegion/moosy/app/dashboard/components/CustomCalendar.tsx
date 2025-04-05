@@ -20,6 +20,7 @@ import AddBookingOverlay from './addBookingOverlay';
 import SimpleSideBar from './simpleSideBar';
 import { motion } from 'framer-motion';
 import { CalendarEvent } from './booking';
+import { useAppContext } from '@/app/utils/AppContext';
 
 interface CustomCalendarProps {
   events: CalendarEvent[];
@@ -29,6 +30,7 @@ interface CustomCalendarProps {
 type CalendarView = 'day' | 'week' | 'month' | 'list';
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick }) => {
+  const { notifications, removeNotification } = useAppContext();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<CalendarView>('day');
   const [weekDays, setWeekDays] = useState<Date[]>([]);
@@ -38,13 +40,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showAddBooking, setShowAddBooking] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<Date | null>(null);
-  // const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showNotifications, setShowNotifications] = useState(false);
   // this is for testing purposes
-  const [currentTime, setCurrentTime] = useState(() => {
-    const today = new Date();
-    today.setHours(10, 0, 0, 0); // Set to 5 PM
-    return today;
-  });
+  // const [currentTime, setCurrentTime] = useState(() => {
+  //   const today = new Date();
+  //   today.setHours(10, 0, 0, 0); // Set to 5 PM
+  //   return today;
+  // });
 
   // Update current time every minute
   useEffect(() => {
@@ -201,8 +204,31 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
 
   // Updated event click handler
   const handleEventClick = (event: CalendarEvent) => {
+    // Don't process clicks for completed or cancelled events
+    if (event.status.name.toLowerCase() === 'completed' || event.status.name.toLowerCase() === 'cancelled') {
+      return;
+    }
     setSelectedEvent(event);
     onEventClick(event);
+  };
+
+  // Update the getStatusStyles function
+  const getStatusStyles = (status: string) => {
+    const isDisabled = status.toLowerCase() === 'completed' || status.toLowerCase() === 'cancelled';
+    const baseStyles = isDisabled ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:bg-opacity-90';
+    
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return `border-l-4 border-l-yellow-500 bg-yellow-50 hover:bg-yellow-100 ${baseStyles}`;
+      case 'completed':
+        return `border-l-4 border-l-green-500 bg-green-50 ${baseStyles}`;
+      case 'cancelled':
+        return `border-l-4 border-l-red-500 bg-red-50 ${baseStyles}`;
+      case 'confirmed':
+        return `border-l-4 border-l-blue-500 bg-blue-50 hover:bg-blue-100 ${baseStyles}`;
+      default:
+        return `border-l-4 border-l-gray-500 bg-gray-50 ${baseStyles}`;
+    }
   };
 
   // Updated renderDayView with current time indicator
@@ -230,9 +256,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             };
 
             return (
-              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-50 relative">
+              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-100 relative">
                 <div
-                  className="time-label flex h-full text-xs font-semibold text-gray-500 cursor-pointer"
+                  className="time-label flex h-full text-xs font-semibold text-gray-400 cursor-pointer"
                   onClick={() => {
                     // Create new date object for the selected time slot
                     const selectedDateTime = createDateTimeForHour();
@@ -246,7 +272,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                   {timeDisplay}
                 </div>
                 <div
-                  className="time-slot p-2 min-h-20 flex flex-col gap-2 relative hover:bg-gray-50/50 transition-all duration-200 cursor-pointer"
+                  className="time-slot p-1 min-h-20 flex flex-col gap-1 relative hover:bg-gray-50/50"
                   onClick={() => {
                     // Create new date object for the selected time slot
                     const selectedDateTime = createDateTimeForHour();
@@ -273,13 +299,30 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                   {eventsInSlot.map(event => (
                     <div
                       key={event.id}
-                      className="event-chip bg-gray-200 text-gray-800 px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-300 hover:scale-[1.01] transition-all z-1 relative"
+                      className={`event-chip px-3 py-1.5 rounded shadow-sm cursor-pointer overflow-hidden flex flex-col gap-0.5 transition-all ${getStatusStyles(event.status.name)}`}
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the time slot click
+                        e.stopPropagation();
                         handleEventClick(event);
                       }}
                     >
-                      {event.customer.name} - {event.service.name}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium truncate">
+                          {event.service.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-600 gap-2">
+                        <span>{format(new Date(event.start), 'h:mm a')}</span>
+                        <span>•</span>
+                        <span className="truncate">{event.customer.name}</span>
+                        <span className="ml-auto font-medium" style={{
+                          color: event.status.name.toLowerCase() === 'pending' ? '#D97706' :
+                            event.status.name.toLowerCase() === 'confirmed' ? '#2563EB' :
+                            event.status.name.toLowerCase() === 'completed' ? '#059669' :
+                            '#DC2626'
+                        }}>
+                          {event.status.name}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -325,8 +368,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             const hour = hourIndex + 8; // Starting at 8 AM
 
             return (
-              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray">
-                <div className="time-label flex h-full text-xs font-semibold text-gray-500">
+              <div key={hourIndex} className="grid grid-cols-[60px_1fr] border-b border-gray-100">
+                <div className="time-label flex h-full text-xs font-semibold text-gray-400">
                   {timeDisplay}
                 </div>
                 <div className="grid grid-cols-7">
@@ -336,7 +379,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     return (
                       <div
                         key={dayIndex}
-                        className={`time-slot p-2 min-h-20 flex flex-col gap-2 relative ${isSameDay(day, new Date()) ? 'bg-gray-50/70' : 'hover:bg-gray-50/30'} transition-all duration-200`}
+                        className={`time-slot p-1 min-h-20 flex flex-col gap-1 relative ${
+                          isSameDay(day, new Date()) ? 'bg-blue-50/30' : ''
+                        } border-l border-gray-100`}
                         onClick={() => {
                           if (isMobile) {
                             setCurrentDate(day);
@@ -345,31 +390,29 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         }}
                       >
                         {isMobile ? (
-                          // Mobile: Just show the count
+                          // Mobile: Show count with status-based colors
                           eventsInSlot.length > 0 && (
-                            <div
-                              className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mx-auto cursor-pointer shadow-md"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentDate(day);
-                                setCurrentView('list');
-                              }}
-                            >
-                              {eventsInSlot.length}
+                            <div className="event-count bg-gray-100 text-xs font-medium rounded-lg px-2 py-1 text-center">
+                              {eventsInSlot.length} events
                             </div>
                           )
                         ) : (
-                          // Desktop: Show event details
+                          // Desktop: Updated event display
                           eventsInSlot.map(event => (
                             <div
                               key={event.id}
-                              className="event-chip bg-gray-200 text-gray-800 px-4 py-2.5 text-sm font-medium rounded-xl shadow-md cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 hover:bg-gray-300 hover:scale-[1.01] transition-all"
+                              className={`event-chip px-2 py-1 rounded shadow-sm cursor-pointer overflow-hidden transition-all ${getStatusStyles(event.status.name)}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEventClick(event);
                               }}
                             >
-                              {event.service.name}
+                              <div className="text-xs font-medium truncate">
+                                {event.service.name}
+                              </div>
+                              <div className="text-xs text-gray-600 truncate">
+                                {event.customer.name}
+                              </div>
                             </div>
                           ))
                         )}
@@ -397,7 +440,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-3 flex-grow min-h-[70vh]">
+        <div className="grid grid-cols-7 gap-1 flex-grow">
           {monthDays.flat().map((day, index) => {
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isToday = isSameDay(day, new Date());
@@ -406,58 +449,35 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
             return (
               <div
                 key={index}
-                className={`day-cell rounded-2xl p-1.5 sm:p-2.5 flex flex-col overflow-hidden transition-all duration-200 hover:bg-gray-50/70 ${isCurrentMonth ? '' : 'bg-gray-50/30 text-gray-400'} ${isToday ? 'ring-1 ring-black/20 shadow-sm' : ''} cursor-pointer`}
-                onClick={() => {
-                  setCurrentDate(day);
-                  setCurrentView('day');
-                }}
+                className={`day-cell p-1 flex flex-col min-h-[100px] ${
+                  isCurrentMonth ? '' : 'bg-gray-50'
+                } ${isToday ? 'ring-1 ring-blue-500' : 'border border-gray-100'}`}
               >
-                <div className="flex justify-end mb-2 flex-shrink-0">
-                  <span className={`inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 text-sm font-medium ${isToday ? 'bg-black text-white rounded-full shadow-md' : ''}`}>
-                    {format(day, 'd')}
-                  </span>
+                <div className={`text-sm ${isToday ? 'font-bold text-blue-600' : ''}`}>
+                  {format(day, 'd')}
                 </div>
-
-                {dayEvents.length > 0 && (
-                  isMobile ? (
-                    // Mobile: Only show event count
-                    <div className="flex justify-end mt-auto mb-1">
+                <div className="flex-grow overflow-y-auto space-y-1 mt-1">
+                  {dayEvents.map((event, idx) => 
+                    idx < 3 ? (
                       <div
-                        className="event-count bg-gray-200 text-gray-800 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-md"
+                        key={event.id}
+                        className={`px-2 py-1 text-xs rounded cursor-pointer ${getStatusStyles(event.status.name)}`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          setCurrentDate(day);
-                          setCurrentView('day');
+                          handleEventClick(event);
                         }}
                       >
-                        {dayEvents.length}
+                        <div className="font-medium truncate">
+                          {format(new Date(event.start), 'h:mm a')} {event.service.name}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    // Desktop: Show event previews with flexible layout
-                    <div className="flex-grow overflow-y-auto space-y-1.5">
-                      {dayEvents.map((event, idx) => (
-                        idx < 2 ? (
-                          <div
-                            key={event.id}
-                            className="event-chip bg-gray-200 text-gray-800 p-2 text-xs rounded-xl cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:bg-gray-300 transition-all shadow-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEventClick(event);
-                            }}
-                          >
-                            {format(new Date(event.start), 'h:mm')} {event.service.name}
-                          </div>
-                        ) : (idx === 2 ? (
-                          <div key="more" className="text-xs font-medium text-black/70 pl-1.5 flex items-center">
-                            <span className="bg-black/10 rounded-full w-5 h-5 flex items-center justify-center mr-1 text-black/70">+</span>
-                            <span>{dayEvents.length - 2} more</span>
-                          </div>
-                        ) : null)
-                      ))}
-                    </div>
-                  )
-                )}
+                    ) : idx === 3 ? (
+                      <div key="more" className="text-xs text-gray-500 px-2">
+                        + {dayEvents.length - 3} more
+                      </div>
+                    ) : null
+                  )}
+                </div>
               </div>
             );
           })}
@@ -485,18 +505,59 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
               <div className="view-switcher flex justify-between items-center px-4 py-4 sm:px-5 sm:py-5">
                 {/* View buttons with modern style */}
                 <div className="flex space-x-2 sm:space-x-3 items-center">
-                  {/* Notification Bell - Inline with buttons */}
-                  <button
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2"
-                    aria-label="Notifications"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    {/* Notification indicator */}
-                    <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
-                  </button>
+                  {/* Notification Bell - Clear on click outside */}
+                  <div className="dropdown">
+                    <div 
+                      tabIndex={0} 
+                      role="button" 
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm relative mr-1 sm:mr-2 cursor-pointer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                      {notifications && notifications.length > 0 && (
+                        <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full shadow-md"></span>
+                      )}
+                    </div>
+
+                    <ul 
+                      tabIndex={0} 
+                      className="dropdown-content menu bg-base-100 rounded-box z-[1] w-80 sm:w-96 p-2 shadow-lg mt-4"
+                      onBlur={(e) => {
+                        // Check if the related target is outside the dropdown
+                        if (!e.currentTarget.contains(e.relatedTarget as Node) && notifications?.length > 0) {
+                          notifications.forEach(notification => removeNotification(notification.id));
+                        }
+                      }}
+                    >
+                      <div className="p-2">
+                        <h3 className="text-sm font-semibold text-black mb-4">Notifications</h3>
+
+                        <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                          {notifications && notifications.length > 0 ? (
+                            notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                className="flex items-start p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors group"
+                              >
+                                <div className="flex-1">
+                                  <p className="text-sm text-black">{notification.message}</p>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {new Date(notification.timestamp).toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-8">
+                              <p className="text-sm text-gray-500">No notifications</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </ul>
+                  </div>
 
                   <button
                     className={`w-20 sm:w-28 h-10 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${currentView === 'day' ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}

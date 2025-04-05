@@ -88,6 +88,13 @@ export interface LoginResponse {
         value: string;
         is_primary: boolean;
       }> | null;
+      address: {
+        street: string | null;
+        city: string | null;
+        state: string | null;
+        postalCode: string | null;
+        country: string | null;
+      } | null;
     }>;
   };
   company: {
@@ -117,13 +124,7 @@ export interface LoginResponse {
         id: string;
         name: string;
       };
-      services: Array<{
-        id: string;
-        name: string;
-        description: string;
-        duration: string;
-        price: number;
-      }>;
+      services: Array<ServiceResponse>;
     }>;
     contact_method: Array<{
       id: string;
@@ -178,13 +179,7 @@ export interface BookingResponse {
       is_primary: boolean;
     }> | null;
   } | null;
-  service: {
-    id: string;
-    name: string;
-    description: string;
-    duration: string;
-    price: number;
-  };
+  service: ServiceResponse;
   status: {
     id: string;
     name: string;
@@ -193,6 +188,14 @@ export interface BookingResponse {
   };
   start_time: string;
   end_time: string;
+}
+
+export interface ServiceResponse {
+  id: string;
+  name: string;
+  description: string;
+  duration: string;
+  price: number;
 }
 
 // Function to handle login
@@ -230,8 +233,8 @@ const SSOLogin = () => {
 
   const handleLoginSubmit = async (username: string, password: string) => {
     const response = await handleLogin(username, password);
-    if (response) {
-      setAuthentication(response);
+    if (response?.company.id) {
+      // setAuthentication(response);
       router.push('/');
     }
   };

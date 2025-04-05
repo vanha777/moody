@@ -2,8 +2,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Db, Server } from "@/app/utils/db";
-import { AppProvider, useAppContext, UserData } from "@/app/utils/AppContext";
-import ManageIdeaForm from '@/app/dashboard/components/manageIdeas';
+import { useAppContext } from "@/app/utils/AppContext";
 import router from 'next/router';
 import CustomerDetails from './customerDetails';
 import AddCustomer from './addCustomer';
@@ -41,8 +40,10 @@ export interface IdeaProps {
 }
 
 export interface ContactProps {
-  id?: number;
+  id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   company?: string;
@@ -53,8 +54,8 @@ export interface ContactProps {
     street?: string;
     city?: string;
     state?: string;
+    postal_code?: string;
     country?: string;
-    zip?: string;
   };
   isFavorite?: boolean;
   lastVisited?: Date;
@@ -73,6 +74,20 @@ interface ContactListProps {
   contacts?: ContactProps[];
   onContactSelect?: (contact: ContactProps) => void;
   onClose?: () => void;
+}
+
+// Helper function to transform customer data to ContactProps format
+function transformCustomerToContact(customer: any): ContactProps {
+  return {
+    id: customer.id,
+    name: `${customer.personal_information.first_name} ${customer.personal_information.last_name}`,
+    email: customer.contact_method?.find((m: { type: string; }) => m.type === 'email')?.value || '',
+    phone: customer.contact_method?.find((m: { type: string; }) => m.type === 'phone')?.value,
+    avatar: customer.profile_image?.path,
+    notes: customer.notes || '',
+    lastVisited: undefined, // You might want to store this separately or add to your customer schema
+    address: customer.address
+  };
 }
 
 export default function ContactList({
@@ -103,187 +118,32 @@ export default function ContactList({
 
     // Otherwise fetch from database
     const fetchContacts = async () => {
-      let user = auth.userData;
-      if (!user) {
-        user = getUser();
-        if (!user) {
-          router.push('/not-found');
-          return;
-        }
+      if (!auth) {
+        router.push('/dashboard/login');
+        return;
       }
 
-      // Mock data for now - this would be replaced with actual DB fetch
-      const mockContacts: ContactProps[] = [
-        {
-          id: 1,
-          name: "Alice Johnson",
-          email: "alice@example.com",
-          phone: "123-456-7890",
-          company: "Acme Corp",
-          avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-          lastVisited: new Date(Date.now() - 3600000), // 1 hour ago
-          totalSpent: 1250.75,
-          loyaltyPoints: 450,
-          isFavorite: true,
-          notes: "Prefers email communication",
-          address: {
-            street: "123 Main St",
-            city: "Boston",
-            state: "MA",
-            country: "USA",
-            zip: "02108"
-          },
-          purchaseHistory: [
-            { date: new Date(Date.now() - 86400000 * 7), amount: 350.25, items: ["Product A", "Product B"] },
-            { date: new Date(Date.now() - 86400000 * 30), amount: 900.50, items: ["Product C"] }
-          ]
-        },
-        {
-          id: 2,
-          name: "Bob Smith",
-          email: "bob@example.com",
-          phone: "234-567-8901",
-          company: "Tech Solutions",
-          avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-          totalSpent: 875.50,
-          loyaltyPoints: 200,
-          returns: 1
-        },
-        {
-          id: 3,
-          name: "Carol Davis",
-          email: "carol@example.com",
-          phone: "345-678-9012",
-          company: "Global Systems",
-          avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-          lastVisited: new Date(Date.now() - 7200000), // 2 hours ago
-          totalSpent: 3200.25,
-          loyaltyPoints: 780,
-          isFavorite: true,
-          address: {
-            street: "456 Oak Ave",
-            city: "Chicago",
-            state: "IL",
-            country: "USA",
-            zip: "60601"
-          }
-        },
-        {
-          id: 4,
-          name: "David Wilson",
-          email: "david@example.com",
-          phone: "456-789-0123",
-          company: "Innovative Inc",
-          avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-          totalSpent: 450.00,
-          loyaltyPoints: 100,
-          returns: 2
-        },
-        {
-          id: 5,
-          name: "Emma Brown",
-          email: "emma@example.com",
-          phone: "567-890-1234",
-          company: "Digital Services",
-          avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-          lastVisited: new Date(Date.now() - 86400000), // 1 day ago
-          totalSpent: 1875.30,
-          loyaltyPoints: 520,
-          notes: "Interested in premium products",
-          purchaseHistory: [
-            { date: new Date(Date.now() - 86400000 * 10), amount: 875.30, items: ["Premium Package"] },
-            { date: new Date(Date.now() - 86400000 * 60), amount: 1000.00, items: ["Annual Subscription"] }
-          ]
-        },
-        {
-          id: 6,
-          name: "Frank Miller",
-          email: "frank@example.com",
-          phone: "678-901-2345",
-          company: "Creative Solutions",
-          avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-          totalSpent: 325.75,
-          loyaltyPoints: 80
-        },
-        {
-          id: 7,
-          name: "Grace Lee",
-          email: "grace@example.com",
-          phone: "789-012-3456",
-          company: "Future Tech",
-          avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-          totalSpent: 2150.00,
-          loyaltyPoints: 600,
-          isFavorite: true,
-          address: {
-            street: "789 Pine St",
-            city: "Seattle",
-            state: "WA",
-            country: "USA",
-            zip: "98101"
-          }
-        },
-        {
-          id: 8,
-          name: "Henry Garcia",
-          email: "henry@example.com",
-          phone: "890-123-4567",
-          company: "Smart Innovations",
-          avatar: "https://randomuser.me/api/portraits/men/4.jpg",
-          totalSpent: 750.25,
-          loyaltyPoints: 180,
-          returns: 1
-        },
-        {
-          id: 9,
-          name: "Isabella Martinez",
-          email: "isabella@example.com",
-          phone: "901-234-5678",
-          company: "Bright Ideas",
-          avatar: "https://randomuser.me/api/portraits/women/5.jpg",
-          totalSpent: 1625.50,
-          loyaltyPoints: 420,
-          notes: "Prefers phone calls",
-          address: {
-            street: "101 Maple Dr",
-            city: "Austin",
-            state: "TX",
-            country: "USA",
-            zip: "73301"
-          }
-        },
-        {
-          id: 10,
-          name: "Jack Robinson",
-          email: "jack@example.com",
-          phone: "012-345-6789",
-          company: "Next Gen Tech",
-          avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-          totalSpent: 950.00,
-          loyaltyPoints: 250,
-          purchaseHistory: [
-            { date: new Date(Date.now() - 86400000 * 15), amount: 450.00, items: ["Service A"] },
-            { date: new Date(Date.now() - 86400000 * 45), amount: 500.00, items: ["Service B"] }
-          ]
-        },
-      ];
+      if (auth.roles.customer) {
+        // Transform customer data to ContactProps format
+        const realContacts = auth.roles.customer.map(transformCustomerToContact);
+        
+        setContacts(realContacts);
+        setFilteredContacts(realContacts);
 
-      setContacts(mockContacts);
-      setFilteredContacts(mockContacts);
+        // Set recently visited contacts
+        const recent = realContacts
+          .filter(contact => contact.lastVisited)
+          .sort((a, b) =>
+            (b.lastVisited?.getTime() || 0) - (a.lastVisited?.getTime() || 0)
+          )
+          .slice(0, 4);
 
-      // Set recently visited contacts
-      const recent = mockContacts
-        .filter(contact => contact.lastVisited)
-        .sort((a, b) =>
-          (b.lastVisited?.getTime() || 0) - (a.lastVisited?.getTime() || 0)
-        )
-        .slice(0, 4); // Get the 4 most recently visited contacts
-
-      setRecentlyVisited(recent);
+        setRecentlyVisited(recent);
+      }
     };
 
     fetchContacts();
-  }, [propContacts]);
+  }, [propContacts, auth]);
 
   // Filter contacts when search query changes
   useEffect(() => {
@@ -442,7 +302,7 @@ export default function ContactList({
                               className="w-14 h-14 rounded-full object-cover mb-1"
                             />
                           ) : (
-                            <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-semibold">
+                            <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center text-white text-xl font-semibold">
                               {contact.name.charAt(0)}
                             </div>
                           )}
@@ -487,7 +347,7 @@ export default function ContactList({
                               className="w-10 h-10 rounded-full object-cover mr-3"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold mr-3">
+                            <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-semibold mr-3">
                               {contact.name.charAt(0)}
                             </div>
                           )}

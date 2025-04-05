@@ -1,29 +1,45 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ContactProps } from '../../clients/components/businesses';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { ServiceResponse } from '@/app/dashboard/login/page';
+import { useAppContext } from '@/app/utils/AppContext';
 
 interface PaymentMethodProps {
   amount: number;
-  selectedServices: any[];
-  selectedDiscounts: any[];
-  customerInfo?: ContactProps | null;
+  selectedServices: any[] | null;
+  selectedDiscounts: any[] | null;
+  customerInfo: ContactProps;
+  bookingId?: string | null;
+  currencyId: string;
   onClose: () => void;
 }
 
-export default function PaymentMethods({ 
+export default function PaymentMethods({
   amount,
   selectedServices,
   selectedDiscounts,
   customerInfo,
+  bookingId,
+  currencyId,
   onClose,
 }: PaymentMethodProps) {
+  const { auth, checkoutBooking, checkoutWalkin } = useAppContext();
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle');
+
+  useEffect(() => {
+    console.log("Payment Methods Customer Info: ", customerInfo);
+    console.log("Payment Methods Booking ID: ", bookingId);
+    console.log("Payment Methods Amount: ", amount);
+    console.log("Payment Methods Currency ID: ", currencyId);
+    console.log("Payment Methods Selected Services: ", selectedServices);
+    console.log("Payment Methods Selected Discounts: ", selectedDiscounts);
+  }, []);
 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method);
@@ -37,22 +53,41 @@ export default function PaymentMethods({
 
   const handlePaymentSubmit = async () => {
     if (!selectedMethod || !customerInfo) return;
-    
     setIsProcessing(true);
     setPaymentStatus('processing');
-    
     try {
-      // Your payment processing logic here
-      // await processPayment({ ... });
-      
-      setPaymentStatus('completed');
-      // Handle completion internally instead of calling parent
-      // You could redirect to a success page or show a modal
+      if (bookingId) {
+        // checkout a booking
+        const response = await checkoutBooking(
+          customerInfo.id,
+          amount,
+          selectedMethod,
+          currencyId,
+          bookingId || undefined,
+          selectedServices?.map(service => service.id),
+          selectedDiscounts?.map(discount => discount.id)
+        );
+        console.log("Payment booking response ", response);
+      }
+      else {
+        // process a payment without a booking
+        const response = await checkoutWalkin(
+          customerInfo.id,
+          amount,
+          selectedMethod,
+          currencyId,
+          selectedServices?.map(service => service.id),
+          selectedDiscounts?.map(discount => discount.id)
+        );
+        console.log("Payment walkin customer response ", response);
+      }
+
     } catch (error) {
       setPaymentStatus('error');
       console.error('Payment failed:', error);
     } finally {
       setIsProcessing(false);
+      setPaymentStatus('completed');
     }
   };
 
@@ -89,11 +124,10 @@ export default function PaymentMethods({
             {paymentMethods.map((method) => (
               <div
                 key={method.id}
-                className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all ${
-                  selectedMethod === method.id
-                    ? 'border-black bg-gray-100'
-                    : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
-                }`}
+                className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all ${selectedMethod === method.id
+                  ? 'border-black bg-gray-100'
+                  : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                  }`}
                 onClick={() => handleMethodSelect(method.id)}
               >
                 <div className="w-12 h-12 relative mb-2">
@@ -130,10 +164,10 @@ export default function PaymentMethods({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ 
+                transition={{
                   type: "spring",
                   stiffness: 260,
-                  damping: 20 
+                  damping: 20
                 }}
               >
                 <CheckCircle className="w-16 h-16 text-black mb-4" />
@@ -161,7 +195,7 @@ export default function PaymentMethods({
           ) : (
             <>
               <button
-                onClick={handlePaymentSubmit}
+                onClick={() => handlePaymentSubmit()}
                 disabled={!selectedMethod || isProcessing}
                 className={`relative w-full h-12 rounded-lg font-medium
                   ${!selectedMethod || isProcessing
@@ -190,7 +224,7 @@ export default function PaymentMethods({
                   'Complete Payment'
                 )}
               </button>
-              
+
               {paymentStatus === 'error' && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}

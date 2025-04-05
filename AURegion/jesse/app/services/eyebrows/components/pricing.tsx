@@ -10,22 +10,36 @@ export default function PricingHero() {
 
   const services = [
     {
-      title: "Lift",
-      description: "Lash Lift is a semi-permanent treatment that enhances your natural curl, giving your lashes a lifted, voluminous look without extensions.",
-      image: "/lift.png",
+      title: "Brown Lamination & Tint",
+      description: "Brow lamination is a semi-permanent treatment that smooths and shapes unruly brows for a fuller, more defined look. We use a gentle solution to realign and set your brow hairs in place, leaving you with a polished, natural finish that lasts up to 8 weeks. Pair it with a tint to add depth and enhance your brows' color, making them look even fuller and more defined—perfect for effortlessly bold brows every day!",
+      image: "/brown_1.png",
       subServices: [
         {
-          name: "Korean Lash Lift + Collagen",
+          name: "Brow Lamination",
           // description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
-          price: "85",
-          duration: "45 min",
+          price: "75",
+          duration: "40 min",
           // image: "/3.png"
         },
         {
-          name: "Lash Tint & Lift ",
-          description: "",
-          price: "95",
+          name: "Brow Wax",
+          // description: "Lifted, elongated, and a little dramatic! This winged lash style enhances your eye shape for a flirty, cat-eye effect.",
+          price: "30",
           duration: "25 min",
+          // image: "/3.png"
+        },
+        {
+          name: "Brow Tint",
+          // description: "Bold, glossy, and full of drama! This lash style gives that freshly-coated mascara effect—perfect for a sultry, high-impact look.",
+          price: "30",
+          duration: "25 min",
+          // image: "/3.png"
+        },
+        {
+          name: "Brow Lamination, Wax & Tint",
+          description: "",
+          price: "85",
+          duration: "55 min",
           image: ""
         }
       ]
@@ -170,6 +184,87 @@ export default function PricingHero() {
 
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] py-20">
+        <div className="container mx-auto px-4 md:px-8">
+          <motion.h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-black">Frequently Asked</span>{' '}
+            <span className="text-[#D1B882]">Questions</span>
+          </motion.h2>
+
+          <div className="max-w-4xl mx-auto">
+            {[
+              {
+                question: "How long does brow lamination last?",
+                answer: "Brow lamination typically lasts 6-8 weeks, depending on your natural brow growth cycle and how well you care for them. The treatment helps maintain a groomed, lifted appearance throughout this period."
+              },
+              {
+                question: "Is brow lamination safe?",
+                answer: "Yes, when performed by a trained professional using high-quality products, brow lamination is completely safe. We use gentle solutions and follow strict hygiene protocols to ensure your safety and comfort."
+              },
+              {
+                question: "How should I prepare for my brow appointment?",
+                answer: "Please arrive with clean, makeup-free brows. Avoid using oil-based products around your brows before your appointment. If you have any skin conditions or allergies, please inform us beforehand."
+              },
+              {
+                question: "Can I wear makeup after brow lamination?",
+                answer: "Yes, but you should wait 24 hours after the treatment before applying any makeup. When you do apply makeup, avoid oil-based products and be gentle when removing makeup around the brow area."
+              },
+              {
+                question: "What's the difference between brow lamination and tinting?",
+                answer: "Brow lamination is a treatment that straightens and sets your brow hairs in place, while tinting adds color to your brows. They can be done separately or together for a more dramatic effect."
+              },
+              {
+                question: "How do I care for my laminated brows?",
+                answer: "Avoid getting your brows wet for the first 24 hours. After that, you can wash them gently with a mild cleanser. Brush them daily with a clean spoolie brush to maintain their shape. Avoid using oil-based products near your brows."
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="mb-6"
+              >
+                <div
+                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300"
+                  onClick={() => setExpandedService(expandedService === `faq-${index}` ? null : `faq-${index}`)}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-900">{faq.question}</h3>
+                    <svg
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
+                        expandedService === `faq-${index}` ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {expandedService === `faq-${index}` && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4 text-gray-600"
+                    >
+                      {faq.answer}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </>

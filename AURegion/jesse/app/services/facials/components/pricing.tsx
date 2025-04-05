@@ -11,7 +11,7 @@ export default function PricingHero() {
   const services = [
     {
       title: "Facials",
-      description: "Give your skin a little extra love with our no-fuss facials—perfect for a quick refresh, deep cleanse, or a moment of relaxation. Whether you're tackling breakouts, soothing your skin, or just want a healthy glow, we’ve got a simple, effective treatment for you.",
+      description: "Give your skin a little extra love with our no-fuss facials—perfect for a quick refresh, deep cleanse, or a moment of relaxation. Whether you're tackling breakouts, soothing your skin, or just want a healthy glow, we've got a simple, effective treatment for you.",
       image: "/facial_home.png",
       subServices: [
         {
@@ -177,6 +177,87 @@ export default function PricingHero() {
 
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] py-20">
+        <div className="container mx-auto px-4 md:px-8">
+          <motion.h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-black">Frequently Asked</span>{' '}
+            <span className="text-[#D1B882]">Questions</span>
+          </motion.h2>
+
+          <div className="max-w-4xl mx-auto">
+            {[
+              {
+                question: "How often should I get a facial?",
+                answer: "For optimal skin health, we recommend getting a facial every 4-6 weeks. This timing aligns with your skin's natural renewal cycle and helps maintain consistent results. However, the frequency can be adjusted based on your specific skin concerns and goals."
+              },
+              {
+                question: "Are facials suitable for all skin types?",
+                answer: "Yes, our facials are customized to suit all skin types. Whether you have dry, oily, combination, or sensitive skin, we'll tailor the treatment to address your specific needs and concerns."
+              },
+              {
+                question: "How should I prepare for my facial appointment?",
+                answer: "Please arrive with clean skin, free of makeup. Avoid using any harsh skincare products 24 hours before your appointment. If you have any skin conditions or allergies, please inform us beforehand."
+              },
+              {
+                question: "What should I expect after a facial?",
+                answer: "Your skin may appear slightly red immediately after the treatment, but this typically subsides within a few hours. You'll notice improved hydration and a healthy glow. We'll provide you with specific aftercare instructions to maintain your results."
+              },
+              {
+                question: "Can I wear makeup after a facial?",
+                answer: "We recommend waiting at least 6 hours before applying makeup after a facial to allow your skin to fully absorb the benefits of the treatment. When you do apply makeup, use clean brushes and gentle products."
+              },
+              {
+                question: "What's the difference between the different facial treatments?",
+                answer: "Our Clear Glow treatment focuses on acne and breakouts, Serenity Touch provides relaxation and stress relief, while Deep Rejuvenate offers a more intensive massage and rejuvenation experience. Each treatment is designed to address specific skin concerns and goals."
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="mb-6"
+              >
+                <div
+                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300"
+                  onClick={() => setExpandedService(expandedService === `faq-${index}` ? null : `faq-${index}`)}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-900">{faq.question}</h3>
+                    <svg
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
+                        expandedService === `faq-${index}` ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {expandedService === `faq-${index}` && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4 text-gray-600"
+                    >
+                      {faq.answer}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </>

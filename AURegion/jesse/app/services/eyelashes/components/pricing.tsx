@@ -94,10 +94,31 @@ export default function PricingHero() {
         },
         {
           name: "Glow mega volume 10D-14D",
-          description: "Bold and intense! You’ll love the ultimate in volume lashes, using ultra-light extensions to create a full, dramatic effect.",
+          description: "Bold and intense! You'll love the ultimate in volume lashes, using ultra-light extensions to create a full, dramatic effect.",
           price: 165,
           duration: "1h30",
           image: "/glow_mega_volume_10D-14D.png"
+        }
+      ]
+    },
+    {
+      title: "Lash Lift",
+      description: "Lash Lift is a semi-permanent treatment that enhances your natural curl, giving your lashes a lifted, voluminous look without extensions.",
+      image: "/lift.png",
+      subServices: [
+        {
+          name: "Korean Lash Lift + Collagen",
+          // description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
+          price: "85",
+          duration: "45 min",
+          // image: "/3.png"
+        },
+        {
+          name: "Lash Tint & Lift ",
+          description: "",
+          price: "95",
+          duration: "25 min",
+          image: ""
         }
       ]
     },
@@ -115,84 +136,84 @@ Refill after 4+ weeks : A new full set will be required 
           // description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
           price: "70 - 100",
           duration: "1h",
-          image: "/baby_doll.png"
+          // image: "/baby_doll.png"
         },
         {
           name: "Angle wings",
           // description: "Lifted, elongated, and a little dramatic! This winged lash style enhances your eye shape for a flirty, cat-eye effect.",
           price: "70 - 100",
           duration: "1h",
-          image: "/fairy_wings.png"
+          // image: "/fairy_wings.png"
         },
         {
           name: "Wet Look",
           // description: "Bold, glossy, and full of drama! This lash style gives that freshly-coated mascara effect—perfect for a sultry, high-impact look.",
           price: "70 - 100",
           duration: "1h",
-          image: "/wet_look.png"
+          // image: "/wet_look.png"
         },
         {
           name: "Anime",
           // description: "Big, bright, and doll-like! Inspired by anime characters, these lashes open up your eyes for a wide-eyed, playful effect.",
           price: "70 - 100",
           duration: "1h",
-          image: "/animate.png"
+          // image: "/animate.png"
         },
         {
           name: "Sunflower",
           // description: "A unique spiky lash style that combines narrow, well-defined fans with longer spikes for a bold, textured look.",
           price: "80 - 110",
           duration: "1h",
-          image: "/sun_flower.png"
+          // image: "/sun_flower.png"
         },
         {
           name: "Multi layer",
           // description: "Full, fluffy, and dimensional! This style uses different lengths and layers to create texture and depth for a voluminous but airy look.",
           price: "85 - 110",
           duration: "1h",
-          image: "/multi_layer.png"
+          // image: "/multi_layer.png"
         },
         {
           name: "Wispy Katun Thai",
           // description: "Light, soft, and feathery with a touch of luxury—perfect for a natural yet elevated look.",
           price: "90 - 120",
           duration: "1h",
-          image: "/wispy_katun_thai.png"
+          // image: "/wispy_katun_thai.png"
         },
         {
           name: "Glow foxy eyes (Signature)",
           // description: "Bold and lifted! These lashes create a foxy, winged effect that elongates and defines your eyes for a sultry, cat-eye look.",
           price: "95 - 125",
           duration: "1h",
-          image: "/glow_fox_eye_(Signature).png"
+          // image: "/glow_fox_eye_(Signature).png"
         },
         {
           name: "Individual (classic)",
           // description: "Simple, timeless, and naturally beautiful. A single extension is applied to each lash for a soft, effortless enhancement.",
           price: "65 - 95",
           duration: "1h",
-          image: "/individual.png"
+          // image: "/individual.png"
         },
         {
           name: "Hybrid",
           // description: " A little classic, a little volume! Hybrid lashes mix single extensions and volume fans for a wispy, fuller-but-still-natural look.",
           price: "70 - 100",
           duration: "1h",
-          image: "/hybrid_lash.png"
+          // image: "/hybrid_lash.png"
         },
         {
           name: "Natural volume 3D-5D",
           // description: "Soft and fluttery! Multiple lightweight extensions create a fuller look, without being too dramatic.",
           price: "80 - 110",
           duration: "1h",
-          image: "/nature_volume_3D-5D.png"
+          // image: "/nature_volume_3D-5D.png"
         },
         {
           name: "Glow mega volume 10D-14D",
           description: "",
           price: "90 - 120",
           duration: "1h",
-          image: "/glow_mega_volume_10D-14D.png"
+          image: ""
         }
       ]
     }
@@ -336,6 +357,87 @@ Refill after 4+ weeks : A new full set will be required 
 
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] py-20">
+        <div className="container mx-auto px-4 md:px-8">
+          <motion.h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-black">Frequently Asked</span>{' '}
+            <span className="text-[#D1B882]">Questions</span>
+          </motion.h2>
+
+          <div className="max-w-4xl mx-auto">
+            {[
+              {
+                question: "How long do eyelash extensions last?",
+                answer: "Eyelash extensions typically last between 2-4 weeks, depending on your natural lash growth cycle and how well you care for them. Regular refills every 2-3 weeks are recommended to maintain a full look."
+              },
+              {
+                question: "Are eyelash extensions safe?",
+                answer: "Yes, when applied by a trained professional using high-quality products, eyelash extensions are completely safe. We use medical-grade adhesives and follow strict hygiene protocols to ensure your safety and comfort."
+              },
+              {
+                question: "How should I prepare for my appointment?",
+                answer: "Please arrive with clean, makeup-free eyes. Avoid using oil-based products around your eyes before your appointment. If you wear contact lenses, you may want to remove them before the service."
+              },
+              {
+                question: "Can I wear makeup with eyelash extensions?",
+                answer: "Yes, but you should avoid oil-based makeup products and waterproof mascara. We recommend using water-based makeup and gentle makeup removers. Never use an eyelash curler on your extensions."
+              },
+              {
+                question: "What's the difference between classic and volume lashes?",
+                answer: "Classic lashes involve attaching one extension to one natural lash, creating a natural look. Volume lashes use multiple lightweight extensions per natural lash, creating a fuller, more dramatic effect."
+              },
+              {
+                question: "How do I care for my eyelash extensions?",
+                answer: "Avoid getting your lashes wet for the first 24 hours after application. Clean them daily with a lash-safe cleanser, avoid rubbing your eyes, and brush them gently with a clean spoolie brush."
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="mb-6"
+              >
+                <div
+                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300"
+                  onClick={() => setExpandedService(expandedService === `faq-${index}` ? null : `faq-${index}`)}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-900">{faq.question}</h3>
+                    <svg
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
+                        expandedService === `faq-${index}` ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {expandedService === `faq-${index}` && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4 text-gray-600"
+                    >
+                      {faq.answer}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </>

@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import SimpleLoading from "./components/simpleLoading";
 import DashboardClient from "./DashboardClient";
 import { redirect } from "next/navigation";
-import { UserData } from "../utils/AppContext";
 import type { Metadata } from 'next'
 import { useSearchParams } from "next/navigation";
 import MainUniverse from "./components/mainUniverse";
@@ -41,7 +40,7 @@ export default function Dashboard() {
   return (
     // <Suspense fallback={<SimpleLoading />}>
       // <DashboardClient rawUser={initialUser} />
-      <MainUniverse rawUser={initialUser} />
+      <MainUniverse  />
     // </Suspense>
   );
 }

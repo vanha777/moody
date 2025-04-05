@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ContactProps } from './businesses';
+import AddCustomer from './addCustomer';
+import { useAppContext } from '../../../utils/AppContext';
 
 interface CustomerDetailsProps {
     customer: ContactProps;
@@ -7,6 +9,31 @@ interface CustomerDetailsProps {
 }
 
 const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer, onClose }) => {
+    const { deleteCustomer } = useAppContext();
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        try {
+            setIsDeleting(true);
+            const response = await deleteCustomer(customer.id);
+            console.log("Customer deleted response: ", response);
+        } catch (error) {
+            console.error('Error deleting customer:', error);
+        } finally {
+            setIsDeleting(false);
+            onClose(); // Close the details view after successful deletion
+        }
+    };
+
+    if (showEditForm) {
+        console.log("This Is Customer Details: ", customer);
+        return <AddCustomer onClose={() => {
+            setShowEditForm(false)
+            onClose()
+        }} customer={customer} />;
+    }
+
     return (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
             {/* Header with back button */}
@@ -81,7 +108,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer, onClose }) 
                 {customer.address && (
                     <div className="py-3 border-b border-gray-200">
                         <p className="text-gray-500 text-sm">Address</p>
-                        <p>{customer.address.street}, {customer.address.city}, {customer.address.state}, {customer.address.zip}</p>
+                        <p>{customer.address.street}, {customer.address.city}, {customer.address.state}, {customer.address.postal_code}</p>
                     </div>
                 )}
                 {customer.lastContacted && (
@@ -147,11 +174,18 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({ customer, onClose }) 
 
             {/* Edit and Delete buttons */}
             <div className="px-4 py-6 space-y-3">
-                <button className="w-full py-2 bg-black text-white rounded-lg font-medium">
+                <button
+                    onClick={() => setShowEditForm(true)}
+                    className="w-full py-2 bg-black text-white rounded-lg font-medium"
+                >
                     Edit Contact
                 </button>
-                <button className="w-full py-2 text-black border border-black rounded-lg font-medium">
-                    Delete Contact
+                <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className={`w-full py-2 text-black border border-black rounded-lg font-medium ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete Contact'}
                 </button>
             </div>
         </div>

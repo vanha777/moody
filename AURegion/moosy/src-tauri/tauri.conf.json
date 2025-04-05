@@ -9,6 +9,14 @@
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun run build"
   },
+  "plugins": {
+    "notification": {
+      "all": true
+    },
+    "http": {
+      "all": true
+    }
+  },
   "app": {
     "windows": [
       {

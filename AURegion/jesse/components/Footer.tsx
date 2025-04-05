@@ -26,7 +26,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-[#F8D7D2] relative overflow-hidden border-t-2 border-[#D1B882]">
+    <footer className="bg-white relative overflow-hidden border-t-2 border-[#D1B882]">
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
           {/* Logo */}
