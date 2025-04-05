@@ -28,7 +28,7 @@ export default function Statements() {
   }
 
   return (
-    <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden flex items-center justify-center py-24">
+    <section className="bg-white relative overflow-hidden flex items-center justify-center py-24">
     {/* <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden flex items-center justify-center py-24"> */}
       <motion.div
         className="w-full relative z-10"

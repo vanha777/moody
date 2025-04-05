@@ -46,7 +46,7 @@ export default function Testimonials() {
   ]
 
   return (
-    <section className="py-20 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden">
+    <section className="py-20 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -60,6 +60,22 @@ export default function Testimonials() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             See the stunning transformations and hear what our clients have to say about their experience
           </p>
+        </motion.div>
+
+        {/* Decorative divider */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex items-center justify-center w-full my-6 mb-16"
+        >
+          <div className="h-0.5 w-24 bg-[#D1B882]"></div>
+          <div className="mx-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#D1B882" />
+            </svg>
+          </div>
+          <div className="h-0.5 w-24 bg-[#D1B882]"></div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">

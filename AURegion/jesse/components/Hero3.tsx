@@ -42,7 +42,7 @@ export default function Hero() {
   return (
     <>
       {/* <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10"> */}
-      <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10 pt-20">
+      <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10 pt-20">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.h1
             className="text-4xl md:text-5xl lg:text-7xl font-bold text-center mb-8 pb-28"
