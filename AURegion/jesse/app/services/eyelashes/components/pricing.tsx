@@ -94,7 +94,7 @@ export default function PricingHero() {
         },
         {
           name: "Glow mega volume 10D-14D",
-          description: "Bold and intense! You’ll love the ultimate in volume lashes, using ultra-light extensions to create a full, dramatic effect.",
+          description: "Bold and intense! You'll love the ultimate in volume lashes, using ultra-light extensions to create a full, dramatic effect.",
           price: 165,
           duration: "1h30",
           image: "/glow_mega_volume_10D-14D.png"
@@ -357,6 +357,87 @@ Refill after 4+ weeks : A new full set will be required 
 
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] py-20">
+        <div className="container mx-auto px-4 md:px-8">
+          <motion.h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-black">Frequently Asked</span>{' '}
+            <span className="text-[#D1B882]">Questions</span>
+          </motion.h2>
+
+          <div className="max-w-4xl mx-auto">
+            {[
+              {
+                question: "How long do eyelash extensions last?",
+                answer: "Eyelash extensions typically last between 2-4 weeks, depending on your natural lash growth cycle and how well you care for them. Regular refills every 2-3 weeks are recommended to maintain a full look."
+              },
+              {
+                question: "Are eyelash extensions safe?",
+                answer: "Yes, when applied by a trained professional using high-quality products, eyelash extensions are completely safe. We use medical-grade adhesives and follow strict hygiene protocols to ensure your safety and comfort."
+              },
+              {
+                question: "How should I prepare for my appointment?",
+                answer: "Please arrive with clean, makeup-free eyes. Avoid using oil-based products around your eyes before your appointment. If you wear contact lenses, you may want to remove them before the service."
+              },
+              {
+                question: "Can I wear makeup with eyelash extensions?",
+                answer: "Yes, but you should avoid oil-based makeup products and waterproof mascara. We recommend using water-based makeup and gentle makeup removers. Never use an eyelash curler on your extensions."
+              },
+              {
+                question: "What's the difference between classic and volume lashes?",
+                answer: "Classic lashes involve attaching one extension to one natural lash, creating a natural look. Volume lashes use multiple lightweight extensions per natural lash, creating a fuller, more dramatic effect."
+              },
+              {
+                question: "How do I care for my eyelash extensions?",
+                answer: "Avoid getting your lashes wet for the first 24 hours after application. Clean them daily with a lash-safe cleanser, avoid rubbing your eyes, and brush them gently with a clean spoolie brush."
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="mb-6"
+              >
+                <div
+                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300"
+                  onClick={() => setExpandedService(expandedService === `faq-${index}` ? null : `faq-${index}`)}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-900">{faq.question}</h3>
+                    <svg
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
+                        expandedService === `faq-${index}` ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {expandedService === `faq-${index}` && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4 text-gray-600"
+                    >
+                      {faq.answer}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </>
