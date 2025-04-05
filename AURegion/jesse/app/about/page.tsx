@@ -34,7 +34,7 @@ export default function About() {
 
   const teamMembers = [
     {
-      name: "Jessie Nguyen",
+      name: "Jess Nguyen",
       role: "Jess Glow Founder",
       image: "/founder01.jpg",
       instagram: "https://instagram.com/glazenails",
@@ -136,7 +136,7 @@ export default function About() {
             <div className="flex flex-col md:flex-row-reverse gap-16 items-center my-16">
               <div className="w-full md:w-1/2">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 text-[#D1B882]">
-                  Meet the owner - Jessie
+                  Meet the owner - Jess
                 </h2>
                 <p className="text-gray-700">
                   "I’ve always loved beauty and dreamed of having my own studio one day—but I never expected it to happen this fast. In 2023, an unexpected opportunity led me into the beauty industry, and I took the leap to start my own business. It’s been an incredible journey of learning, growing, and perfecting my craft with every client I meet."
@@ -169,7 +169,7 @@ export default function About() {
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <div className="flex flex-col items-center justify-center h-full">
                     <Image
-                      src="/room-2.jpg"
+                      src="/studio.jpg"
                       alt="Jess Glow"
                       fill
                       className="object-cover rounded-xl"

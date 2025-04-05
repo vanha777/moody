@@ -9,7 +9,7 @@ export default function NavBar() {
         <motion.div
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-full z-50 bg-[#F8D7D2] border-b-2 border-[#D1B882]"
+            className="w-full z-50 bg-white border-b-2 border-[#D1B882]"
         >
             <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="navbar-start">
