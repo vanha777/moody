@@ -126,7 +126,7 @@ export default function ContactList({
       if (auth.roles.customer) {
         // Transform customer data to ContactProps format
         const realContacts = auth.roles.customer.map(transformCustomerToContact);
-        
+
         setContacts(realContacts);
         setFilteredContacts(realContacts);
 
@@ -208,6 +208,12 @@ export default function ContactList({
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const onSelectNewContacts = async (contact: ContactProps) => {
+    if (onContactSelect) {
+      onContactSelect(contact);
+    }
+  }
 
   return (
     // <div className="w-full h-full flex flex-col bg-white relative">
@@ -381,16 +387,16 @@ export default function ContactList({
             </div>
 
             {/* New Contact Button */}
-            {!onContactSelect && (
-              <button
-                className="fixed md:bottom-6 bottom-28 right-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors z-20"
-                onClick={() => setShowAddContact(true)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-            )}
+
+            <button
+              className="fixed md:bottom-6 bottom-28 right-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors z-20"
+              onClick={() => setShowAddContact(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+
           </motion.div>
         </SimpleSideBar>
       )}
@@ -407,6 +413,7 @@ export default function ContactList({
       {showAddContact && (
         <AddCustomer
           onClose={() => setShowAddContact(false)}
+          onSelectNewContact={onSelectNewContacts}
         />
       )}
     </div>

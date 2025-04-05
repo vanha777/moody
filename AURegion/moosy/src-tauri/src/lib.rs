@@ -1,5 +1,6 @@
 use futures::future::try_join_all;
-use serde_json::Value;
+use serde::Serialize;
+use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
 use std::sync::OnceLock;
@@ -605,7 +606,7 @@ async fn checkout_booking(
 }
 
 // First, define the struct for the customer input
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone, Serialize)]
 struct CustomerInput {
     id: Option<String>,
     avatar: Option<String>,
@@ -627,7 +628,7 @@ async fn add_customer(
     pool: State<'_, PgPool>,
     state: State<'_, AuthState>,
     app: tauri::AppHandle,
-) -> Result<sqlx::types::Uuid, String> {
+) -> Result<serde_json::Value, String> {
     // Get the current auth data to ensure user is authenticated
     let auth = match &state.0 {
         Some(data) => data.clone(),
@@ -644,7 +645,7 @@ async fn add_customer(
     .bind(&customer.last_name)
     .bind(customer.date_of_birth)
     .bind(customer.gender)
-    .bind(customer.email)
+    .bind(customer.email.as_ref().map(|x|x.clone()))
     .bind(customer.address.as_ref().map(|a| a.street.clone()))
     .bind(customer.address.as_ref().map(|a| a.city.clone()))
     .bind(customer.address.as_ref().map(|a| a.state.clone()))
@@ -658,7 +659,16 @@ async fn add_customer(
     match result {
         Some(customer_id) => {
             let _ = fetch_latest_state(pool, state, app).await?;
-            Ok(customer_id)
+            Ok(json!({
+                "id": customer_id.to_string(),
+                "name": format!("{} {}", customer.first_name.clone(), customer.last_name.clone()),
+                "firstName": customer.first_name.clone(),
+                "lastName": customer.last_name.clone(),
+                "email": customer.email.map(|x|x.clone()),
+                "phone": customer.phone,
+                "address": customer.address.map(|x|x.clone()),
+            }
+            ))
         }
         None => Err("Failed to create/update customer".to_string()),
     }
