@@ -88,7 +88,7 @@ export default function NavBar() {
                 {/* CTA Button */}
                 <div className="navbar-end">
                     <Link
-                        href="https://colaunch-it.vercel.app/booking/jess-glow"
+                        href="https://moosy.vercel.app/booking/jess-glow"
                         rel="noopener noreferrer"
                         className="bg-[#D1B882] text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg hover:bg-[#E2CA94]"
                     >

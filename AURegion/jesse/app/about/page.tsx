@@ -148,10 +148,11 @@ export default function About() {
                 </div>
               </div>
             </div>
-            <div className="my-48"></div>
-            <Testimonials />
+            {/* <div className="my-48"></div> */}
+
           </motion.div>
         </motion.div>
+        <Testimonials />
       </section>
 
       <Footer />

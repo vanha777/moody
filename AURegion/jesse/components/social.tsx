@@ -56,7 +56,7 @@ const OpeningHours = () => {
                 Jess Glow is conveniently located in the heart of Morley. See you soon! 💖
               </p>
               <motion.a
-                href="https://colaunch-it.vercel.app/booking"
+                href="https://moosy.vercel.app/booking/jess-glow"
                 className="inline-flex items-center space-x-2 bg-[#D1B882] text-white px-6 py-3 rounded-full shadow-lg hover:bg-opacity-90 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
