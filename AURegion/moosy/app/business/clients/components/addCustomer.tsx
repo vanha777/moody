@@ -5,9 +5,10 @@ import { useAppContext } from '../../../utils/AppContext';
 interface AddCustomerProps {
     onClose: () => void;
     customer?: ContactProps;
+    onSelectNewContact?: (contact: ContactProps) => void;
 }
 
-const AddCustomer: React.FC<AddCustomerProps> = ({ onClose, customer }) => {
+const AddCustomer: React.FC<AddCustomerProps> = ({ onClose, customer, onSelectNewContact }) => {
     const { auth, addCustomer, editCustomer } = useAppContext();
     const [formData, setFormData] = useState<Partial<ContactProps>>({
         address: {
@@ -52,6 +53,11 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ onClose, customer }) => {
                 // If no customer, we're creating new
                 const response = await addCustomer(formData);
                 console.log("Response from addCustomer:", response);
+                if (onSelectNewContact) {
+                    const newContact = response as ContactProps;
+                    console.log("newContact hererere: ", newContact);
+                    onSelectNewContact(newContact);
+                }
             }
         } catch (error) {
             console.error("Error saving customer:", error);

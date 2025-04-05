@@ -31,7 +31,7 @@ const Contact = () => {
 
   return (
     // <section id="contact" className="relative overflow-hidden py-24 bg-white">
-      <section id="contact" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]">
+      <section id="contact" className="relative overflow-hidden py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">
@@ -44,13 +44,13 @@ const Contact = () => {
         </div>
 
         <motion.div
-          className="max-w-2xl mx-auto bg-white rounded-3xl shadow-md overflow-hidden"
+          className="max-w-2xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden border-2 border-[#D1B882]/30"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="p-6 border-b border-gray-100">
+          <div className="p-6 border-b border-[#D1B882]/30 bg-gradient-to-r from-[#D1B882]/10 to-white">
             <h3 className="text-xl font-bold flex items-center text-black">
               <span className="h-3 w-3 rounded-full bg-[#D1B882] mr-3 animate-pulse"></span>
               Service Assistant
@@ -58,7 +58,7 @@ const Contact = () => {
             <p className="text-black/60 text-sm mt-1">Ask me anything about our services and products</p>
           </div>
 
-          <div className="h-[400px] overflow-y-auto p-6 bg-gray-50">
+          <div className="h-[400px] overflow-y-auto p-6 bg-gradient-to-b from-[#D1B882]/10 to-white">
             <div className="space-y-4">
               {messages.map((msg, index) => (
                 <div
@@ -67,7 +67,7 @@ const Contact = () => {
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.isBot
-                      ? 'bg-white text-black shadow-sm rounded-tl-none'
+                      ? 'bg-white text-black shadow-sm rounded-tl-none border border-[#D1B882]/20'
                       : 'bg-[#D1B882] text-white rounded-tr-none'
                       }`}
                   >
@@ -90,24 +90,24 @@ const Contact = () => {
             </div>
           </div>
 
-          <div className="p-4 border-t border-gray-100 bg-white">
+          <div className="p-4 border-t border-[#D1B882]/30 bg-gradient-to-r from-white to-[#D1B882]/10">
             <form onSubmit={handleSendMessage} className="flex items-center">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                className="flex-1 bg-gray-50 text-black rounded-l-full px-6 py-3 focus:outline-none focus:ring-1 focus:ring-[#D1B882]"
+                className="flex-1 bg-white text-black rounded-l-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-[#D1B882] border border-[#D1B882]/30"
                 placeholder="Ask about our services..."
               />
               <button
                 type="submit"
-                className="bg-[#D1B882] hover:bg-opacity-90 text-white p-3 rounded-r-full transition-all duration-300"
+                className="bg-[#D1B882] hover:bg-[#D1B882]/90 text-white p-3 rounded-r-full transition-all duration-300"
               >
                 <FiSend className="h-5 w-5" />
               </button>
             </form>
             <p className="text-xs text-black/60 mt-2 text-center">
-              Need more specific help? <a href="https://calendly.com/sofiang2407/30min" className="text-[#D1B882] hover:underline">Book an appointment</a>
+              Need more specific help? <a href="https://calendly.com/sofiang2407/30min" className="text-[#D1B882] hover:underline font-medium">Book an appointment</a>
             </p>
           </div>
         </motion.div>

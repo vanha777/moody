@@ -21,7 +21,7 @@ export default function Hero() {
 
   return (
     // <section className="bg-white relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10">
-      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10">
+      <section className="bg-white relative overflow-hidden min-h-screen flex items-center px-4 md:px-8 py-10">
 
       <div className="container mx-auto relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">

@@ -79,7 +79,7 @@ export default function PaymentMethods({
           selectedServices?.map(service => service.id),
           selectedDiscounts?.map(discount => discount.id)
         );
-        console.log("Payment walkin customer response ", response);
+        console.log("Payment walkin New customer response ", response);
       }
 
     } catch (error) {

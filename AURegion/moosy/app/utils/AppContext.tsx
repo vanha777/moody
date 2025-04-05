@@ -171,14 +171,12 @@ export function AppProvider({ children }: AppProviderProps) {
 
     const checkoutWalkin = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, servicesId?: string[], discountsId?: string[]) => {
         try {
-            console.log("checkoutWalkin: ", customerId, amount, method, currencyId, servicesId, discountsId);
             const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
             return response;
         } catch (error) {
             return error;
         }
     }, []);
-
 
     // Add useEffect to subscribe to specific database events
     // useEffect(() => {

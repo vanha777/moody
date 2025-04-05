@@ -56,7 +56,7 @@ export default function PricingHero() {
 
   return (
     <>
-      <section id="services" className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] relative overflow-hidden min-h-screen py-10">
+      <section id="services" className="bg-white relative overflow-hidden min-h-screen py-10">
         <div className="container mx-auto relative z-10 px-4 md:px-8">
           <motion.h1
             className="text-4xl md:text-5xl lg:text-7xl font-bold  my-32 mb-8 pb-10"
@@ -188,7 +188,7 @@ export default function PricingHero() {
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6] py-20">
+      <section className="bg-white py-20">
         <div className="container mx-auto px-4 md:px-8">
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16"
@@ -235,11 +235,14 @@ export default function PricingHero() {
                 className="mb-6"
               >
                 <div
-                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300"
+                  className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow duration-300 border-2 border-[#D1B882]/30 hover:border-[#D1B882]/50 bg-gradient-to-r from-white to-[#D1B882]/5"
                   onClick={() => setExpandedService(expandedService === `faq-${index}` ? null : `faq-${index}`)}
                 >
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-900">{faq.question}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-[#D1B882] mr-3"></span>
+                      {faq.question}
+                    </h3>
                     <svg
                       className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
                         expandedService === `faq-${index}` ? 'rotate-180' : ''
@@ -256,7 +259,7 @@ export default function PricingHero() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-4 text-gray-600"
+                      className="mt-4 text-gray-600 border-t border-[#D1B882]/20 pt-4 pl-5"
                     >
                       {faq.answer}
                     </motion.p>

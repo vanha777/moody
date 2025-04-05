@@ -37,7 +37,7 @@ const OpeningHours = () => {
   };
 
   return (
-    <section id="location" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]">
+    <section id="location" className="relative overflow-hidden py-24 bg-white">
       {/* <section id="location" className="relative overflow-hidden py-24 bg-gradient-to-r from-[#F8F4EA] to-[#F0EAD6]"> */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
@@ -75,7 +75,7 @@ const OpeningHours = () => {
             transition={{ duration: 0.5 }}
           >
             {/* Location Card with larger map */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 border-2 border-[#D1B882]/30 bg-gradient-to-br from-white to-[#D1B882]/5">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="bg-[#D1B882] p-4 rounded-full text-white shadow-lg">
                   <FiMapPin className="h-6 w-6" />
@@ -86,7 +86,7 @@ const OpeningHours = () => {
                 </div>
               </div>
 
-              <div className="aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+              <div className="aspect-[16/9] rounded-2xl overflow-hidden shadow-lg border border-[#D1B882]/20">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3387.2115471593347!2d115.9014628!3d-31.9008491!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2a32b1c8d178da49%3A0xfd0a3e6445537478!2sJess&#39;%20Beauty%20Studio%20869!5e0!3m2!1sen!2sau!4v1742610583194!5m2!1sen!2sau" width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -104,7 +104,7 @@ const OpeningHours = () => {
             </div>
 
             {/* Opening Hours Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 border-2 border-[#D1B882]/30 bg-gradient-to-br from-white to-[#D1B882]/5">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="bg-[#D1B882] p-4 rounded-full text-white shadow-lg">
                   <FiClock className="h-6 w-6" />
@@ -117,7 +117,7 @@ const OpeningHours = () => {
                   <motion.div
                     key={schedule.day}
                     variants={itemVariants}
-                    className={`flex justify-between items-center p-3 rounded-lg ${currentDay === index ? 'bg-[#D1B882]/10 shadow-sm' : ''
+                    className={`flex justify-between items-center p-3 rounded-lg ${currentDay === index ? 'bg-[#D1B882]/20 shadow-sm border border-[#D1B882]/30' : 'border border-[#D1B882]/10'
                       }`}
                   >
                     <span className={`font-medium ${currentDay === index ? 'text-[#D1B882]' : 'text-black'}`}>
