@@ -9,7 +9,7 @@ export default function NavBar() {
         <motion.div
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-full z-50 bg-[#F8D7D2] border-b-2 border-[#D1B882] sticky top-0"
+            className="w-full z-50 bg-white border-b-2 border-[#D1B882] sticky top-0"
         >
             <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="navbar-start">
@@ -46,7 +46,7 @@ export default function NavBar() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center">
                         <Image
-                            src="/mainLogo.png"
+                            src="/jessGlowLogo.png"
                             alt="Jess Glow Logo"
                             width={250}
                             height={250}
