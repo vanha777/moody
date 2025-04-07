@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Db, Server } from "@/app/utils/db";
 import { useAppContext } from "@/app/utils/AppContext";
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import CustomerDetails from './customerDetails';
 import AddCustomer from './addCustomer';
 import { motion } from 'framer-motion';
@@ -95,6 +95,7 @@ export default function ContactList({
   onContactSelect,
   onClose
 }: ContactListProps = {}) {
+  const router = useRouter();
   const { auth, getUser } = useAppContext();
   const [contacts, setContacts] = useState<ContactProps[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<ContactProps[]>([]);

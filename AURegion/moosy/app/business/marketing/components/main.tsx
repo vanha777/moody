@@ -42,10 +42,10 @@ export default function Main() {
     const { auth } = useAppContext();
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     useEffect(() => {
-        if (!auth) {
-            router.push('/dashboard/login');
-        }
-        console.log("campaign :", auth?.company.campaigns)
+        // if (!auth) {
+        //     router.push('/dashboard/login');
+        // }
+        // console.log("campaign :", auth?.company.campaigns)
     }, [auth?.company.campaigns]);
 
     const handleClose = () => {

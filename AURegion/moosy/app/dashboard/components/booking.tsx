@@ -45,7 +45,7 @@ const BookingList: React.FC = () => {
     };
 
     useEffect(() => {
-        getUser();
+        // getUser();
         if (!auth) {
             router.push("/dashboard/login");
         }

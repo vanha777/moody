@@ -303,6 +303,12 @@ export function AppProvider({ children }: AppProviderProps) {
     }
     // }, []);
 
+    useEffect(() => {
+        if (auth?.company.id) {
+            getUser();
+        }
+    }, [auth?.company.id]);
+
     // UPDATE STATE BY BE EVENT
     // useEffect(() => {
     //     if (auth?.company.id) {
