@@ -101,11 +101,16 @@ export interface LoginResponse {
     id: string;
     name: string;
     description: string;
-    logo: {
-      id: string;
-      type: string;
-      path: string;
-    };
+      logo: {
+        id: string;
+        type: string;
+        path: string;
+      };
+      profile: {
+        id: string;
+        type: string;
+        path: string;
+      };
     currency: {
       id: string;
       code: string;
@@ -132,6 +137,57 @@ export interface LoginResponse {
       value: string;
       is_primary: boolean;
     }>;
+    campaigns: {
+      [key: string]: Array<{
+        id: string;
+        name: string;
+        description: string;
+        trigger_frequency: number;
+        message_template: string;
+        active: boolean;
+        type: string;
+        features: Array<{
+          feature_id: string;
+          feature_name: string;
+          feature_description: string;
+          feature_cap: number;
+          usage: number;
+        }> | null;
+      }>;
+    } | null;
+    financial: {
+      daily: {
+        total_revenue: number;
+        total_count: number;
+        most_used_payment_method: string | null;
+        most_used_service: string | null;
+        new_customer: number;
+      };
+      weekly: {
+        total_revenue: number;
+        total_count: number;
+        breakdown: Array<{
+          date_full: string;
+          total_revenue: number;
+          total_count: number;
+          most_used_payment_method: string | null;
+          most_used_service: string | null;
+          new_customer: number;
+        }>;
+      };
+      monthly: {
+        total_revenue: number;
+        total_count: number;
+        breakdown: Array<{
+          month: string;
+          total_revenue: number;
+          total_count: number;
+          most_used_payment_method: string | null;
+          most_used_service: string | null;
+          new_customer: number;
+        }>;
+      };
+    };
   };
   bookings: Array<BookingResponse>;
 }

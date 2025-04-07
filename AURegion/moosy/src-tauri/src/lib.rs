@@ -3,7 +3,7 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
-use std::sync::OnceLock;
+use std::{collections::HashMap, sync::OnceLock};
 use tauri::{http::header::PROXY_AUTHENTICATE, Emitter, Manager, State};
 
 // Define the authentication data structure that matches the TypeScript interface
@@ -86,10 +86,70 @@ pub struct Company {
     pub name: String,
     pub description: String,
     pub logo: Option<Image>,
+    pub profile: Option<Image>,
     pub currency: Currency,
     pub timetable: Vec<Timetable>,
     pub services_by_catalogue: Option<Vec<ServiceCatalogue>>,
     pub contact_method: Option<Vec<ContactMethod>>,
+    pub campaigns: Option<HashMap<String, Vec<Campaign>>>,
+    pub financial: Option<Financial>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct Financial {
+    pub daily: DailyData,
+    pub weekly: PeriodData,
+    pub monthly: PeriodData,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct DailyData {
+    pub total_revenue: f64,
+    pub total_count: i32,
+    pub most_used_payment_method: Option<String>,
+    pub most_used_service: Option<String>,
+    pub new_customer: Option<i32>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct PeriodData {
+    pub total_revenue: f64,
+    pub total_count: i32,
+    pub breakdown: Option<Vec<BreakdownData>>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct BreakdownData {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_full: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub month: Option<String>,
+    pub total_revenue: f64,
+    pub total_count: i32,
+    pub most_used_payment_method: Option<String>,
+    pub most_used_service: Option<String>,
+    pub new_customer: i32,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct Campaign {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub trigger_frequency: i32,
+    pub message_template: String,
+    pub active: bool,
+    pub r#type: String,
+    pub features: Option<Vec<Feature>>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct Feature {
+    pub feature_id: String,
+    pub feature_name: String,
+    pub feature_description: String,
+    pub feature_cap: i32,
+    pub usage: i32,
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -160,7 +220,7 @@ static DATABASE_URL: OnceLock<String> = OnceLock::new();
 // Helper function to get or initialize the DATABASE_URL
 fn get_database_url() -> &'static str {
     DATABASE_URL
-        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "postgres://postgres.xzjrkgzptjqoyxxeqchy:CjjJhnWvTlf7nRpY@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres".to_string()))
+        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "post".to_string()))
 }
 
 #[tauri::command]
@@ -282,7 +342,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postgres")
+                    .connect("s")
                     .await
                     .expect("Failed to create pool")
             });
@@ -375,7 +435,8 @@ pub fn run() {
             add_customer,
             edit_customer,
             delete_customer,
-            checkout_walkin
+            checkout_walkin,
+            update_campaign
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -858,4 +919,77 @@ async fn checkout_walkin(
     };
     let _ = fetch_latest_state(pool, state, app).await?;
     Ok(payment_result) // Return the UUID from the tuple
+}
+
+#[tauri::command]
+async fn update_campaign(
+    campaign_id: String,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    // Get the current auth data to ensure user is authenticated
+    let company_id = match &state.0 {
+        Some(data) => data.company.id.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // First, check if the link already exists
+    let existing_link = sqlx::query!(
+        "SELECT id FROM public.campaign_linkable 
+         WHERE campaign_id = $1::uuid 
+         AND linkable_id = $2::uuid 
+         AND linkable_type = 'company'",
+        sqlx::types::Uuid::parse_str(&campaign_id)
+            .map_err(|e| format!("Invalid campaign ID: {}", e))?,
+        sqlx::types::Uuid::parse_str(&company_id)
+            .map_err(|e| format!("Invalid company ID: {}", e))?
+    )
+    .fetch_optional(&*pool)
+    .await
+    .map_err(|e| format!("Failed to check campaign link: {}", e))?;
+
+    match existing_link {
+        // If link exists, delete it
+        Some(_) => {
+            sqlx::query!(
+                "DELETE FROM public.campaign_linkable 
+                 WHERE campaign_id = $1::uuid 
+                 AND linkable_id = $2::uuid 
+                 AND linkable_type = 'company'",
+                sqlx::types::Uuid::parse_str(&campaign_id)
+                    .map_err(|e| format!("Invalid campaign ID: {}", e))?,
+                sqlx::types::Uuid::parse_str(&company_id)
+                    .map_err(|e| format!("Invalid company ID: {}", e))?
+            )
+            .execute(&*pool)
+            .await
+            .map_err(|e| format!("Failed to delete campaign link: {}", e))?;
+
+            // Fetch the latest state to ensure the app has up-to-date data
+            let _ = fetch_latest_state(pool, state, app).await?;
+
+            Ok(format!("Campaign link successfully removed"))
+        }
+        // If link doesn't exist, insert it
+        None => {
+            sqlx::query!(
+                "INSERT INTO public.campaign_linkable 
+                 (campaign_id, linkable_id, linkable_type) 
+                 VALUES ($1::uuid, $2::uuid, 'company')",
+                sqlx::types::Uuid::parse_str(&campaign_id)
+                    .map_err(|e| format!("Invalid campaign ID: {}", e))?,
+                sqlx::types::Uuid::parse_str(&company_id)
+                    .map_err(|e| format!("Invalid company ID: {}", e))?
+            )
+            .execute(&*pool)
+            .await
+            .map_err(|e| format!("Failed to create campaign link: {}", e))?;
+
+            // Fetch the latest state to ensure the app has up-to-date data
+            let _ = fetch_latest_state(pool, state, app).await?;
+
+            Ok(format!("Campaign link successfully created"))
+        }
+    }
 }

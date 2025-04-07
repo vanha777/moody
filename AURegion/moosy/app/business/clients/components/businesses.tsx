@@ -217,7 +217,7 @@ export default function ContactList({
 
   return (
     // <div className="w-full h-full flex flex-col bg-white relative">
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white z-50 overflow-y-auto pb-20">
       {/* Only show main content when no overlay is active */}
       {!showContactDetail && !showAddContact && (
         <SimpleSideBar>
