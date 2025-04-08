@@ -486,7 +486,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
     );
   };
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white z-50 overflow-y-auto pb-20">
       {/* <div className="custom-calendar bg-white rounded-xl shadow-sm flex flex-col h-full min-h-[70vh]">*/}
       {!selectedEvent && !showAddBooking ? (
         <SimpleSideBar>

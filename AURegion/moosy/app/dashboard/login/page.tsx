@@ -101,11 +101,16 @@ export interface LoginResponse {
     id: string;
     name: string;
     description: string;
-    logo: {
-      id: string;
-      type: string;
-      path: string;
-    };
+      logo: {
+        id: string;
+        type: string;
+        path: string;
+      };
+      profile: {
+        id: string;
+        type: string;
+        path: string;
+      };
     currency: {
       id: string;
       code: string;
@@ -132,6 +137,57 @@ export interface LoginResponse {
       value: string;
       is_primary: boolean;
     }>;
+    campaigns: {
+      [key: string]: Array<{
+        id: string;
+        name: string;
+        description: string;
+        trigger_frequency: number;
+        message_template: string;
+        active: boolean;
+        type: string;
+        features: Array<{
+          feature_id: string;
+          feature_name: string;
+          feature_description: string;
+          feature_cap: number;
+          usage: number;
+        }> | null;
+      }>;
+    } | null;
+    financial: {
+      daily: {
+        total_revenue: number;
+        total_count: number;
+        most_used_payment_method: string | null;
+        most_used_service: string | null;
+        new_customer: number;
+      };
+      weekly: {
+        total_revenue: number;
+        total_count: number;
+        breakdown: Array<{
+          date_full: string;
+          total_revenue: number;
+          total_count: number;
+          most_used_payment_method: string | null;
+          most_used_service: string | null;
+          new_customer: number;
+        }>;
+      };
+      monthly: {
+        total_revenue: number;
+        total_count: number;
+        breakdown: Array<{
+          month: string;
+          total_revenue: number;
+          total_count: number;
+          most_used_payment_method: string | null;
+          most_used_service: string | null;
+          new_customer: number;
+        }>;
+      };
+    };
   };
   bookings: Array<BookingResponse>;
 }
@@ -240,80 +296,86 @@ const SSOLogin = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100">
-      <div className="text-center space-y-8">
-        {/* Logo Circle with Glow Effect */}
+    <div className="h-screen flex flex-col items-center justify-center bg-white">
+      <div className="text-center space-y-8 max-w-md w-full px-6">
+        {/* Logo Circle with minimal design */}
         <div className="relative">
-          <div className="w-32 h-32 mx-auto bg-white border border-gray-200 rounded-full 
-                        flex items-center justify-center relative z-10 shadow-lg">
+          <div className="w-24 h-24 mx-auto bg-black border border-gray-200 rounded-full 
+                        flex items-center justify-center relative z-10 shadow-sm">
             <img
-              src="/apple.png"
+              src="/moosyLogo.png"
               alt="MetaLoot Logo"
-              className={`w-20 h-20 ${isSpinning ? 'animate-spin' : ''}`}
+              className={`w-full h-full rounded-full ${isSpinning ? 'animate-spin' : ''}`}
             />
           </div>
-          {/* Glowing effect behind the circle */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 
-                        blur-xl rounded-full transform scale-150 -z-0"></div>
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-gray-600 text-sm tracking-wider">Welcome to</h2>
-          <h1 className="text-gray-800 text-5xl font-light tracking-wider">CoLaunch</h1>
-          <p className="text-gray-500 text-xl">Share Ideas, Connect & Find Partners</p>
+          <h2 className="text-gray-500 text-sm tracking-wider">Welcome to</h2>
+          <h1 className="text-black text-4xl font-light tracking-wider">Moosy</h1>
+          <p className="text-gray-600 text-lg">Book, Manage & Optimize Your Space</p>
         </div>
 
-        <div className="space-y-4 w-80">
+        <div className="space-y-4 w-full">
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
-                      text-gray-600 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-300"
+            className="w-full px-5 py-3 bg-white border border-gray-200 rounded-md
+                      text-gray-800 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
-                      text-gray-600 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-300"
+            className="w-full px-5 py-3 bg-white border border-gray-200 rounded-md
+                      text-gray-800 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
           />
           <button
             onClick={() => handleLoginSubmit(username, password)}
-            className="w-full px-6 py-3 bg-blue-500 rounded-lg text-white 
-                      hover:bg-blue-600 transition-all duration-300"
+            className="w-full px-5 py-3 bg-black rounded-md text-white 
+                      hover:bg-gray-800 transition-all duration-200"
           >
             Login
           </button>
 
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
           <button
             onClick={() => handleSSOLogin('google')}
-            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
-                     text-gray-600 hover:text-gray-800 hover:border-gray-300 hover:shadow-md
-                     transition-all duration-300 flex items-center justify-center gap-3"
+            className="w-full px-5 py-3 bg-white border border-gray-200 rounded-md
+                     text-gray-800 hover:bg-gray-50 hover:border-gray-300
+                     transition-all duration-200 flex items-center justify-center gap-3"
           >
             <FcGoogle className="text-xl" />
-            <span>Continue with Google</span>
+            <span>Google</span>
           </button>
 
           <button
             onClick={() => handleSSOLogin('apple')}
-            className="w-full px-6 py-3 bg-white border border-gray-200 rounded-lg
-                     text-gray-600 hover:text-gray-800 hover:border-gray-300 hover:shadow-md
-                     transition-all duration-300 flex items-center justify-center gap-3"
+            className="w-full px-5 py-3 bg-white border border-gray-200 rounded-md
+                     text-gray-800 hover:bg-gray-50 hover:border-gray-300
+                     transition-all duration-200 flex items-center justify-center gap-3"
           >
             <BsApple className="text-xl" />
-            <span>Continue with Apple</span>
+            <span>Apple</span>
           </button>
         </div>
 
-        <div className="text-sm text-gray-500 mt-8">
+        <div className="text-xs text-gray-500 mt-8">
           By proceeding, you agree to our{' '}
-          <span className="text-gray-700 hover:text-gray-900 cursor-pointer transition-colors">Terms</span>{' '}
+          <span className="text-gray-700 hover:text-black cursor-pointer transition-colors">Terms</span>{' '}
           &{' '}
-          <span className="text-gray-700 hover:text-gray-900 cursor-pointer transition-colors">Privacy</span>
+          <span className="text-gray-700 hover:text-black cursor-pointer transition-colors">Privacy</span>
         </div>
       </div>
     </div>

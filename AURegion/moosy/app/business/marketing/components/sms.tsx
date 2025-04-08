@@ -1,78 +1,120 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaToggleOn, FaToggleOff, FaImage, FaCheck, FaCalendarAlt, FaBirthdayCake, FaStar, FaUserClock } from 'react-icons/fa';
 import SimpleSideBar from "@/app/dashboard/components/simpleSideBar";
 import { motion } from 'framer-motion';
-
+import { useAppContext } from '@/app/utils/AppContext';
 interface SmsAutomation {
     id: string;
-    title: string;
+    name: string;
     description: string;
-    icon: React.ReactNode;
-    enabled: boolean;
-    message: string;
-    image: string | null;
+    trigger_frequency: number;
+    message_template: string;
+    active: boolean;
+    type: string;
+    features: Array<{
+        feature_id: string;
+        feature_name: string;
+        feature_description: string;
+        feature_cap: number;
+        usage: number;
+    }> | null;
+    icon?: React.ReactNode;
+    image?: string | null;
 }
 
-export default function SmsMarketing({ close }: { close: () => void }) {
+export default function SmsMarketing({ 
+    close, 
+    initialAutomations 
+}: { 
+    close: () => void;
+    initialAutomations?: SmsAutomation[];
+}) {
+    const { auth,updateCampaign } = useAppContext();
     const [selectedAutomation, setSelectedAutomation] = useState<string | null>(null);
-    const [automations, setAutomations] = useState<SmsAutomation[]>([
+    const [automations, setAutomations] = useState<SmsAutomation[]>(initialAutomations || [
         {
             id: 'welcome',
-            title: 'Welcome Message',
+            name: 'Welcome Message',
             description: 'Say hi to every client after their first two bookings',
             icon: <FaCheck className="text-green-500" />,
-            enabled: false,
-            message: 'Thank you for choosing our services! We hope you enjoyed your experience and look forward to seeing you again soon.',
+            active: false,
+            message_template: 'Thank you for choosing our services! We hope you enjoyed your experience and look forward to seeing you again soon.',
+            trigger_frequency: 2,
+            type: 'welcome',
+            features: null,
             image: null
         },
         {
             id: 'revisit',
-            title: 'Invite for Another Visit',
+            name: 'Invite for Another Visit',
             description: 'Send a reminder after a specific number of days',
             icon: <FaCalendarAlt className="text-blue-500" />,
-            enabled: false,
-            message: 'We miss you! It\'s been a while since your last visit. Book your next appointment today!',
+            active: false,
+            message_template: 'We miss you! It\'s been a while since your last visit. Book your next appointment today!',
+            trigger_frequency: 30,
+            type: 'revisit',
+            features: null,
             image: null
         },
         {
             id: 'birthday',
-            title: 'Birthday Discount',
+            name: 'Birthday Discount',
             description: 'Offer special discounts on clients\' birthdays',
             icon: <FaBirthdayCake className="text-pink-500" />,
-            enabled: false,
-            message: 'Happy Birthday! Enjoy 15% off your next service as our gift to you on your special day.',
+            active: false,
+            message_template: 'Happy Birthday! Enjoy 15% off your next service as our gift to you on your special day.',
+            trigger_frequency: 1,
+            type: 'birthday',
+            features: null,
             image: null
         },
         {
             id: 'review',
-            title: 'Review Reminder',
+            name: 'Review Reminder',
             description: 'Remind clients to leave a review after their visit',
             icon: <FaStar className="text-yellow-500" />,
-            enabled: false,
-            message: 'We value your feedback! Please take a moment to share your experience with us by leaving a review.',
+            active: false,
+            message_template: 'We value your feedback! Please take a moment to share your experience with us by leaving a review.',
+            trigger_frequency: 1,
+            type: 'review',
+            features: null,
             image: null
         },
         {
             id: 'inactive',
-            title: 'Reactivation Offer',
+            name: 'Reactivation Offer',
             description: 'Offer discount for clients who haven\'t visited in 90 days',
             icon: <FaUserClock className="text-purple-500" />,
-            enabled: false,
-            message: 'We miss you! It\'s been 90 days since your last visit. Come back and enjoy 10% off your next service!',
+            active: false,
+            message_template: 'We miss you! It\'s been 90 days since your last visit. Come back and enjoy 10% off your next service!',
+            trigger_frequency: 90,
+            type: 'inactive',
+            features: null,
             image: null
         }
     ]);
 
-    const toggleAutomation = (id: string) => {
-        setAutomations(automations.map(automation =>
-            automation.id === id ? { ...automation, enabled: !automation.enabled } : automation
-        ));
+    // Add useEffect to update automations when initialAutomations changes
+    useEffect(() => {
+        if (initialAutomations) {
+            setAutomations(initialAutomations);
+        }
+    }, [initialAutomations]);
+
+    const toggleAutomation = async (id: string, active: boolean) => {
+        // console.log("toogle campaign on/off :", id,active)
+        try {
+            const response = await updateCampaign(id, !automations.find(a => a.id === id)?.active);
+            console.log("Campaign updated At:", response);
+        } catch (error) {
+            console.log("Error updating campaign:", error);
+        } 
     };
 
     const updateMessage = (id: string, message: string) => {
         setAutomations(automations.map(automation =>
-            automation.id === id ? { ...automation, message } : automation
+            automation.id === id ? { ...automation, message_template: message } : automation
         ));
     };
 
@@ -139,14 +181,14 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                     className="bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer relative"
                                     onClick={() => setSelectedAutomation(automation.id)}
                                 >
-                                    {automation.enabled && (
+                                    {automation.active && (
                                         <div className="absolute top-3 right-3 flex items-center bg-green-50 px-2 py-1 rounded-full">
                                             <span className="text-xs font-medium text-green-700 bg-green-50 rounded-full px-2 py-1">Active</span>
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2 sm:gap-3 mb-2">
                                         {automation.icon}
-                                        <h3 className="text-lg sm:text-xl font-semibold">{automation.title}</h3>
+                                        <h3 className="text-lg sm:text-xl font-semibold">{automation.name}</h3>
                                     </div>
                                     <p className="text-sm sm:text-base text-gray-600">{automation.description}</p>
                                 </div>
@@ -180,9 +222,9 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                     </button>
                                     <div
                                         className="cursor-pointer"
-                                        onClick={() => toggleAutomation(selectedAutomation)}
+                                        onClick={() => toggleAutomation(selectedAutomation, !automations.find(a => a.id === selectedAutomation)?.active)}
                                     >
-                                        {automations.find(a => a.id === selectedAutomation)?.enabled ? (
+                                        {automations.find(a => a.id === selectedAutomation)?.active ? (
                                             <FaToggleOn size={46} className="text-black" />
                                         ) : (
                                             <FaToggleOff size={46} className="text-black" />
@@ -198,7 +240,7 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                 {/* Title and description */}
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-bold text-gray-900">
-                                        {automations.find(a => a.id === selectedAutomation)?.title}
+                                        {automations.find(a => a.id === selectedAutomation)?.name}
                                     </h2>
                                     <p className="text-gray-600 mt-1">
                                         {automations.find(a => a.id === selectedAutomation)?.description}
@@ -213,7 +255,7 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                                     <textarea
                                         className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base"
                                         rows={4}
-                                        value={automations.find(a => a.id === selectedAutomation)?.message || ''}
+                                        value={automations.find(a => a.id === selectedAutomation)?.message_template || ''}
                                         onChange={(e) => updateMessage(selectedAutomation, e.target.value)}
                                         placeholder="Enter your message here..."
                                     />
@@ -263,11 +305,11 @@ export default function SmsMarketing({ close }: { close: () => void }) {
                         </div>
 
                         {/* iPhone-style bottom safe area */}
-                        <div className={`${automations.find(a => a.id === selectedAutomation)?.enabled ? 'bg-green-200' : 'bg-gray-50'} border-t border-gray-200`}>
+                        <div className={`${automations.find(a => a.id === selectedAutomation)?.active ? 'bg-green-200' : 'bg-gray-50'} border-t border-gray-200`}>
                             <div className="p-4">
                                 <span className="text-sm font-medium text-gray-600">
-                                    Status: <span className={`${automations.find(a => a.id === selectedAutomation)?.enabled ? 'text-green-600' : 'text-gray-500'}`}>
-                                        {automations.find(a => a.id === selectedAutomation)?.enabled ? 'Active' : 'Inactive'}
+                                    Status: <span className={`${automations.find(a => a.id === selectedAutomation)?.active ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {automations.find(a => a.id === selectedAutomation)?.active ? 'Active' : 'Inactive'}
                                     </span>
                                 </span>
                             </div>
@@ -279,3 +321,4 @@ export default function SmsMarketing({ close }: { close: () => void }) {
         </motion.div>
     );
 }
+

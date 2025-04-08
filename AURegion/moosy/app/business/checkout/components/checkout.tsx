@@ -31,7 +31,6 @@ interface Discount {
 
 export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const { auth } = useAppContext();
-    const router = useRouter();
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);
     const [services, setServices] = useState<ServiceData[]>([]);

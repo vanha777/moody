@@ -37,6 +37,7 @@ export interface AppContextData {
     editCustomer: (customer: any) => Promise<any>;
     deleteCustomer: (customerId: string) => Promise<any>;
     checkoutWalkin: (customerId: string, amount: number, method: string, currency: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    updateCampaign: (campaignId: string, active: boolean) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -178,6 +179,18 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
+    const updateCampaign = useCallback(async (campaignId: string, active: boolean) => {
+        console.log("update campaign :", campaignId, active);
+        try {
+            //
+            const response = await invoke('update_campaign', { campaignId });
+            console.log("Campaign update response:", response);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
     // Add useEffect to subscribe to specific database events
     // useEffect(() => {
     console.log("activate listening to bookings changes");
@@ -290,6 +303,12 @@ export function AppProvider({ children }: AppProviderProps) {
     }
     // }, []);
 
+    useEffect(() => {
+        if (auth?.company.id) {
+            getUser();
+        }
+    }, [auth?.company.id]);
+
     // UPDATE STATE BY BE EVENT
     // useEffect(() => {
     //     if (auth?.company.id) {
@@ -322,7 +341,8 @@ export function AppProvider({ children }: AppProviderProps) {
         addCustomer,
         editCustomer,
         deleteCustomer,
-        checkoutWalkin
+        checkoutWalkin,
+        updateCampaign
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -24,14 +24,14 @@ export default function PricingHero() {
         {
           name: "Serenity touch- relaxation facial massage",
           description: "Melt away stress with a warm lifting massage, optional extractions, and a cooling mask to refresh and firm your skin.",
-          price: "65",
+          price: "69",
           duration: "30 min",
           // image: "/3.png"
         },
         {
           name: "Deep Rejuvanate- Duluxe Tissue facial Massage",
           description: "A revitalizing massage to boost circulation, relieve tension, and leave your skin feeling soft, smooth, and refreshed.",
-          price: "90",
+          price: "89",
           duration: "60 min",
           image: ""
         }
@@ -237,9 +237,8 @@ export default function PricingHero() {
                       {faq.question}
                     </h3>
                     <svg
-                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
-                        expandedService === `faq-${index}` ? 'rotate-180' : ''
-                      }`}
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${expandedService === `faq-${index}` ? 'rotate-180' : ''
+                        }`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
