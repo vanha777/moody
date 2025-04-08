@@ -17,28 +17,28 @@ export default function PricingHero() {
         {
           name: "Baby Doll",
           description: "Soft, fluttery, and ultra-light! Perfect for a delicate, doe-eyed look that keeps it sweet and natural.",
-          price: 140,
+          price: 125,
           duration: "1h30",
           image: "/baby_doll.png"
         },
         {
           name: "Angle wings",
           description: "Lifted, elongated, and a little dramatic! This winged lash style enhances your eye shape for a flirty, cat-eye effect.",
-          price: "140",
+          price: "125",
           duration: "1h30",
           image: "/fairy_wings.png"
         },
         {
           name: "Wet Look",
           description: "Bold, glossy, and full of drama! This lash style gives that freshly-coated mascara effect—perfect for a sultry, high-impact look.",
-          price: 140,
+          price: 125,
           duration: "1h30",
           image: "/wet_look.png"
         },
         {
           name: "Anime",
           description: "Big, bright, and doll-like! Inspired by anime characters, these lashes open up your eyes for a wide-eyed, playful effect.",
-          price: 140,
+          price: 135,
           duration: "1h30",
           image: "/animate.png"
 
@@ -46,56 +46,56 @@ export default function PricingHero() {
         {
           name: "Sunflower",
           description: "A unique spiky lash style that combines narrow, well-defined fans with longer spikes for a bold, textured look.",
-          price: 150,
+          price: 135,
           duration: "1h30",
           image: "/sun_flower.png"
         },
         {
           name: "Multi layer",
           description: "Full, fluffy, and dimensional! This style uses different lengths and layers to create texture and depth for a voluminous but airy look.",
-          price: 155,
+          price: 145,
           duration: "1h30",
           image: "/multi_layer.png"
         },
         {
           name: "Wispy Katun Thai",
           description: "Light, soft, and feathery with a touch of luxury—perfect for a natural yet elevated look.",
-          price: 165,
+          price: 155,
           duration: "1h30",
           image: "/wispy_katun_thai.png"
         },
         {
           name: "Glow foxy eyes (Signature)",
           description: "Bold and lifted! These lashes create a foxy, winged effect that elongates and defines your eyes for a sultry, cat-eye look.",
-          price: 175,
+          price: 160,
           duration: "1h30",
           image: "/glow_fox_eye_(Signature).png"
         },
         {
           name: "Individual (classic)",
           description: "Simple, timeless, and naturally beautiful. A single extension is applied to each lash for a soft, effortless enhancement.",
-          price: 109,
+          price: 95,
           duration: "1h15",
           image: "/individual.png"
         },
         {
           name: "Hybrid",
           description: " A little classic, a little volume! Hybrid lashes mix single extensions and volume fans for a wispy, fuller-but-still-natural look.",
-          price: 129,
+          price: 115,
           duration: "1h15",
           image: "/hybrid_lash.png"
         },
         {
           name: "Natural volume 3D-5D",
           description: "Soft and fluttery! Multiple lightweight extensions create a fuller look, without being too dramatic.",
-          price: 139,
+          price: 125,
           duration: "1h15",
           image: "/nature_volume_3D-5D.png"
         },
         {
           name: "Glow mega volume 10D-14D",
           description: "Bold and intense! You'll love the ultimate in volume lashes, using ultra-light extensions to create a full, dramatic effect.",
-          price: 165,
+          price: 155,
           duration: "1h30",
           image: "/glow_mega_volume_10D-14D.png"
         }
@@ -417,9 +417,8 @@ Refill after 4+ weeks : A new full set will be required 
                       {faq.question}
                     </h3>
                     <svg
-                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${
-                        expandedService === `faq-${index}` ? 'rotate-180' : ''
-                      }`}
+                      className={`w-6 h-6 text-[#D1B882] transform transition-transform duration-300 ${expandedService === `faq-${index}` ? 'rotate-180' : ''
+                        }`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

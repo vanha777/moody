@@ -8,13 +8,13 @@ const OpeningHours = () => {
   const currentDay = new Date().getDay();
 
   const businessHours = [
-    { day: 'Sunday', hours: '10:00 AM - 6:00 PM', isOpen: true },
-    { day: 'Monday', hours: '9:00 AM - 5:00 PM', isOpen: true },
-    { day: 'Tuesday', hours: '9:00 AM - 5:00 PM', isOpen: true },
-    { day: 'Wednesday', hours: '9:00 AM - 4:00 PM', isOpen: true },
-    { day: 'Thursday', hours: '10:30 AM - 6:00 PM', isOpen: true },
-    { day: 'Friday', hours: '9:00 AM - 6:00 PM', isOpen: true },
-    { day: 'Saturday', hours: '9:00 AM - 5:00 PM', isOpen: true },
+    { day: 'Sunday', hours: '9:00 AM - 5:00 PM', isOpen: true },
+    { day: 'Monday', hours: '10:00 AM - 8:00 PM', isOpen: true },
+    { day: 'Tuesday', hours: '10:00 AM - 8:00 PM', isOpen: true },
+    { day: 'Wednesday', hours: '9:00 AM - 4:00 PM', isOpen: false },
+    { day: 'Thursday', hours: '10:00 AM - 8:00 PM', isOpen: true },
+    { day: 'Friday', hours: '10:00 AM - 8:00 PM', isOpen: true },
+    { day: 'Saturday', hours: '9:00 AM - 5:00 PM', isOpen: false },
   ];
 
   const containerVariants = {
@@ -123,7 +123,9 @@ const OpeningHours = () => {
                     <span className={`font-medium ${currentDay === index ? 'text-[#D1B882]' : 'text-black'}`}>
                       {schedule.day}
                     </span>
-                    <span className="text-black/70">{schedule.hours}</span>
+                    <span className="text-black/70">
+                      {schedule.isOpen === false ? 'Closed' : schedule.hours}
+                    </span>
                   </motion.div>
                 ))}
               </div>
