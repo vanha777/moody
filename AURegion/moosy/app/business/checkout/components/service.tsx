@@ -34,23 +34,23 @@ export default function ServiceSelector({ onSelectService, isOpen, onClose }: Se
   }, []);
 
   const catalogues = auth?.company?.services_by_catalogue || [];
-  
-  const services = selectedCatalogue === 'all' 
-    ? catalogues.flatMap(catalogue => 
-        catalogue.services.map(service => ({
-          ...service,
-          category: catalogue.catalogue.name
-        }))
-      )
-    : catalogues
-        .find(cat => cat.catalogue.id === selectedCatalogue)
-        ?.services.map(service => ({
-          ...service,
-          category: catalogues.find(cat => cat.catalogue.id === selectedCatalogue)?.catalogue.name || ''
-        })) || [];
 
-  const selectedCatalogueName = selectedCatalogue === 'all' 
-    ? 'All Categories' 
+  const services = selectedCatalogue === 'all'
+    ? catalogues.flatMap(catalogue =>
+      catalogue.services.map(service => ({
+        ...service,
+        category: catalogue.catalogue.name
+      }))
+    )
+    : catalogues
+      .find(cat => cat.catalogue.id === selectedCatalogue)
+      ?.services.map(service => ({
+        ...service,
+        category: catalogues.find(cat => cat.catalogue.id === selectedCatalogue)?.catalogue.name || ''
+      })) || [];
+
+  const selectedCatalogueName = selectedCatalogue === 'all'
+    ? 'All Categories'
     : catalogues.find(cat => cat.catalogue.id === selectedCatalogue)?.catalogue.name || 'All Categories';
 
   const handleCustomSubmit = () => {
@@ -79,147 +79,164 @@ export default function ServiceSelector({ onSelectService, isOpen, onClose }: Se
 
   return (
     <div className="fixed inset-0 bg-white z-50">
-      <div className="h-full w-full p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-black">Select Service</h2>
-          <button
-            onClick={onClose}
-            className="text-black hover:text-gray-600"
-          >
-            ✕
-          </button>
+      <div className="h-full w-full overflow-y-auto">
+        {/* Header - Replace existing header with checkout-style header */}
+        <div className="bg-white px-4 py-6 border-b">
+          <div className="flex items-center justify-start max-w-3xl mx-auto">
+            <button
+              onClick={onClose}
+              className="text-black hover:text-gray-700 mr-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </button>
+            <h1 className="text-xl font-semibold text-black">Select Service</h1>
+          </div>
         </div>
 
-        {/* Innovative Dropdown */}
-        <div className="relative mb-6">
-          <div
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600">
-                {selectedCatalogueName}
-              </span>
-            </div>
-            <svg
-              className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Main Content - add padding to match checkout layout */}
+        <div className="px-4 py-6 space-y-6 max-w-3xl mx-auto">
+          {/* Innovative Dropdown */}
+          <div className="relative mb-6">
+            <div
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center justify-between p-3 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-
-          {/* Dropdown Menu */}
-          {isDropdownOpen && (
-            <div className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-10">
-              <div 
-                className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedCatalogue === 'all' ? 'bg-gray-50' : ''
-                }`}
-                onClick={() => {
-                  setSelectedCatalogue('all');
-                  setIsDropdownOpen(false);
-                }}
-              >
-                <span className="text-gray-600">All Categories</span>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">
+                  {selectedCatalogueName}
+                </span>
               </div>
-              {catalogues.map((cat) => (
+              <svg
+                className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-10">
                 <div
-                  key={cat.catalogue.id}
-                  className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    selectedCatalogue === cat.catalogue.id ? 'bg-gray-50' : ''
-                  }`}
+                  className={`p-3 cursor-pointer hover:bg-gray-300 transition-colors ${selectedCatalogue === 'all' ? 'bg-gray-200' : ''
+                    }`}
                   onClick={() => {
-                    setSelectedCatalogue(cat.catalogue.id);
+                    setSelectedCatalogue('all');
                     setIsDropdownOpen(false);
                   }}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">{cat.catalogue.name}</span>
-                    <span className="text-gray-400 text-sm">{cat.services.length} services</span>
+                  <span className="text-gray-600">All Categories</span>
+                </div>
+                {catalogues.map((cat) => (
+                  <div
+                    key={cat.catalogue.id}
+                    className={`p-3 cursor-pointer hover:bg-gray-300 transition-colors ${selectedCatalogue === cat.catalogue.id ? 'bg-gray-200' : ''
+                      }`}
+                    onClick={() => {
+                      setSelectedCatalogue(cat.catalogue.id);
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">{cat.catalogue.name}</span>
+                      <span className="text-gray-400 text-sm">{cat.services.length} services</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            {services.map((service) => (
+              <div
+                key={service.id}
+                onClick={() => onSelectService(service)}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium text-black">{service.name}</h3>
+                    <p className="text-sm text-gray-700">{service.description}</p>
+                    <p className="text-sm text-gray-700">Duration: {service.duration}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-lg text-black">${service.price.toFixed(2)}</p>
+                    <p className="text-sm text-gray-700">{service.category}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              </div>
+            ))}
 
-        <div className="space-y-4">
-          {services.map((service) => (
-            <div
-              key={service.id}
-              onClick={() => onSelectService(service)}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-medium text-black">{service.name}</h3>
-                  <p className="text-sm text-gray-700">{service.description}</p>
-                  <p className="text-sm text-gray-700">Duration: {service.duration}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-lg text-black">${service.price.toFixed(2)}</p>
-                  <p className="text-sm text-gray-700">{service.category}</p>
+            {/* Custom Service Option */}
+            {!showCustomForm ? (
+              <div
+                onClick={() => setShowCustomForm(true)}
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium text-black">Create Custom Charge</h3>
+                    <p className="text-sm text-gray-700">Add a custom service with your own price</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-700">Variable</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
-          {/* Custom Service Option */}
-          {!showCustomForm ? (
-            <div
-              onClick={() => setShowCustomForm(true)}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-medium text-black">Create Custom Charge</h3>
-                  <p className="text-sm text-gray-700">Add a custom service with your own price</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-700">Variable</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="font-medium mb-3 text-black">Custom Charge Details</h3>
-              <div className="space-y-3">
-                <input
-                  type="number"
-                  value={customPrice}
-                  onChange={(e) => setCustomPrice(e.target.value)}
-                  placeholder="Enter price"
-                  className="w-full p-2 border border-gray-300 rounded focus:border-gray-500 focus:outline-none"
-                  step="0.01"
-                  min="0"
-                />
-                <textarea
-                  value={customDescription}
-                  onChange={(e) => setCustomDescription(e.target.value)}
-                  placeholder="Enter description (optional)"
-                  className="w-full p-2 border border-gray-300 rounded focus:border-gray-500 focus:outline-none"
-                  rows={3}
-                />
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleCustomSubmit}
-                    className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-                  >
-                    Add Custom Charge
-                  </button>
-                  <button
-                    onClick={() => setShowCustomForm(false)}
-                    className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-black"
-                  >
-                    Cancel
-                  </button>
+            ) : (
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <h3 className="font-medium mb-3 text-black">Custom Charge Details</h3>
+                <div className="space-y-3">
+                  <input
+                    type="number"
+                    value={customPrice}
+                    onChange={(e) => setCustomPrice(e.target.value)}
+                    placeholder="Enter price"
+                    className="w-full p-2 border border-gray-300 rounded focus:border-gray-500 focus:outline-none"
+                    step="0.01"
+                    min="0"
+                  />
+                  <textarea
+                    value={customDescription}
+                    onChange={(e) => setCustomDescription(e.target.value)}
+                    placeholder="Enter description (optional)"
+                    className="w-full p-2 border border-gray-300 rounded focus:border-gray-500 focus:outline-none"
+                    rows={3}
+                  />
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleCustomSubmit}
+                      className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+                    >
+                      Add Custom Charge
+                    </button>
+                    <button
+                      onClick={() => setShowCustomForm(false)}
+                      className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-black"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

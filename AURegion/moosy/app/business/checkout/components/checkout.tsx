@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, KeyboardEvent } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/navigation";
 import ContactList, { ContactProps } from "@/app/business/clients/components/businesses";
@@ -33,6 +33,8 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const { auth } = useAppContext();
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);
+    const [customAmount, setCustomAmount] = useState<string>("");
+    const [isEditingAmount, setIsEditingAmount] = useState<boolean>(false);
     const [services, setServices] = useState<ServiceData[]>([]);
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [selectedServices, setSelectedServices] = useState<Service[]>([]);
@@ -95,6 +97,25 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const handleProceedToPayment = () => {
         // console.log("Proceed to Payment: ", selectedClient, selectedServices, selectedDiscounts, amount,booking);
         setShowOverall(false);
+    };
+
+    const handleAddCustomService = () => {
+        if (customAmount && parseFloat(customAmount) > 0) {
+            const customService: Service = {
+                id: `custom-${Date.now()}`,
+                name: "Custom Service",
+                price: parseFloat(customAmount)
+            };
+            setSelectedServices([...selectedServices, customService]);
+            setCustomAmount("");
+            setIsEditingAmount(false);
+        }
+    };
+
+    const handleCustomAmountKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleAddCustomService();
+        }
     };
 
     return (
@@ -178,10 +199,31 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
 
                         {/* Total Amount Box */}
                         <div className="p-4 border-2 rounded-xl bg-gray-50">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center">
                                     <span className="text-2xl font-bold mr-2">$</span>
-                                    <span className="text-3xl font-bold">{amount}</span>
+                                    {selectedServices.length === 0 && isEditingAmount ? (
+                                        <input
+                                            type="number"
+                                            value={customAmount}
+                                            onChange={(e) => setCustomAmount(e.target.value)}
+                                            onKeyDown={handleCustomAmountKeyDown}
+                                            onBlur={handleAddCustomService}
+                                            autoFocus
+                                            className="text-3xl font-bold bg-transparent outline-none w-32"
+                                            placeholder="0.00"
+                                        />
+                                    ) : (
+                                        <span 
+                                            className="text-3xl font-bold cursor-pointer"
+                                            onClick={() => {
+                                                if (selectedServices.length === 0) {
+                                                    setIsEditingAmount(true);
+                                                    setCustomAmount(amount.toString());
+                                                }
+                                            }}
+                                        >{amount}</span>
+                                    )}
                                 </div>
                                 <button
                                     onClick={() => setShowServiceModal(true)}
