@@ -36,8 +36,9 @@ export interface AppContextData {
     addCustomer: (customer: any) => Promise<any>;
     editCustomer: (customer: any) => Promise<any>;
     deleteCustomer: (customerId: string) => Promise<any>;
-    checkoutWalkin: (customerId: string, amount: number, method: string, currency: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    checkoutWalkin: (amount: number, method: string, currency: string,customerId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
     updateCampaign: (campaignId: string, active: boolean) => Promise<any>;
+    sendEmail: (email: string, payment_id: string) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -170,7 +171,7 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    const checkoutWalkin = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, servicesId?: string[], discountsId?: string[]) => {
+    const checkoutWalkin = useCallback(async (amount: number, method: string, currencyId: string,customerId?: string, servicesId?: string[], discountsId?: string[]) => {
         try {
             const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
             return response;
@@ -185,6 +186,19 @@ export function AppProvider({ children }: AppProviderProps) {
             //
             const response = await invoke('update_campaign', { campaignId });
             console.log("Campaign update response:", response);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);
+
+
+    const sendEmail = useCallback(async (email: string,paymentId: string) => {
+        console.log("send email :", email, paymentId);
+        try {
+            //
+            const response = await invoke('send_email', { email, paymentId });
+            console.log("Send email response:", response);
             return response;
         } catch (error) {
             return error;
@@ -342,7 +356,8 @@ export function AppProvider({ children }: AppProviderProps) {
         editCustomer,
         deleteCustomer,
         checkoutWalkin,
-        updateCampaign
+        updateCampaign,
+        sendEmail
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

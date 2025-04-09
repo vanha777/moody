@@ -5,7 +5,7 @@ use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
 use std::{collections::HashMap, sync::OnceLock};
 use tauri::{http::header::PROXY_AUTHENTICATE, Emitter, Manager, State};
-
+use reqwest::Client;
 // Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AuthData {
@@ -342,7 +342,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postgres://postgres.xzjrkgzptjqoyxxeqchy:CjjJhnWvTlf7nRpY@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres")
+                    .connect("")
                     .await
                     .expect("Failed to create pool")
             });
@@ -436,7 +436,8 @@ pub fn run() {
             edit_customer,
             delete_customer,
             checkout_walkin,
-            update_campaign
+            update_campaign,
+            send_email
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -814,7 +815,7 @@ async fn delete_customer(
 
 #[tauri::command]
 async fn checkout_walkin(
-    customer_id: String,
+    customer_id: Option<String>,
     services_id: Option<Vec<String>>,
     discounts_id: Option<Vec<String>>,
     currency_id: String,
@@ -991,5 +992,32 @@ async fn update_campaign(
 
             Ok(format!("Campaign link successfully created"))
         }
+    }
+}
+
+#[tauri::command]
+async fn send_email(
+    email: String,
+    payment_id: String,
+) -> Result<String, String> {
+    // Build the request to Supabase function
+    let client = reqwest::Client::new();
+    let response = client.post("https://xzjrkgzptjqoyxxeqchy.supabase.co/functions/v1/send_email")
+        .header("Content-Type", "application/json")
+        .json(&serde_json::json!({
+            "payment_id": payment_id,
+            "email_to": email
+        }))
+        .send()
+        .await
+        .map_err(|e| format!("Failed to send email request: {}", e))?;
+    
+    // Check response status
+    if response.status().is_success() {
+        Ok("Email sent successfully".to_string())
+    } else {
+        let error_text = response.text().await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        Err(format!("Failed to send email: {}", error_text))
     }
 }

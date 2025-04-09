@@ -288,7 +288,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                     <div className="max-w-3xl mx-auto">
                         <button
                             onClick={handleProceedToPayment}
-                            disabled={!selectedClient || selectedServices.length === 0}
+                            disabled={selectedServices.length === 0}
                             className="w-full bg-black text-white py-4 rounded-xl font-semibold hover:bg-gray-800 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors"
                         >
                             Proceed to Payment
@@ -298,7 +298,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
             )}
 
             {/* Payment view */}
-            {!showOverall && auth && selectedClient && (
+            {!showOverall && auth && (
                 <PaymentMethods
                     amount={amount}
                     selectedServices={selectedServices}
