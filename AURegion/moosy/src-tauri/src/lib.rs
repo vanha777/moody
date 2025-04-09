@@ -342,7 +342,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("s")
+                    .connect("postgres://postgres.xzjrkgzptjqoyxxeqchy:CjjJhnWvTlf7nRpY@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres")
                     .await
                     .expect("Failed to create pool")
             });
