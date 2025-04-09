@@ -163,7 +163,7 @@ export default function SmsMarketing({
                     </div>
                 </div>
             )}
-            <div className={`${selectedAutomation ? 'fixed inset-0 bg-white z-40' : 'p-6'}`}>
+            <div className={`${selectedAutomation ? 'fixed inset-0 bg-white z-40' : ''}`}>
                 {!selectedAutomation && (
                     <div className="bg-white px-4 py-6 border-b mb-6">
                         <div className="flex items-center justify-start max-w-3xl mx-auto">
