@@ -307,7 +307,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium truncate">
-                          {event.service.name}
+                          {event.services && event.services.length > 0 
+                            ? event.services.length > 1 
+                              ? `${event.services[0].name} +${event.services.length - 1}` 
+                              : event.services[0].name
+                            : 'No service'}
                         </span>
                       </div>
                       <div className="flex items-center text-xs text-gray-600 gap-2">
@@ -408,7 +412,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                               }}
                             >
                               <div className="text-xs font-medium truncate">
-                                {event.service.name}
+                                {event.services && event.services.length > 0 
+                                  ? event.services.length > 1 
+                                    ? `${event.services[0].name} +${event.services.length - 1}` 
+                                    : event.services[0].name
+                                  : 'No service'}
                               </div>
                               <div className="text-xs text-gray-600 truncate">
                                 {event.customer.name}
@@ -468,7 +476,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ events, onEventClick })
                         }}
                       >
                         <div className="font-medium truncate">
-                          {format(new Date(event.start), 'h:mm a')} {event.service.name}
+                          {format(new Date(event.start), 'h:mm a')} {event.services && event.services.length > 0 
+                            ? event.services.length > 1 
+                              ? `${event.services[0].name} +${event.services.length - 1}` 
+                              : event.services[0].name
+                            : 'No service'}
                         </div>
                       </div>
                     ) : idx === 3 ? (

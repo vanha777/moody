@@ -12,6 +12,7 @@ import {
     sendNotification,
 } from '@tauri-apps/plugin-notification';
 import { ContactProps } from '../business/clients/components/businesses';
+import { BookingFormData } from '../dashboard/components/addBookingOverlay';
 
 // Add Notification type
 interface Notification {
@@ -36,9 +37,10 @@ export interface AppContextData {
     addCustomer: (customer: any) => Promise<any>;
     editCustomer: (customer: any) => Promise<any>;
     deleteCustomer: (customerId: string) => Promise<any>;
-    checkoutWalkin: (amount: number, method: string, currency: string,customerId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    checkoutWalkin: (amount: number, method: string, currency: string, customerId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
     updateCampaign: (campaignId: string, active: boolean) => Promise<any>;
     sendEmail: (email: string, payment_id: string) => Promise<any>;
+    addBooking: (formData: any) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextData | undefined>(undefined);
@@ -171,7 +173,7 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    const checkoutWalkin = useCallback(async (amount: number, method: string, currencyId: string,customerId?: string, servicesId?: string[], discountsId?: string[]) => {
+    const checkoutWalkin = useCallback(async (amount: number, method: string, currencyId: string, customerId?: string, servicesId?: string[], discountsId?: string[]) => {
         try {
             const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
             return response;
@@ -193,7 +195,7 @@ export function AppProvider({ children }: AppProviderProps) {
     }, []);
 
 
-    const sendEmail = useCallback(async (email: string,paymentId: string) => {
+    const sendEmail = useCallback(async (email: string, paymentId: string) => {
         console.log("send email :", email, paymentId);
         try {
             //
@@ -205,7 +207,24 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    // Add useEffect to subscribe to specific database events
+    const addBooking = useCallback(async (formData: BookingFormData) => {
+        console.log("add booking raw Data :", formData);
+        try {
+            const response = await invoke('add_booking', {
+                personId: formData.client?.id,
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                services: formData.services.map((service: { id: any; }) => service.id),
+                staffId: formData.staff?.id,
+            });
+            console.log("Add booking response:", response);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }, []);// Add useEffect to subscribe to specific database events
+
+
     // useEffect(() => {
     console.log("activate listening to bookings changes");
     if (auth?.company.id) {
@@ -357,7 +376,8 @@ export function AppProvider({ children }: AppProviderProps) {
         deleteCustomer,
         checkoutWalkin,
         updateCampaign,
-        sendEmail
+        sendEmail,
+        addBooking
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

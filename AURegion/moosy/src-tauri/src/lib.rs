@@ -1,11 +1,11 @@
 use futures::future::try_join_all;
+use reqwest::Client;
 use serde::Serialize;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use sqlx::{FromRow, PgPool};
 use std::{collections::HashMap, sync::OnceLock};
 use tauri::{http::header::PROXY_AUTHENTICATE, Emitter, Manager, State};
-use reqwest::Client;
 // Define the authentication data structure that matches the TypeScript interface
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AuthData {
@@ -200,7 +200,7 @@ pub struct Booking {
     pub id: String,
     pub customer: Customer,
     pub staff: Option<Person>,
-    pub service: Service,
+    pub services: Option<Vec<Service>>,
     pub status: Status,
     pub start_time: String,
     pub end_time: String,
@@ -219,8 +219,7 @@ static DATABASE_URL: OnceLock<String> = OnceLock::new();
 
 // Helper function to get or initialize the DATABASE_URL
 fn get_database_url() -> &'static str {
-    DATABASE_URL
-        .get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "post".to_string()))
+    DATABASE_URL.get_or_init(|| dotenv::var("DATABASE_URL").unwrap_or_else(|_| "post".to_string()))
 }
 
 #[tauri::command]
@@ -342,7 +341,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("")
+                    .connect("postgres")
                     .await
                     .expect("Failed to create pool")
             });
@@ -437,7 +436,8 @@ pub fn run() {
             delete_customer,
             checkout_walkin,
             update_campaign,
-            send_email
+            send_email,
+            add_booking
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -996,13 +996,11 @@ async fn update_campaign(
 }
 
 #[tauri::command]
-async fn send_email(
-    email: String,
-    payment_id: String,
-) -> Result<String, String> {
+async fn send_email(email: String, payment_id: String) -> Result<String, String> {
     // Build the request to Supabase function
     let client = reqwest::Client::new();
-    let response = client.post("https://xzjrkgzptjqoyxxeqchy.supabase.co/functions/v1/send_email")
+    let response = client
+        .post("https://xzjrkgzptjqoyxxeqchy.supabase.co/functions/v1/send_email")
         .header("Content-Type", "application/json")
         .json(&serde_json::json!({
             "payment_id": payment_id,
@@ -1011,13 +1009,97 @@ async fn send_email(
         .send()
         .await
         .map_err(|e| format!("Failed to send email request: {}", e))?;
-    
+
     // Check response status
     if response.status().is_success() {
         Ok("Email sent successfully".to_string())
     } else {
-        let error_text = response.text().await
+        let error_text = response
+            .text()
+            .await
             .unwrap_or_else(|_| "Unknown error".to_string());
         Err(format!("Failed to send email: {}", error_text))
     }
+}
+
+#[tauri::command]
+async fn add_booking(
+    person_id: String,
+    start_date: String,
+    end_date: String,
+    staff_id: String,
+    services: Vec<String>,
+    pool: State<'_, PgPool>,
+    state: State<'_, AuthState>,
+    app: tauri::AppHandle,
+) -> Result<String, String> {
+    // Get the current auth data to ensure user is authenticated
+    let company_id = match &state.0 {
+        Some(data) => data.company.id.clone(),
+        None => return Err("Not authenticated".to_string()),
+    };
+
+    // Execute SQL query to insert the booking and return the ID
+    // Convert the booking_id string to UUID since the database expects UUID type
+    let status_id = "2b6bf1b7-8d4b-4b36-946c-e3bd951f6021";
+
+    // Use a transaction to ensure all operations are atomic
+    let mut tx = match pool.begin().await {
+        Ok(tx) => tx,
+        Err(e) => return Err(format!("Failed to start transaction: {}", e)),
+    };
+
+    // Insert the booking and return the ID
+    let booking_id = match sqlx::query_scalar::<_, sqlx::types::Uuid>(
+        "INSERT INTO booking (customer_id, company_id, start_time, end_time, status_id, staff_id) 
+         VALUES ($1::uuid, $2::uuid, $3::timestamp, $4::timestamp, $5::uuid, $6::uuid) 
+         RETURNING id",
+    )
+    .bind(person_id.clone())
+    .bind(company_id.clone())
+    .bind(start_date.clone())
+    .bind(end_date.clone())
+    .bind(status_id.clone())
+    .bind(staff_id.clone())
+    .fetch_one(&mut *tx)
+    // .fetch_one(&*pool)
+    .await
+    {
+        Ok(id) => id,
+        Err(e) => {
+            let _ = tx.rollback().await;
+            return Err(format!("Failed to create booking: {}", e));
+        }
+    };
+
+    // Insert each service into the booking_linkable table
+    for service_id in services {
+        match sqlx::query(
+            "INSERT INTO booking_linkable (booking_id, linkable_id, linkable_type) 
+             VALUES ($1::uuid, $2::uuid, $3)",
+        )
+        .bind(booking_id)
+        .bind(service_id)
+        .bind("services")
+        .execute(&mut *tx)
+        .await
+        {
+            Ok(_) => (),
+            Err(e) => {
+                let _ = tx.rollback().await;
+                return Err(format!("Failed to link service to booking: {}", e));
+            }
+        }
+    }
+
+    // Commit the transaction
+    match tx.commit().await {
+        Ok(_) => (),
+        Err(e) => return Err(format!("Failed to commit transaction: {}", e)),
+    }
+
+    // Fetch the latest state to ensure the app has up-to-date data
+    let _ = fetch_latest_state(pool, state, app).await?;
+
+    Ok(booking_id.to_string())
 }

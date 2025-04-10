@@ -101,16 +101,16 @@ export interface LoginResponse {
     id: string;
     name: string;
     description: string;
-      logo: {
-        id: string;
-        type: string;
-        path: string;
-      };
-      profile: {
-        id: string;
-        type: string;
-        path: string;
-      };
+    logo: {
+      id: string;
+      type: string;
+      path: string;
+    };
+    profile: {
+      id: string;
+      type: string;
+      path: string;
+    };
     currency: {
       id: string;
       code: string;
@@ -189,7 +189,7 @@ export interface LoginResponse {
       };
     };
   };
-  bookings: Array<BookingResponse>;
+  bookings: Array<BookingResponse> | null;
 }
 
 export interface BookingResponse {
@@ -235,7 +235,7 @@ export interface BookingResponse {
       is_primary: boolean;
     }> | null;
   } | null;
-  service: ServiceResponse;
+  services: ServiceResponse[] | null;
   status: {
     id: string;
     name: string;

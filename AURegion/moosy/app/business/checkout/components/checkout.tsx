@@ -53,7 +53,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     useEffect(() => {
         if (booking) {
             setSelectedClient(booking.customer);
-            setSelectedServices([booking.service]);
+            setSelectedServices(booking.services);
         }
     }, [booking]);
 

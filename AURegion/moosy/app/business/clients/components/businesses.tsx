@@ -85,7 +85,7 @@ function transformCustomerToContact(customer: any): ContactProps {
     phone: customer.contact_method?.find((m: { type: string; }) => m.type === 'phone')?.value,
     avatar: customer.profile_image?.path,
     notes: customer.notes || '',
-    lastVisited: undefined, // You might want to store this separately or add to your customer schema
+    lastVisited: customer.last_visited ? new Date(customer.last_visited) : undefined,
     address: customer.address
   };
 }
@@ -131,15 +131,24 @@ export default function ContactList({
         setContacts(realContacts);
         setFilteredContacts(realContacts);
 
-        // Set recently visited contacts
-        const recent = realContacts
-          .filter(contact => contact.lastVisited)
-          .sort((a, b) =>
-            (b.lastVisited?.getTime() || 0) - (a.lastVisited?.getTime() || 0)
-          )
-          .slice(0, 4);
+        // For recently visited contacts, only use those with lastVisited already set
+        // If none have lastVisited set, just show the first 4 contacts without dates
+        const contactsWithVisitDates = realContacts.filter(contact => contact.lastVisited);
+        
+        let recentContacts;
+        if (contactsWithVisitDates.length > 0) {
+          // Use contacts that actually have visit dates
+          recentContacts = contactsWithVisitDates
+            .sort((a, b) => 
+              (b.lastVisited?.getTime() || 0) - (a.lastVisited?.getTime() || 0)
+            )
+            .slice(0, 4);
+        } else {
+          // Just take first 4 contacts without setting fake dates
+          recentContacts = realContacts.slice(0, 4);
+        }
 
-        setRecentlyVisited(recent);
+        setRecentlyVisited(recentContacts);
       }
     };
 
@@ -191,6 +200,9 @@ export default function ContactList({
       const withoutCurrent = prev.filter(c => c.id !== contact.id);
       return [updatedContact, ...withoutCurrent].slice(0, 4);
     });
+    
+    // Note: For persistence between sessions, we would need to implement 
+    // a database update here to store the lastVisited timestamp
 
     if (onContactSelect) {
       onContactSelect(updatedContact);
@@ -294,7 +306,9 @@ export default function ContactList({
                 {/* Recently visited section */}
                 {recentlyVisited.length > 0 && (
                   <div className="px-4 py-2">
-                    <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recently Visited</h2>
+                    <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      {recentlyVisited.some(c => c.lastVisited) ? "Recently Visited" : "Quick Access"}
+                    </h2>
                     <div className="mt-2 grid grid-cols-4 gap-4 pb-4">
                       {recentlyVisited.map((contact) => (
                         <div
@@ -314,9 +328,11 @@ export default function ContactList({
                             </div>
                           )}
                           <span className="text-xs text-center truncate w-full">{contact.name.split(' ')[0]}</span>
-                          <span className="text-xs text-gray-400 text-center">
-                            {contact.lastVisited ? formatTimeAgo(contact.lastVisited) : ''}
-                          </span>
+                          {contact.lastVisited && (
+                            <span className="text-xs text-gray-400 text-center">
+                              {formatTimeAgo(contact.lastVisited)}
+                            </span>
+                          )}
                         </div>
                       ))}
                     </div>

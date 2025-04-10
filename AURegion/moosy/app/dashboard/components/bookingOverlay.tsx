@@ -62,7 +62,10 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
 
   const handleReschedule = async (booking: CalendarEvent, newDate: Date) => {
     try {
-      const duration = booking.service.duration; // Assuming format "HH:MM:SS"
+      // Use the duration of the first service if available, otherwise default to 1 hour
+      const duration = booking.services && booking.services.length > 0 
+        ? booking.services[0].duration 
+        : '01:00:00'; // Default duration if no services
       console.log("Duration", duration);
       
       // Parse duration string (HH:MM:SS) into milliseconds
@@ -165,8 +168,19 @@ const BookingOverlay: React.FC<BookingOverlayProps> = ({
         {/* Appointment Details */}
         <div className="p-4 space-y-4">
           <div className="space-y-2">
-            <p className="text-gray-600">Service</p>
-            <p className="font-medium">{booking.service.name}</p>
+            <p className="text-gray-600">Services</p>
+            {booking.services && booking.services.length > 0 ? (
+              <div>
+                {booking.services.map((service, index) => (
+                  <div key={index} className="flex justify-between mb-1">
+                    <p className="font-medium">{service.name}</p>
+                    <p className="text-gray-700">${service.price}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="font-medium">No services</p>
+            )}
           </div>
 
           <div className="space-y-2">

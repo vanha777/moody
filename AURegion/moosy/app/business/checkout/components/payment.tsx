@@ -69,6 +69,7 @@ export default function PaymentMethods({
     setPaymentStatus('processing');
     try {
       if (bookingId) {
+        console.log("xxxxxxxyyyyyy Payment submit bookingId: ", selectedServices);
         if (!customerInfo) return;
         // checkout a booking
         const response = await checkoutBooking(

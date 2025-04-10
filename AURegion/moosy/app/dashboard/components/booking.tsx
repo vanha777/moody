@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { getTimezoneOffset } from 'date-fns-tz';
 export interface CalendarEvent {
     id: string;
-    service: ServiceData
+    services: ServiceData[]
     notes: string;
     start: Date;
     end: Date;
@@ -58,17 +58,17 @@ const BookingList: React.FC = () => {
         const fetchEvents = async () => {
             setIsLoading(true);
             try {
-                const mockEvents: CalendarEvent[] = auth?.bookings.map((booking) => ({
+                const mockEvents: CalendarEvent[] = auth?.bookings?.map((booking) => ({
                     id: booking.id,
                     status: booking.status,
-                    service: {
-                        id: booking.service.id,
-                        name: booking.service.name,
-                        description: booking.service.description,
-                        price: booking.service.price,
-                        duration: booking.service.duration,
+                    services: booking.services?.map((service) => ({
+                        id: service.id,
+                        name: service.name,
+                        description: service.description,
+                        price: service.price,
+                        duration: service.duration,
                         category: 'N/A' // Not provided in the booking data structure
-                    },
+                    })) || [],
                     notes: booking.customer.notes || '',
                     start: new Date(booking.start_time),
                     end: new Date(booking.end_time),
