@@ -30,6 +30,16 @@ pub struct Roles {
 }
 
 #[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct Auxiliary {
+    pub name: Option<String>,
+    pub value: Option<f64>,
+    pub description: Option<String>,
+    pub r#type: Option<String>,
+    pub increment: Option<bool>,
+    pub decrement: Option<bool>,
+}
+
+#[derive(FromRow, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Person {
     pub id: String,
     pub personal_information: PersonalInfo,
@@ -338,10 +348,10 @@ pub fn run() {
         .setup(|app| {
             // Initialize notification plugin
             // app.handle().plugin(tauri_plugin_notification::init())?;
-            let pool = tauri::async_runtime::block_on(async {
+            let pool: sqlx::Pool<sqlx::Postgres> = tauri::async_runtime::block_on(async {
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(2)
-                    .connect("postgres")
+                    .connect("")
                     .await
                     .expect("Failed to create pool")
             });
@@ -564,6 +574,7 @@ async fn checkout_booking(
     customer_id: String,
     services_id: Option<Vec<String>>,
     discounts_id: Option<Vec<String>>,
+    auxiliary: Option<Vec<Auxiliary>>,
     currency_id: String,
     method: String,
     amount: f64,
@@ -664,6 +675,54 @@ async fn checkout_booking(
         }
         None => (),
     };
+
+    // link auxiliary to payment
+    match auxiliary {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                    let pool = pool.clone();
+                    let payment_id = payment_id.clone();
+                    let id = id.clone();
+                    async move {
+                        // Insert into auxiliary table and get the ID
+                        let aux_id: Option<sqlx::types::Uuid> = sqlx::query_scalar(
+                            "INSERT INTO public.auxiliary (name, value, description, type, increment, decrement) 
+                             VALUES ($1, $2::numeric, $3, $4, $5::boolean, $6::boolean) 
+                             RETURNING id"
+                        )
+                            .bind(id.name)
+                            .bind(id.value)
+                            .bind(id.description)
+                            .bind(id.r#type)
+                            .bind(id.increment)
+                            .bind(id.decrement)
+                            .fetch_one(&*pool)
+                            .await
+                            .map_err(|e| format!("Failed to insert auxiliary: {}", e))?;
+                        
+                        // Link the auxiliary to the payment
+                        if let Some(aux_id) = aux_id {
+                            sqlx::query(
+                                "INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) 
+                                 VALUES ($1::uuid, $2::uuid, $3)"
+                            )
+                                .bind(payment_id)
+                                .bind(aux_id)
+                                .bind("auxiliary")
+                                .execute(&*pool)
+                                .await
+                                .map_err(|e| format!("Failed to link auxiliary to payment: {}", e))?;
+                        }
+                        Ok(()) as Result<(), String>
+                    }
+                });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };
+
+    let _ = fetch_latest_state(pool, state, app).await?;
     Ok(payment_result) // Return the UUID from the tuple
 }
 
@@ -818,6 +877,7 @@ async fn checkout_walkin(
     customer_id: Option<String>,
     services_id: Option<Vec<String>>,
     discounts_id: Option<Vec<String>>,
+    auxiliary: Option<Vec<Auxiliary>>,
     currency_id: String,
     method: String,
     amount: f64,
@@ -914,6 +974,52 @@ async fn checkout_walkin(
                         .map_err(|e| format!("Failed to link discount to payment: {}", e))
                 }
             });
+            try_join_all(futures).await?;
+        }
+        None => (),
+    };   
+    
+     // link auxiliary to payment
+    match auxiliary {
+        Some(ids) => {
+            let payment_id = payment_result.to_string();
+            let futures = ids.iter().map(|id| {
+                    let pool = pool.clone();
+                    let payment_id = payment_id.clone();
+                    let id = id.clone();
+                    async move {
+                        // Insert into auxiliary table and get the ID
+                        let aux_id: Option<sqlx::types::Uuid> = sqlx::query_scalar(
+                            "INSERT INTO public.auxiliary (name, value, description, type, increment, decrement) 
+                             VALUES ($1, $2::numeric, $3, $4, $5::boolean, $6::boolean) 
+                             RETURNING id"
+                        )
+                            .bind(id.name)
+                            .bind(id.value)
+                            .bind(id.description)
+                            .bind(id.r#type)
+                            .bind(id.increment)
+                            .bind(id.decrement)
+                            .fetch_one(&*pool)
+                            .await
+                            .map_err(|e| format!("Failed to insert auxiliary: {}", e))?;
+                        
+                        // Link the auxiliary to the payment
+                        if let Some(aux_id) = aux_id {
+                            sqlx::query(
+                                "INSERT INTO public.payment_linkable (payment_id, linkable_id, linkable_type) 
+                                 VALUES ($1::uuid, $2::uuid, $3)"
+                            )
+                                .bind(payment_id)
+                                .bind(aux_id)
+                                .bind("auxiliary")
+                                .execute(&*pool)
+                                .await
+                                .map_err(|e| format!("Failed to link auxiliary to payment: {}", e))?;
+                        }
+                        Ok(()) as Result<(), String>
+                    }
+                });
             try_join_all(futures).await?;
         }
         None => (),

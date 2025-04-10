@@ -8,9 +8,11 @@ import { XCircle, Mail } from 'lucide-react';
 import { FaCheck, FaBellSlash } from 'react-icons/fa';
 import { ServiceResponse } from '@/app/dashboard/login/page';
 import { useAppContext } from '@/app/utils/AppContext';
+import { Discount } from './checkout';
 
 interface PaymentMethodProps {
   amount: number;
+  selectedAuxiliary: any[] | null;
   selectedServices: any[] | null;
   selectedDiscounts: any[] | null;
   customerInfo?: ContactProps | null;
@@ -26,6 +28,7 @@ export default function PaymentMethods({
   customerInfo,
   bookingId,
   currencyId,
+  selectedAuxiliary,
   onClose,
 }: PaymentMethodProps) {
   const { auth, checkoutBooking, checkoutWalkin, sendEmail } = useAppContext();
@@ -39,12 +42,13 @@ export default function PaymentMethods({
   const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   useEffect(() => {
-    console.log("Payment Methods Customer Info: ", customerInfo);
-    console.log("Payment Methods Booking ID: ", bookingId);
-    console.log("Payment Methods Amount: ", amount);
-    console.log("Payment Methods Currency ID: ", currencyId);
-    console.log("Payment Methods Selected Services: ", selectedServices);
-    console.log("Payment Methods Selected Discounts: ", selectedDiscounts);
+    // console.log("Payment Methods Customer Info: ", customerInfo);
+    // console.log("Payment Methods Booking ID: ", bookingId);
+    // console.log("Payment Methods Amount: ", amount);
+    // console.log("Payment Methods Currency ID: ", currencyId);
+    // console.log("Payment Methods Selected Services: ", selectedServices);
+    // console.log("Payment Methods Selected Discounts: ", selectedDiscounts);
+    // console.log("Payment Methods Selected Auxiliary: ", selectedAuxiliary);
   }, []);
 
   useEffect(() => {
@@ -67,9 +71,41 @@ export default function PaymentMethods({
     if (!selectedMethod) return;
     setIsProcessing(true);
     setPaymentStatus('processing');
+    // console.log("Selected services: ", selectedServices);
+    // console.log("Selected discounts: ", selectedDiscounts);
+    // Filter out any services with id containing 'custom'
+    const filteredServices = selectedServices?.filter(service => !service.id.includes('custom')) || [];
+    // Filter out any discounts with id containing 'custom'
+    const filteredDiscounts = selectedDiscounts?.filter(discount => !discount.id.includes('custom')) || [];
+    const filteredAuxiliary = selectedAuxiliary?.map(x => {
+      if (x.type === 'custom_service') {
+        return {
+          id: x.id,
+          name: "Custom Service",
+          value: x.price,
+          description: x.description,
+          type: "auxiliary",
+          increment: true,
+          decrement: false
+        };
+      } else {
+        return {
+          id: x.id,
+          name: "Custom Discount",
+          value: x.value,
+          description: x.name,
+          type: "auxiliary",
+          increment: false,
+          decrement: true
+        };
+      }
+    }) || [];
+    // console.log("Raw auxiliary: ", selectedAuxiliary);
+    console.log("Filtered auxiliary: ", filteredAuxiliary);
+    console.log("Filtered services: ", filteredServices);
+    console.log("Filtered discounts: ", filteredDiscounts);
     try {
       if (bookingId) {
-        console.log("xxxxxxxyyyyyy Payment submit bookingId: ", selectedServices);
         if (!customerInfo) return;
         // checkout a booking
         const response = await checkoutBooking(
@@ -78,8 +114,9 @@ export default function PaymentMethods({
           selectedMethod,
           currencyId,
           bookingId || undefined,
-          selectedServices?.map(service => service.id),
-          selectedDiscounts?.map(discount => discount.id)
+          filteredServices.map(service => service.id),
+          filteredDiscounts.map(discount => discount.id),
+          filteredAuxiliary || undefined
         );
         console.log("Payment submit response ", response);
         setPaymentId(response.toString());
@@ -91,9 +128,11 @@ export default function PaymentMethods({
           selectedMethod,
           currencyId,
           customerInfo?.id,
-          selectedServices?.map(service => service.id),
-          selectedDiscounts?.map(discount => discount.id)
+          filteredServices.map(service => service.id),
+          filteredDiscounts.map(discount => discount.id),
+          filteredAuxiliary || undefined
         );
+        setPaymentId(response.toString());
         console.log("Payment walkin New customer response ", response);
       }
       setPaymentStatus('completed');
@@ -296,8 +335,8 @@ export default function PaymentMethods({
                 onClick={handleEmailSubmit}
                 disabled={!email || isSendingEmail}
                 className={`flex-1 py-3 px-4 rounded-lg ${!email || isSendingEmail
-                    ? 'bg-gray-300 text-gray-500'
-                    : 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-gray-300 text-gray-500'
+                  : 'bg-black text-white hover:bg-gray-800'
                   } transition-colors`}
               >
                 {isSendingEmail ? 'Sending...' : 'Send'}

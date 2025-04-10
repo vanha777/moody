@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ContactList, { ContactProps } from "@/app/business/clients/components/businesses";
 import PaymentMethods from "./payment";
 import ServiceSelector, { ServiceData } from "./service";
+import DiscountSelector, { DiscountData } from "./discount";
 import Link from "next/link";
 import { CalendarEvent } from "@/app/dashboard/components/booking";
 import { useAppContext } from "@/app/utils/AppContext";
@@ -21,18 +22,24 @@ interface Service {
     id: string;
     name: string;
     price: number;
+    description?: string;
 }
 
-interface Discount {
+export interface Discount {
     id: string;
     name: string;
-    percentage: number;
+    value: number;
+    description: string;
+    type: string;
+    increment: boolean;
+    decrement: boolean;
 }
 
 export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const { auth } = useAppContext();
     const [selectedClient, setSelectedClient] = useState<ContactProps | null>(null);
     const [amount, setAmount] = useState<number>(0);
+    const [originalAmount, setOriginalAmount] = useState<number>(0);
     const [customAmount, setCustomAmount] = useState<string>("");
     const [isEditingAmount, setIsEditingAmount] = useState<boolean>(false);
     const [services, setServices] = useState<ServiceData[]>([]);
@@ -44,11 +51,18 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const [showDiscountModal, setShowDiscountModal] = useState<boolean>(false);
     const [showContactModal, setShowContactModal] = useState<boolean>(false);
     const [showOverall, setShowOverall] = useState<boolean>(true);
+    const [totalDiscountPercentage, setTotalDiscountPercentage] = useState<number>(0);
+    const [selectedAuxiliary, setSelectedAuxiliary] = useState<any[]>([]);
+    const [customServiceName, setCustomServiceName] = useState<string>("Custom Service");
+    const [customDiscountName, setCustomDiscountName] = useState<string>("Custom Discount");
+    const [customDiscountValue, setCustomDiscountValue] = useState<string>("");
+    const [showCustomServiceForm, setShowCustomServiceForm] = useState<boolean>(false);
+    const [showCustomDiscountForm, setShowCustomDiscountForm] = useState<boolean>(false);
 
     // Fetch clients, services, and discounts on component mount
-        //   useEffect(() => {
+    //   useEffect(() => {
 
-        //   }, []);
+    //   }, []);
 
     useEffect(() => {
         if (booking) {
@@ -60,7 +74,11 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     // Calculate total amount based on services and discounts
     useEffect(() => {
         const servicesTotal = selectedServices.reduce((sum, service) => sum + service.price, 0);
-        const discountPercentage = selectedDiscounts.reduce((sum, discount) => sum + discount.percentage, 0);
+        setOriginalAmount(servicesTotal);
+
+        const discountPercentage = selectedDiscounts.reduce((sum, discount) => sum + discount.value, 0);
+        setTotalDiscountPercentage(discountPercentage);
+
         const discountAmount = (servicesTotal * discountPercentage) / 100;
         setAmount(servicesTotal - discountAmount);
     }, [selectedServices, selectedDiscounts]);
@@ -79,19 +97,58 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
     const handleAddService = (service: Service) => {
         setSelectedServices([...selectedServices, service]);
         setShowServiceModal(false);
+        
+        // Add custom service to auxiliary if it's a custom service
+        if (service.id === 'custom' || service.id.startsWith('custom-')) {
+            setSelectedAuxiliary([...selectedAuxiliary, {
+                type: 'custom_service',
+                id: service.id,
+                name: service.name,
+                price: service.price,
+                category: "Custom",
+                description: service.description || "",
+                duration: "Variable"
+            }]);
+        }
     };
 
     const handleAddDiscount = (discount: Discount) => {
         setSelectedDiscounts([...selectedDiscounts, discount]);
+        
+        // Add custom discount to auxiliary if it's a custom discount
+        if (discount.id.startsWith('custom-')) {
+            setSelectedAuxiliary([...selectedAuxiliary, {
+                type: 'custom_discount',
+                id: discount.id,
+                name: discount.name,
+                value: discount.value,
+                discountType: discount.type
+            }]);
+        }
+        
         setShowDiscountModal(false);
     };
 
     const handleRemoveService = (serviceId: string) => {
         setSelectedServices(selectedServices.filter(service => service.id !== serviceId));
+        
+        // Also remove from auxiliary array if it's a custom service
+        if (serviceId === 'custom' || serviceId.startsWith('custom-')) {
+            setSelectedAuxiliary(selectedAuxiliary.filter(item => 
+                item.type !== 'custom_service' || item.id !== serviceId
+            ));
+        }
     };
 
     const handleRemoveDiscount = (discountId: string) => {
         setSelectedDiscounts(selectedDiscounts.filter(discount => discount.id !== discountId));
+        
+        // Also remove from auxiliary array if it's a custom discount
+        if (discountId.startsWith('custom-')) {
+            setSelectedAuxiliary(selectedAuxiliary.filter(item => 
+                item.type !== 'custom_discount' || item.id !== discountId
+            ));
+        }
     };
 
     const handleProceedToPayment = () => {
@@ -107,6 +164,15 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                 price: parseFloat(customAmount)
             };
             setSelectedServices([...selectedServices, customService]);
+            
+            // Add to auxiliary array
+            setSelectedAuxiliary([...selectedAuxiliary, {
+                type: 'custom_service',
+                id: customService.id,
+                name: customService.name,
+                price: customService.price
+            }]);
+            
             setCustomAmount("");
             setIsEditingAmount(false);
         }
@@ -120,7 +186,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
 
     return (
         <div className="min-h-screen bg-white">
-            {showOverall && !showContactModal && !showServiceModal && (
+            {showOverall && !showContactModal && !showServiceModal && !showDiscountModal && (
                 <>
                     {/* Header */}
                     <div className="bg-white px-4 py-6 border-b">
@@ -151,7 +217,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                     {/* Main Content */}
                     <div className="px-4 py-6 space-y-6 max-w-3xl mx-auto">
                         {/* Client Selection Box */}
-                        <div 
+                        <div
                             onClick={() => setShowContactModal(true)}
                             className="p-4 border-2 rounded-xl cursor-pointer hover:border-gray-400"
                         >
@@ -160,8 +226,8 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                                     <div className="flex items-center space-x-4">
                                         <div className="w-12 h-12 rounded-full overflow-hidden">
                                             {selectedClient.avatar ? (
-                                                <img 
-                                                    src={selectedClient.avatar} 
+                                                <img
+                                                    src={selectedClient.avatar}
                                                     alt={selectedClient.email}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -200,37 +266,58 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                         {/* Total Amount Box */}
                         <div className="p-4 border-2 rounded-xl bg-gray-50">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <span className="text-2xl font-bold mr-2">$</span>
-                                    {selectedServices.length === 0 && isEditingAmount ? (
-                                        <input
-                                            type="number"
-                                            value={customAmount}
-                                            onChange={(e) => setCustomAmount(e.target.value)}
-                                            onKeyDown={handleCustomAmountKeyDown}
-                                            onBlur={handleAddCustomService}
-                                            autoFocus
-                                            className="text-3xl font-bold bg-transparent outline-none w-32"
-                                            placeholder="0.00"
-                                        />
-                                    ) : (
-                                        <span 
-                                            className="text-3xl font-bold cursor-pointer"
-                                            onClick={() => {
-                                                if (selectedServices.length === 0) {
-                                                    setIsEditingAmount(true);
-                                                    setCustomAmount(amount.toString());
-                                                }
-                                            }}
-                                        >{amount}</span>
-                                    )}
+                                <div className="flex flex-col">
+                                    <div className="flex items-center">
+                                        {/* <span className="text-2xl font-bold mr-2">$</span> */}
+                                        {selectedServices.length === 0 && isEditingAmount ? (
+                                            <input
+                                                type="number"
+                                                value={customAmount}
+                                                onChange={(e) => setCustomAmount(e.target.value)}
+                                                onKeyDown={handleCustomAmountKeyDown}
+                                                onBlur={handleAddCustomService}
+                                                autoFocus
+                                                className="text-3xl font-bold bg-transparent outline-none w-32"
+                                                placeholder="0.00"
+                                            />
+                                        ) : (
+                                            <>
+                                                {selectedDiscounts.length > 0 && (
+                                                    <div className="flex flex-col">
+                                                        <span
+                                                            className="text-3xl font-bold"
+                                                        >${amount.toFixed(2)} <span className="text-sm font-normal text-gray-500 line-through">${originalAmount.toFixed(2)}</span></span>
+                                                    </div>
+                                                )}
+                                                {selectedDiscounts.length === 0 && (
+                                                    <span
+                                                        className="text-3xl font-bold cursor-pointer"
+                                                        onClick={() => {
+                                                            if (selectedServices.length === 0) {
+                                                                setIsEditingAmount(true);
+                                                                setCustomAmount(amount.toString());
+                                                            }
+                                                        }}
+                                                    >${amount.toFixed(2)}</span>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => setShowServiceModal(true)}
-                                    className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm"
-                                >
-                                    Add Service
-                                </button>
+                                <div className="flex space-x-2">
+                                    <button
+                                        onClick={() => setShowDiscountModal(true)}
+                                        className="px-4 py-2 border border-gray-300 text-black rounded-lg hover:bg-gray-100 text-sm"
+                                    >
+                                        Add Discount
+                                    </button>
+                                    <button
+                                        onClick={() => setShowServiceModal(true)}
+                                        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm"
+                                    >
+                                        Add Service
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -238,13 +325,13 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                         <div className="space-y-3">
                             {selectedServices.length > 0 ? (
                                 selectedServices.map(service => (
-                                    <div 
-                                        key={service.id} 
+                                    <div
+                                        key={service.id}
                                         className="p-4 border-2 rounded-xl flex items-center justify-between group hover:border-gray-400"
                                     >
                                         <span className="font-medium">{service.name}</span>
                                         <div className="flex items-center space-x-3">
-                                            <span className="font-bold">${service.price}</span>
+                                            <span className="font-bold">${service.price.toFixed(2)}</span>
                                             <button
                                                 onClick={() => handleRemoveService(service.id)}
                                                 className="text-gray-400 hover:text-red-500 p-1"
@@ -262,6 +349,32 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                                 </div>
                             )}
                         </div>
+
+                        {/* Discounts List */}
+                        {selectedDiscounts.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="font-medium text-gray-700">Applied Discounts</h3>
+                                {selectedDiscounts.map(discount => (
+                                    <div
+                                        key={discount.id}
+                                        className="p-4 border-2 border-dashed rounded-xl flex items-center justify-between group hover:border-gray-400 bg-green-50"
+                                    >
+                                        <span className="font-medium text-green-700">{discount.name}</span>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="font-bold text-green-700">-{discount.value}%</span>
+                                            <button
+                                                onClick={() => handleRemoveDiscount(discount.id)}
+                                                className="text-gray-400 hover:text-red-500 p-1"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </>
             )}
@@ -282,8 +395,16 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                 />
             )}
 
+            {showDiscountModal && (
+                <DiscountSelector
+                    onSelectDiscount={handleAddDiscount}
+                    isOpen={showDiscountModal}
+                    onClose={() => setShowDiscountModal(false)}
+                />
+            )}
+
             {/* Bottom action bar */}
-            {showOverall && !showContactModal && !showServiceModal && (
+            {showOverall && !showContactModal && !showServiceModal && !showDiscountModal && (
                 <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t">
                     <div className="max-w-3xl mx-auto">
                         <button
@@ -303,6 +424,7 @@ export default function Checkout({ booking }: { booking?: CalendarEvent }) {
                     amount={amount}
                     selectedServices={selectedServices}
                     selectedDiscounts={selectedDiscounts}
+                    selectedAuxiliary={selectedAuxiliary}
                     customerInfo={selectedClient}
                     bookingId={booking?.id}
                     currencyId={auth.company.currency.id}

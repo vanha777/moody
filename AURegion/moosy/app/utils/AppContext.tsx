@@ -13,6 +13,7 @@ import {
 } from '@tauri-apps/plugin-notification';
 import { ContactProps } from '../business/clients/components/businesses';
 import { BookingFormData } from '../dashboard/components/addBookingOverlay';
+import { Discount } from '../business/checkout/components/checkout';
 
 // Add Notification type
 interface Notification {
@@ -33,11 +34,11 @@ export interface AppContextData {
     removeNotification: (id: string) => void;
     cancelBooking: (bookingId: string) => Promise<any>;
     rescheduleBooking: (bookingId: string, newDate: Date, endTime: Date) => Promise<any>;
-    checkoutBooking: (customerId: string, amount: number, method: string, currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
     addCustomer: (customer: any) => Promise<any>;
     editCustomer: (customer: any) => Promise<any>;
     deleteCustomer: (customerId: string) => Promise<any>;
-    checkoutWalkin: (amount: number, method: string, currency: string, customerId?: string, servicesId?: string[], discountsId?: string[]) => Promise<any>;
+    checkoutWalkin: (amount: number, method: string, currency: string, customerId?: string, servicesId?: string[], discountsId?: string[], auxiliary?: Discount[]) => Promise<any>;
+    checkoutBooking: (customerId: string, amount: number, method: string, currency: string, bookingId?: string, servicesId?: string[], discountsId?: string[], auxiliary?: Discount[]) => Promise<any>;
     updateCampaign: (campaignId: string, active: boolean) => Promise<any>;
     sendEmail: (email: string, payment_id: string) => Promise<any>;
     addBooking: (formData: any) => Promise<any>;
@@ -164,18 +165,18 @@ export function AppProvider({ children }: AppProviderProps) {
         }
     }, []);
 
-    const checkoutBooking = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, bookingId?: string, servicesId?: string[], discountsId?: string[]) => {
+    const checkoutBooking = useCallback(async (customerId: string, amount: number, method: string, currencyId: string, bookingId?: string, servicesId?: string[], discountsId?: string[], auxiliary?: Discount[]) => {
         try {
-            const response = await invoke('checkout_booking', { bookingId, customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
+            const response = await invoke('checkout_booking', { bookingId, customerId, servicesId, discountsId, auxiliary, currencyId, method, amount, status: "completed", })
             return response;
         } catch (error) {
             return error;
         }
     }, []);
 
-    const checkoutWalkin = useCallback(async (amount: number, method: string, currencyId: string, customerId?: string, servicesId?: string[], discountsId?: string[]) => {
+    const checkoutWalkin = useCallback(async (amount: number, method: string, currencyId: string, customerId?: string, servicesId?: string[], discountsId?: string[], auxiliary?: Discount[]) => {
         try {
-            const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, currencyId, method, amount, status: "completed" })
+            const response = await invoke('checkout_walkin', { customerId, servicesId, discountsId, auxiliary, currencyId, method, amount, status: "completed" })
             return response;
         } catch (error) {
             return error;
